@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />    
+
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%cyan([%d{yyyy-MM-dd HH:mm:ss}:%-3relative]) %green([%thread]) %highlight(%-5level) %yellow(%logger{35}) - (%msg%n)</pattern>	
+ 			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	
+	<logger name="org.springframework" level="DEBUG" additivity="true"/>
+
+  <root level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
