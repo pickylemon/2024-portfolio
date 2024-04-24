@@ -48,12 +48,12 @@ public class JoinService {
 			log.info("\n\n uuid={} \n\n", uuid);
 			authDto.setAuthUri(uuid);
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.MINUTE, 30);
+			cal.add(Calendar.MINUTE, 5);
 			authDto.setRegDtm(Calendar.getInstance().getTimeInMillis());
 			authDto.setExpireDtm(cal.getTimeInMillis());
 			memberAuthDao.addAuthInfo(authDto);
 			
-			//인증메일 발송
+			//인증메일 구조 만들어서 발송
 			EmailDto email = new EmailDto();
 			email.setFrom("novecento104@naver.com");
 			email.setReceiver(params.get("email"));
@@ -67,9 +67,7 @@ public class JoinService {
 			emailUtil.sendMail(email, true);
 			//보내는 email이 html인지 아닌지는 직접 구분해서 보내주기.
 		}
-		
-		
-		//인증메일 구조 만들어서 인증메일 보내기
+		return cnt;
 	}
 	
 	public int emailAuth(String uri) {

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
@@ -10,7 +10,7 @@
     
     <!-- ===== Iconscout CSS ===== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="/04/resources/css/style.css">
+    <link rel="stylesheet" href="/240423/resources/css/style.css">
          
     <title>Login & Registration Form</title> 
 </head>
@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-     <script src="/04/resources/js/script.js"></script> 
+     <script src="/240423/resources/js/script.js"></script> 
      <script type="text/javascript">
     	window.onload = function() {
     		var result = '${result}';

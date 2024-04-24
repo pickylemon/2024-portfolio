@@ -20,16 +20,17 @@
 	<constructor-arg ref="memberAuthDao"/>
 	<constructor-arg ref="emailUtil"/>
 </bean>
-<bean id="memberAuthDao" class="com.portfolio.www.dao.MemberAuthDao">
+<bean id="memberAuthDao" class="com.portfolio.www.repository.MemberAuthDao">
 	<constructor-arg ref="dataSource"/>
 </bean>
-<bean id="memberDao" class="com.portfolio.www.dao.MemberDao">
+<bean id="memberDao" class="com.portfolio.www.repository.MemberDao">
     <constructor-arg ref="dataSource"/>
 </bean>
 
 <!-- 이메일 전송하기 위한 bean설정 -->
 <bean id="emailUtil" class="com.portfolio.www.util.EmailUtil">
-	<property name="mailSender" ref="mailSender"/>
+	<!-- <property name="mailSender" ref="mailSender"/> -->
+	<constructor-arg ref="mailSender"/>
 </bean>
 
 

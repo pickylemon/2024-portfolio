@@ -64,15 +64,17 @@ public class MemberAuthDao extends JdbcTemplate{
 	
 	private ResultSetExtractor<MemberAuthDto> resultSetExtractor(){
 		return (rs -> {
-			MemberAuthDto dto = new MemberAuthDto();
-			dto.setAuthSeq(rs.getInt("auth_seq"));
-			dto.setMemberSeq(rs.getInt("member_seq"));
-			dto.setAuthNum(rs.getString("auth_num"));
-			dto.setAuthUri(rs.getString("auth_uri"));
-			dto.setAuthYn(rs.getString("auth_yn"));
-			dto.setRegDtm(rs.getLong("reg_dtm"));
-			dto.setExpireDtm(rs.getLong("expire_dtm"));
-			
+			MemberAuthDto dto = null;
+			while(rs.next()) {
+				dto = new MemberAuthDto();
+				dto.setAuthSeq(rs.getInt("auth_seq"));
+				dto.setMemberSeq(rs.getInt("member_seq"));
+				dto.setAuthNum(rs.getString("auth_num"));
+				dto.setAuthUri(rs.getString("auth_uri"));
+				dto.setAuthYn(rs.getString("auth_yn"));
+				dto.setRegDtm(rs.getLong("reg_dtm"));
+				dto.setExpireDtm(rs.getLong("expire_dtm"));
+			}
 			return dto;
 		});
 	}
