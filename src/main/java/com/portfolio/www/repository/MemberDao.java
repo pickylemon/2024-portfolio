@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -18,7 +19,7 @@ public class MemberDao extends JdbcTemplate{
 		super(dataSource);
 	}
 	
-	public int join(HashMap<String, String> params) {
+	public int join(HashMap<String, String> params) throws DataAccessException {
 		String sql = "INSERT INTO forum.`member`"
 				+ " (member_id, passwd, member_nm, email, auth_yn, pwd_chng_dtm, join_dtm)"
 				+ " VALUES('"+params.get("memberId")
@@ -35,9 +36,17 @@ public class MemberDao extends JdbcTemplate{
 		}
 	}
 	
-	public int getMemberSeq(String memberId) {
+	public int getMemberSeq(String memberId) throws DataAccessException {
 		String sql = "SELECT member_seq FROM member where member_id = '" + memberId +"'";
 		return queryForObject(sql, Integer.class);
+	}
+	
+	public int authValidation(int memberSeq) throws DataAccessException {
+		String sql = "UPDATE forum.`member` "
+				+ " SET auth_yn = 'Y' "
+				+ " WHERE member_seq = '" + memberSeq + "'";
+		
+		return update(sql);
 	}
 	
 

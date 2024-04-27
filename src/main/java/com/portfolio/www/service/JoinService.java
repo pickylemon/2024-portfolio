@@ -4,8 +4,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.portfolio.www.dto.EmailDto;
 import com.portfolio.www.dto.MemberAuthDto;
+import com.portfolio.www.exception.InvalidAuthUriException;
 import com.portfolio.www.exception.TimeoutException;
 import com.portfolio.www.repository.MemberAuthDao;
 import com.portfolio.www.repository.MemberDao;
@@ -24,6 +27,10 @@ public class JoinService {
 
 	public int join(HashMap<String, String> params) {
 		//params에 담겨있는 값 : 이름, 이메일, 비밀번호
+		//join 로직 순서
+		//1. 비밀번호 암호화
+		//2. MemberDao.join 멤버 가입
+		//3. 인증메일 보내기 (인증메일 구조 만들기, 메일 발송)
 		
 		//비밀번호 암호화
 		String passwd = params.get("passwd");
@@ -33,7 +40,7 @@ public class JoinService {
 		log.info(">>>>>>>>> result.verified = {}", result.verified);
 		
 		//암호화된 비밀번호로 바꿔서 저장하기
-		params.put("paswd", encPasswd);
+		params.put("passwd", encPasswd);
 		
 		//가입
 		int cnt = memberDao.join(params);
@@ -70,17 +77,26 @@ public class JoinService {
 		return cnt;
 	}
 	
+	@Transactional
 	public int emailAuth(String uri) {
-		MemberAuthDto dto = memberAuthDao.getMemberAuthDto(uri);
-		log.info("dto.getAuthNum()={}",dto.getAuthNum());
+		MemberAuthDto authDto = memberAuthDao.getMemberAuthDto(uri);
+		if(authDto == null || !uri.equals(authDto.getAuthUri())) { 
+			//client가 잘못된 혹은 임의의 auth uri로 접근했을 경우
+			throw new InvalidAuthUriException("유효하지 않은 인증 uri");
+		}
+		int memberSeq = authDto.getMemberSeq();
 		
-		//인증이 유효한지 검사하기
+		//인증시간이 유효한지 검사하기
 		long now = Calendar.getInstance().getTimeInMillis();
-		long expireDtm = dto.getExpireDtm();
-		if(now < expireDtm) { //아직 유효하면
-			return memberAuthDao.authValidation(uri); //인증을 N -> Y로 업데이트
-		} else {
+		long expireDtm = authDto.getExpireDtm();
+		log.info("\nnow - expireDtm = {}\n", now-expireDtm);
+		
+		if(now > expireDtm) {
 			throw new TimeoutException("인증메일 유효시간 만료.");
 		}
+	
+		memberAuthDao.authValidation(uri);
+		return memberDao.authValidation(memberSeq);
+				
 	}
 }

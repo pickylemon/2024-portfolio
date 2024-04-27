@@ -28,4 +28,13 @@
 		<param-value>classpath*:/context*.xml</param-value>
 	</context-param>
 	<!-- Spring configuration end -->
+	
+	<error-page>
+	<error-code>400</error-code>
+	<location>/error-page/400.jsp</location>
+	</error-page>
+	<error-page>
+	<error-code>500</error-code>
+	<location>/error-page/500.jsp</location>
+	</error-page>
 </web-app>

@@ -59,15 +59,15 @@
 
                 <form action="/240423/join.do" method="post">
                     <div class="input-field">
-                        <input type="text" placeholder="Enter your name" required name="memberId">
+                        <input type="text" placeholder="Enter your name" required name="memberId" value="${memberId}">
                         <i class="uil uil-user"></i>
                     </div>
                     <div class="input-field">
-                        <input type="text" placeholder="Enter your email" required name="email">
+                        <input type="text" placeholder="Enter your email" required name="email" value="${email}">
                         <i class="uil uil-envelope icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="password" class="password" placeholder="Create a password" required name="passwd">
+                        <input type="password" class="password" placeholder="Create a password" required name="passwd" value="${passwd}">
                         <i class="uil uil-lock icon"></i>
                     </div>
                     <div class="input-field">
@@ -103,9 +103,11 @@
     		var result = '${result}';
         	var msg = '${msg}';
         	
-        	if (result != '') {
+        	
+//         	if (result != '') {
+			if (msg != '') {
         		alert(msg)
-        		window.location.href = '/240423/loginPage.do'; 
+        		//window.location.href = '/240423/loginPage.do'; 
         		//PRG패턴 적용하기(Post로 온 요청이라서 새로고침하면 POST요청이 계속 가서 안됨.)
         	}
     	};
