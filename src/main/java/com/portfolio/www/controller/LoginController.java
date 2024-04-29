@@ -18,8 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.portfolio.www.exception.DuplicateMemberException;
 import com.portfolio.www.exception.InvalidAuthUriException;
+import com.portfolio.www.exception.NoSuchMemberException;
 import com.portfolio.www.exception.TimeoutException;
 import com.portfolio.www.service.JoinService;
+import com.portfolio.www.service.LoginService;
+import com.portfolio.www.util.MessageEnum;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,22 +32,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginController {
 	private final JoinService joinService;
+	private final LoginService loginService;
 	
 	@RequestMapping("/loginPage.do") 
 	//로그인 페이지
 	public String loginPage(Model model) {
-		String msg = (String)model.getAttribute("msg");
-		log.info("map={}", model.asMap().toString());
-		log.info("\n\n msg={} \n\n", msg);
-		
-	
+		log.info("\n model={}\n", model);
+
 		return "login";
 	}
 	
-//	@PostMapping("/login.do")
-//	public String login() {
-//		
-//	}
+	@PostMapping("/login.do")
+	public String login(@RequestParam HashMap<String, String> params, HttpServletRequest request, Model model) {
+		log.info("\n params={} \n", params);
+		String goalUrl = request.getHeader("referer"); //이전 요청페이지에 대한 정보
+		log.info("referer = {} ", goalUrl);
+		
+		//회원 인증
+		//service에서 회원 조회 및 비밀번호 대조까지 진행
+		
+		// 존재하지 않는 아이디면 예외발생 -> ExceptionHandler로 처리
+		//비밀번호가 틀리면
+		if(!loginService.login(params)) {
+			
+			model.addAttribute("code", MessageEnum.WRONG_PASSWORD.getCode());
+			model.addAttribute("msg", MessageEnum.WRONG_PASSWORD.getMessage());
+			model.addAllAttributes(params);
+			
+			return "login"; //입력 정보와 메시지를 가지고 다시 입력창으로 이동.
+		}
+		
+		//로그인 성공하면, 세션에 아이디 저장 후
+		request.getSession().setAttribute("memberId", params.get("memberId"));
+		// 원래 요청 주소로 이동.
+		return "redirect:"+goalUrl;
+	}
 	
 	@GetMapping("/logout.do")
 	public String logout(HttpSession session, RedirectAttributes rattr) {
@@ -150,6 +172,14 @@ public class LoginController {
 	public String pageNotFound(InvalidAuthUriException e, Model m) {
 		m.addAttribute("msg", e.getMessage());
 		return "/error-page/404";
+	}
+	
+	@ExceptionHandler(NoSuchMemberException.class)
+	public String noSuchMember(NoSuchMemberException e, Model m) {
+		m.addAttribute("code", MessageEnum.USER_NOT_FOUND.getCode());
+		m.addAttribute("msg", MessageEnum.USER_NOT_FOUND.getMessage());
+		
+		return "login";
 	}
 
 	

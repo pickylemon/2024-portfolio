@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="EUC-KR"%>
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <% String ctx = request.getContextPath(); %>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
@@ -22,13 +23,13 @@
             <div class="form login">
                 <span class="title">Login</span>
 
-                <form action="#">
+                <form action="<c:url value='/login.do'/>" method="post">
                     <div class="input-field">
-                        <input type="text" placeholder="Enter your email" required name="email">
+                        <input type="text" placeholder="Enter your ID" required name="memberId" value=${memberId }>
                         <i class="uil uil-envelope icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="password" class="password" placeholder="Enter your password" name="passwd" required>
+                        <input type="password" class="password" placeholder="Enter your password" name="passwd" required value=${passwd }>
                         <i class="uil uil-lock icon"></i>
                         <i class="uil uil-eye-slash showHidePw"></i>
                     </div>
@@ -43,7 +44,7 @@
                     </div>
 
                     <div class="input-field button">
-                        <input type="button" value="Login">
+                        <input type="submit" value="Login">
                     </div>
                 </form>
 
@@ -58,7 +59,7 @@
             <div class="form signup">
                 <span class="title">Registration</span>
 
-                <form action="/240423/join.do" method="post">
+                <form action="<c:url value='/join.do'/>" method="post">
                     <div class="input-field">
                         <input type="text" placeholder="Enter your name" required name="memberId" value="${memberId}">
                         <i class="uil uil-user"></i>
@@ -109,7 +110,7 @@
 			if (msg != '') {
         		alert(msg)
         		//window.location.href = '/240423/loginPage.do'; 
-        		//PRGÆÐÅÏ Àû¿ëÇÏ±â(Post·Î ¿Â ¿äÃ»ÀÌ¶ó¼­ »õ·Î°íÄ§ÇÏ¸é POST¿äÃ»ÀÌ °è¼Ó °¡¼­ ¾ÈµÊ. jsp°¡ ¾Æ´Ï¶ó Controller¿¡¼­ Ã³¸®ÇÔ.)
+        		//PRGíŒ¨í„´ ì ìš©í•˜ê¸°(Postë¡œ ì˜¨ ìš”ì²­ì´ë¼ì„œ ìƒˆë¡œê³ ì¹¨í•˜ë©´ POSTìš”ì²­ì´ ê³„ì† ê°€ì„œ ì•ˆë¨. jspê°€ ì•„ë‹ˆë¼ Controllerì—ì„œ ì²˜ë¦¬í•¨.)
         	}
     	};
     	

@@ -29,7 +29,9 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 	
-
+	<bean name="bCryptPasswordEncoder" 
+	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+	
 
 	<mvc:resources mapping="/resources/**" location="/resources/" /> <!--  -->
 	

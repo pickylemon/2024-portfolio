@@ -10,8 +10,10 @@
 </head>
 <body>
 This is Home
-<a href="<c:url value='/loginPage.do'/>">Sign in HERE</a>
-<a href="<c:url value='/logout.do'/>">Sign out HERE</a>
+<h3><a href="<c:url value='/loginPage.do'/>">Sign in HERE</a></h3>
+<h3><a href="<c:url value='/logout.do'/>">Sign out HERE</a></h3>
+<h3><a href=#>BOARD</a></h3>
+
 <script>
 const msg = '${msg}'
 if(msg) { //메시지가 있다면 alert창 띄우기
