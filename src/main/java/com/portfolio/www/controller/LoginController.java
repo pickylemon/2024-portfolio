@@ -3,10 +3,13 @@ package com.portfolio.www.controller;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginController {
 	private final JoinService joinService;
 	
-	@RequestMapping("/loginPage.do")
+	@RequestMapping("/loginPage.do") 
+	//로그인 페이지
 	public String loginPage(Model model) {
 		String msg = (String)model.getAttribute("msg");
 		log.info("map={}", model.asMap().toString());
@@ -35,6 +39,21 @@ public class LoginController {
 		
 	
 		return "login";
+	}
+	
+//	@PostMapping("/login.do")
+//	public String login() {
+//		
+//	}
+	
+	@GetMapping("/logout.do")
+	public String logout(HttpSession session, RedirectAttributes rattr) {
+		String memberId = (String)session.getAttribute("memberId");
+		if(!ObjectUtils.isEmpty(memberId)) {
+			session.invalidate(); //세션 invalidate 후
+			rattr.addFlashAttribute("msg", "정상적으로 로그아웃 되었습니다.");
+		}//나중에 view에서 로그인이 된 경우에만 로그아웃 버튼이 보이도록 만들어야 함.
+		return "redirect:/home.do"; //홈으로 redirect
 	}
 	
 	@PostMapping("/join.do")
@@ -71,7 +90,7 @@ public class LoginController {
 		}
 		
 		if(result == 1) {
-			msg = "회원 가입에 성공했습니다";
+			msg = "회원 가입에 성공했습니다. 메일 인증을 완료해주세요.";
 		} else if (result != -1) {
 			msg = "회원 가입에 실패했습니다.";
 		}
@@ -97,12 +116,14 @@ public class LoginController {
 //			log.info("\n\n null체크 시작\n\n");
 //			throw new IllegalAccessException("정상적인 uri 인증 주소로 접근해주세요");
 //		}
+		
 		//정리
 		//1. @RequestParam의 디폴트가 required=true여서 그런지, 
 		//uri = null이면 컨트롤러의 null체크 코드에는 오지도 못하고 바로 400이 터진다. 
 		//톰캣의 400 페이지가 바로 나오기 때문에, 여기서 할 수 있는 일은 기본 400 페이지 대신 내가 만든 400페이지를 보여주는 것 뿐
 		
-		//2. uri = "" 이면, 컨트롤러 로직에서 널체크 및 에러 처리 가능. (ExceptionHandler로 처리)
+		//2. uri = "" 이면, 컨트롤러 로직에서 널체크 및 에러 처리 가능. 
+		// service쪽에서 runtimeException을 만들어 던졌으므로, 해당 ExceptionHandler에서 처리
 		
 	
 		ModelAndView mv = new ModelAndView();

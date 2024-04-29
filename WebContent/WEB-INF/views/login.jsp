@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
+<% String ctx = request.getContextPath(); %>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
 <head>
@@ -10,7 +11,7 @@
     
     <!-- ===== Iconscout CSS ===== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="/240423/resources/css/style.css">
+    <link rel="stylesheet" href="<%=ctx %>/resources/css/style.css">
          
     <title>Login & Registration Form</title> 
 </head>
@@ -97,7 +98,7 @@
             </div>
         </div>
     </div>
-     <script src="/240423/resources/js/script.js"></script> 
+     <script src="<%=ctx %>/resources/js/script.js"></script> 
      <script type="text/javascript">
     	window.onload = function() {
     		var result = '${result}';
@@ -108,7 +109,7 @@
 			if (msg != '') {
         		alert(msg)
         		//window.location.href = '/240423/loginPage.do'; 
-        		//PRG패턴 적용하기(Post로 온 요청이라서 새로고침하면 POST요청이 계속 가서 안됨.)
+        		//PRG패턴 적용하기(Post로 온 요청이라서 새로고침하면 POST요청이 계속 가서 안됨. jsp가 아니라 Controller에서 처리함.)
         	}
     	};
     	

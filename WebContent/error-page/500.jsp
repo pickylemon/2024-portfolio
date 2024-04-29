@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+기본 500페이지
 죄송합니다. 서버에 오류가 발생했습니다. 나중에 다시 시도해주세요.
 </body>
 </html>

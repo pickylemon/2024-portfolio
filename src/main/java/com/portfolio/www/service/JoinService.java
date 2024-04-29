@@ -32,15 +32,25 @@ public class JoinService {
 		//2. MemberDao.join 멤버 가입
 		//3. 인증메일 보내기 (인증메일 구조 만들기, 메일 발송)
 		
-		//비밀번호 암호화
+		//비밀번호와 이메일 암호화
 		String passwd = params.get("passwd");
+		String mail = params.get("email");
 		String encPasswd = BCrypt.withDefaults().hashToString(12, passwd.toCharArray());
+		String encEmail = BCrypt.withDefaults().hashToString(12, mail.toCharArray());
 		log.info(">>>>>>>>> encPasswd = {}", encPasswd);
-		BCrypt.Result result = BCrypt.verifyer().verify(passwd.toCharArray(), encPasswd);
-		log.info(">>>>>>>>> result.verified = {}", result.verified);
+		log.info(">>>>>>>>> encEmail = {}", encEmail);
+		BCrypt.Result passwdResult = BCrypt.verifyer().verify(passwd.toCharArray(), encPasswd);
+		BCrypt.Result emailResult = BCrypt.verifyer().verify(mail.toCharArray(), encEmail);
+		log.info(">>>>>>>>> result.verified = {}", passwdResult.verified);
+		log.info(">>>>>>>>> result.verified = {}", emailResult.verified);
 		
 		//암호화된 비밀번호로 바꿔서 저장하기
 		params.put("passwd", encPasswd);
+		params.put("email", encEmail);
+		log.info("\n\n params.get('email')={} \n\n",params.get("email"));
+		log.info("\n\n mail={}\n\n", mail);
+		
+		//이메일을 저장할 때는 암호화해서 저장하지만, mail을 보낼때는...복호화해서 보내야하는데?
 		
 		//가입
 		int cnt = memberDao.join(params);
@@ -55,7 +65,7 @@ public class JoinService {
 			log.info("\n\n uuid={} \n\n", uuid);
 			authDto.setAuthUri(uuid);
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.MINUTE, 5);
+			cal.add(Calendar.MINUTE, 3); //유효시간 3분
 			authDto.setRegDtm(Calendar.getInstance().getTimeInMillis());
 			authDto.setExpireDtm(cal.getTimeInMillis());
 			memberAuthDao.addAuthInfo(authDto);
@@ -63,7 +73,8 @@ public class JoinService {
 			//인증메일 구조 만들어서 발송
 			EmailDto email = new EmailDto();
 			email.setFrom("novecento104@naver.com");
-			email.setReceiver(params.get("email"));
+//			email.setReceiver(params.get("email"));
+			email.setReceiver(mail);
 			email.setSubject("인증을 완료해주세요");
 			
 			//직접 String을 짜지 않고 코드로 간단한 html 만들어주는 builder없을까
@@ -84,6 +95,7 @@ public class JoinService {
 			//client가 잘못된 혹은 임의의 auth uri로 접근했을 경우
 			throw new InvalidAuthUriException("유효하지 않은 인증 uri");
 		}
+		
 		int memberSeq = authDto.getMemberSeq();
 		
 		//인증시간이 유효한지 검사하기
@@ -93,10 +105,14 @@ public class JoinService {
 		
 		if(now > expireDtm) {
 			throw new TimeoutException("인증메일 유효시간 만료.");
+			//그리고??
+			//사용자에게 다른 이메일 주소를 받아 다시 인증을 요청할 것인지
+			//아니면 회원 가입 자체를 무효화할 것인지?
 		}
 	
 		memberAuthDao.authValidation(uri);
 		return memberDao.authValidation(memberSeq);
+		//member_auth와 member테이블의 auth_yn을 모두 update한다. (@Transactional)
 				
 	}
 }
