@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%-- <%@ page session="false" %> --%>
 <!DOCTYPE html>
 <% String ctx = request.getContextPath(); %>
+<% String requestURI = request.getRequestURI(); %>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
 <head>
@@ -24,6 +26,7 @@
                 <span class="title">Login</span>
 
                 <form action="<c:url value='/login.do'/>" method="post">
+                <input type="hidden" name="requestURI" value=<%=requestURI %>>
                     <div class="input-field">
                         <input type="text" placeholder="Enter your ID" required name="memberId" value=${memberId }>
                         <i class="uil uil-envelope icon"></i>

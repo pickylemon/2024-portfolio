@@ -97,8 +97,6 @@
 	    <artifactId>bcrypt</artifactId>
 	    <version>0.10.2</version>
 	</dependency>
-	
-
 	<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
 	<dependency>
 	    <groupId>org.springframework.security</groupId>
@@ -114,7 +112,7 @@
 	    <version>1.18.22</version>
 	    <scope>provided</scope>
 	</dependency>
-	
+	<!-- 메일 발송 관련 -->
 	<dependency>
 	    <groupId>org.springframework</groupId>
 	    <artifactId>spring-context-support</artifactId>
@@ -127,6 +125,7 @@
 	    <version>1.6.2</version>
 	</dependency>
 	
+	<!-- JSTL 관련 -->
 	<dependency>
 		<groupId>org.apache.taglibs</groupId>
 		<artifactId>taglibs-standard-impl</artifactId>
@@ -143,6 +142,27 @@
 		<groupId>jakarta.servlet.jsp.jstl</groupId>
 		<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 		<version>1.2.7</version>
+	</dependency>
+	
+	<!--Junit5 -->
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter-api</artifactId>
+		<version>5.10.2</version>
+		<scope>test</scope>
+	</dependency>
+	
+	<!-- JSON 관련 -->
+	<dependency>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-core</artifactId>
+		<version>2.16.1</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-databind</artifactId>
+		<version>2.16.1</version>
 	</dependency>
 
 

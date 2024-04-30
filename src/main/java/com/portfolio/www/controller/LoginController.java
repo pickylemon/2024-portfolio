@@ -50,22 +50,31 @@ public class LoginController {
 		
 		//회원 인증
 		//service에서 회원 조회 및 비밀번호 대조까지 진행
-		
-		// 존재하지 않는 아이디면 예외발생 -> ExceptionHandler로 처리
-		//비밀번호가 틀리면
-		if(!loginService.login(params)) {
-			
-			model.addAttribute("code", MessageEnum.WRONG_PASSWORD.getCode());
-			model.addAttribute("msg", MessageEnum.WRONG_PASSWORD.getMessage());
+		try {
+			if(!loginService.login(params)) {
+				//비밀번호가 틀리면
+				model.addAttribute("code", MessageEnum.WRONG_PASSWORD.getCode());
+				model.addAttribute("msg", MessageEnum.WRONG_PASSWORD.getMessage());
+				model.addAllAttributes(params);
+				
+				return "login"; //입력 정보와 메시지를 가지고 다시 입력창으로 이동.
+			}
+		} catch (NoSuchMemberException e) {
+			// 존재하지 않는 아이디면 예외발생 
+			model.addAttribute("code", MessageEnum.USER_NOT_FOUND.getCode());
+			model.addAttribute("msg", MessageEnum.USER_NOT_FOUND.getMessage());
 			model.addAllAttributes(params);
 			
-			return "login"; //입력 정보와 메시지를 가지고 다시 입력창으로 이동.
+			return "login";
 		}
 		
 		//로그인 성공하면, 세션에 아이디 저장 후
 		request.getSession().setAttribute("memberId", params.get("memberId"));
 		// 원래 요청 주소로 이동.
 		return "redirect:"+goalUrl;
+		//문제 : 한 페이지에서 연속으로 로그인 실패시, login.do로 redirect 요청이 가므로 405 에러 뜸
+		//(post mapping인데 get요청이 가니까)
+		// 이것 역시 PRG패턴을 지키지 않아서 생긴 문제
 	}
 	
 	@GetMapping("/logout.do")
@@ -173,15 +182,5 @@ public class LoginController {
 		m.addAttribute("msg", e.getMessage());
 		return "/error-page/404";
 	}
-	
-	@ExceptionHandler(NoSuchMemberException.class)
-	public String noSuchMember(NoSuchMemberException e, Model m) {
-		m.addAttribute("code", MessageEnum.USER_NOT_FOUND.getCode());
-		m.addAttribute("msg", MessageEnum.USER_NOT_FOUND.getMessage());
-		
-		return "login";
-	}
-
-	
 	
 }
