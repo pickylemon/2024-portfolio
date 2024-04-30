@@ -37,6 +37,20 @@ public class BoardDao extends JdbcTemplate {
 				+ " LIMIT ?, ?";
 		
 		return query(sql, rowMapper(), offset, pageSize);
+		
+	}
+	
+	public int getTotalCnt(SearchCondition sc) {
+		String sql = "SELECT count(*) "
+				+ " FROM board b "
+				+ " JOIN board_type bt "
+				+ " ON b.board_type_seq = bt.board_type_seq "
+				+ " JOIN member m "
+				+ " ON b.reg_member_seq = m.member_seq ";
+		//나중에 SearchCondition으로 검색용 동적쿼리 작성해야함
+		
+		return queryForObject(sql, Integer.class);
+		
 	}
 	
 	public RowMapper<BoardDto> rowMapper(){

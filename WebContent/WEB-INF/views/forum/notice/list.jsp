@@ -118,22 +118,31 @@ String ctx = request.getContextPath();
                                     <div class="pagination-area" style="padding-top: 45px;">
 				                        <nav class="navigation pagination" role="navigation">
 				                            <div class="nav-links">
-				                                <a class="prev page-numbers" href="#">
-				                                    <span class="lnr lnr-arrow-left"></span>
-				                                </a>
 <%-- 				                                <c:url value='/forum/notice/list.do?page=1&size=10'/> --%>
-				                                <a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=1&size=10'/>">1</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=2&size=10'/>">2</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=3&size=10'/>">3</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=4&size=10'/>">4</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=5&size=10'/>">5</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=6&size=10'/>">6</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=7&size=10'/>">7</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=8&size=10'/>">8</a>
-				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=9&size=10'/>">9</a>
-				                                <a class="next page-numbers" href="#">
-				                                    <span class="lnr lnr-arrow-right"></span>
-				                                </a>
+												<c:if test="${ph.startPage ne 1 }">
+													<a class="prev page-numbers" href="<c:url value='/listPage.do?page=${ph.startPage-1 }&size=${ph.pageSize }'/>">
+					                                    <span class="lnr lnr-arrow-left"></span>
+					                                </a>
+												</c:if>
+												<c:forEach var="i" begin="${ph.startPage }" end="${ph.endPage }">
+													<a class="page-numbers" href="<c:url value='/listPage.do?page=${i }&size=${ph.pageSize }'/>">${i }</a>
+												</c:forEach>
+<%-- 				                                <a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=1&size=10'/>">1</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=2&size=10'/>">2</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=3&size=10'/>">3</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=4&size=10'/>">4</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=5&size=10'/>">5</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=6&size=10'/>">6</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=7&size=10'/>">7</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=8&size=10'/>">8</a> --%>
+<%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=9&size=10'/>">9</a> --%>
+				                                <c:if test="${ph.endPage ne ph.totalPage }">
+													<a class="next page-numbers" href="<c:url value='/listPage.do?page=${ph.endPage+1 }&size=${ph.pageSize }'/>">
+					                                    <span class="lnr lnr-arrow-right"></span>
+					                                </a>
+												</c:if>
+				                                
+				                                
 				                            </div>
 				                        </nav>
 				                    </div>

@@ -4,19 +4,29 @@ import lombok.Data;
 
 @Data
 public class PageHandler {
-	private final Integer startPage;
+	private Integer startPage;
 	private final Integer currPage;
-	private final Integer endPage;
+	private Integer endPage;
 	private final Integer naviSize = 10;
 	private final Integer pageSize;
 	private final Integer offset;
-	private final Integer totalPage;
+	private Integer totalPage;
 	
-	
-	public PageHandler(Integer currPage, Integer pageSize, Integer totalPost) {
+	public PageHandler(Integer currPage, Integer pageSize) {
 		this.currPage = currPage;
 		this.pageSize = pageSize;
 		this.offset = (currPage - 1) * pageSize;
+	}
+//	public PageHandler(Integer currPage, Integer pageSize, Integer totalPost) {
+//		this.currPage = currPage;
+//		this.pageSize = pageSize;
+//		this.offset = (currPage - 1) * pageSize;
+//		this.startPage = ((currPage-1)/10)*10 + 1;
+//		this.totalPage = (totalPost-1) / pageSize + 1;
+//		this.endPage = Math.min(startPage + naviSize - 1, totalPage);
+//	}
+	
+	public void calculatePage(Integer totalPost) {
 		this.startPage = ((currPage-1)/10)*10 + 1;
 		this.totalPage = (totalPost-1) / pageSize + 1;
 		this.endPage = Math.min(startPage + naviSize - 1, totalPage);
