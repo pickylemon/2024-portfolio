@@ -30,5 +30,8 @@ public class BoardService {
 	public int getTotalCnt(SearchCondition sc) {
 		return boardDao.getTotalCnt(sc);
 	}
-
+	
+	public BoardDto getPost(Integer boardSeq) {
+		return boardDao.getOne(boardSeq);
+	}
 }

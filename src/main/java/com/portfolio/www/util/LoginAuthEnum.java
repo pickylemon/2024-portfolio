@@ -16,5 +16,4 @@ public enum LoginAuthEnum {
 	LoginAuthEnum(String url) {
 		this.url = url;
 	} 
-
 }

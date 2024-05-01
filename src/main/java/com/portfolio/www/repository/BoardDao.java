@@ -53,6 +53,18 @@ public class BoardDao extends JdbcTemplate {
 		
 	}
 	
+	public BoardDto getOne(Integer boardSeq) {
+		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id"
+				+ " FROM board b "
+				+ " JOIN board_type bt "
+				+ " ON b.board_type_seq = bt.board_type_seq "
+				+ " JOIN member m "
+				+ " ON b.reg_member_seq = m.member_seq "
+				+ " WHERE b.board_seq = ?";
+		
+		return queryForObject(sql, rowMapper(), boardSeq);
+	}
+	
 	public RowMapper<BoardDto> rowMapper(){
 		return ((rs, rowNum) -> {
 			BoardDto dto = new BoardDto();

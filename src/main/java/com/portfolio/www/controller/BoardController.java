@@ -62,9 +62,11 @@ public class BoardController {
 		
 		return "forum/notice/write";
 	}
+	
 	@GetMapping("/readPage.do") //개별 게시글 읽기 요청
-	public String readPage() {
-		
+	public String readPage(Integer boardSeq, Model model) {
+		BoardDto boardDto = boardService.getPost(boardSeq);
+		model.addAttribute("boardDto", boardDto);
 		return "forum/notice/read";
 	}
 	

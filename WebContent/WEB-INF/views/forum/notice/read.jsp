@@ -58,7 +58,7 @@ String ctx = request.getContextPath();
                     <div class="forum_detail_area ">
                         <div class="cardify forum--issue">
                             <div class="title_vote clearfix">
-                                <h3>${title }</h3>
+                                <h3>${boardDto.title }</h3>
 
                                 <div class="vote">
                                     <a href="#">
@@ -72,11 +72,11 @@ String ctx = request.getContextPath();
                             </div>
                             <!-- end .title_vote -->
                             <div class="suppot_query_tag">
-                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${regMemberId }
-                                <span>${regDtm }</span>
+                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${boardDto.regMemberId }
+                                <span>${boardDto.regDtm }</span>
                             </div>
                             <p style="    margin-bottom: 0; margin-top: 19px;">
-                            	${content }</p>
+                            	${boardDto.content }</p>
                         </div>
                         <!-- end .forum_issue -->
 
