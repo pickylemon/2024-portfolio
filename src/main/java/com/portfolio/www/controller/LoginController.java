@@ -36,8 +36,10 @@ public class LoginController {
 	
 	@RequestMapping("/loginPage.do") 
 	//로그인 페이지
-	public String loginPage(Model model) {
+	public String loginPage(HttpServletRequest request, Model model) {
 		log.info("\n model={}\n", model);
+		String requestURL = request.getParameter("url");
+		model.addAttribute("requestURL", requestURL);
 
 		return "login";
 	}
@@ -45,8 +47,11 @@ public class LoginController {
 	@PostMapping("/login.do")
 	public String login(@RequestParam HashMap<String, String> params, HttpServletRequest request, Model model) {
 		log.info("\n params={} \n", params);
-		String goalUrl = request.getHeader("referer"); //이전 요청페이지에 대한 정보
-		log.info("referer = {} ", goalUrl);
+//		String goalUrl = request.getHeader("referer"); //이전 요청페이지에 대한 정보
+//		log.info("referer = {} ", goalUrl);
+		
+		String requestURL = params.get("requestURL");
+		log.info("\n requestURL = {}\n", requestURL);
 		
 		//회원 인증
 		//service에서 회원 조회 및 비밀번호 대조까지 진행
@@ -71,7 +76,7 @@ public class LoginController {
 		//로그인 성공하면, 세션에 아이디 저장 후
 		request.getSession().setAttribute("memberId", params.get("memberId"));
 		// 원래 요청 주소로 이동.
-		return "redirect:"+goalUrl;
+		return "redirect:"+requestURL;
 		//문제 : 한 페이지에서 연속으로 로그인 실패시, login.do로 redirect 요청이 가므로 405 에러 뜸
 		//(post mapping인데 get요청이 가니까)
 		// 이것 역시 PRG패턴을 지키지 않아서 생긴 문제

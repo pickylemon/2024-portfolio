@@ -4,7 +4,6 @@
 <%-- <%@ page session="false" %> --%>
 <!DOCTYPE html>
 <% String ctx = request.getContextPath(); %>
-<% String requestURI = request.getRequestURI(); %>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
 <head>
@@ -26,7 +25,7 @@
                 <span class="title">Login</span>
 
                 <form action="<c:url value='/login.do'/>" method="post">
-                <input type="hidden" name="requestURI" value=<%=requestURI %>>
+                <input type="hidden" name="requestURL" value="${requestURL }">
                     <div class="input-field">
                         <input type="text" placeholder="Enter your ID" required name="memberId" value=${memberId }>
                         <i class="uil uil-envelope icon"></i>
