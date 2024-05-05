@@ -65,6 +65,16 @@ public class BoardDao extends JdbcTemplate {
 		return queryForObject(sql, rowMapper(), boardSeq);
 	}
 	
+	public int addLike(int boardSeq, int boardTypeSeq, int memberSeq, String ip) {
+		String sql = "INSERT INTO forum.board_like"
+				+ "(board_seq, board_type_seq, member_seq, ip, reg_dtm)"
+				+ "VALUES(?, ?, ?, ?, DATE_FORMAT(NOW(), );";
+		
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq, ip};
+		return update(sql, args);
+		
+	}
+	
 	public RowMapper<BoardDto> rowMapper(){
 		return ((rs, rowNum) -> {
 			BoardDto dto = new BoardDto();

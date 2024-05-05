@@ -1,4 +1,4 @@
-package com.portfolio.www.controller;
+package com.portfolio.www.forum.notice.controller;
 
 import java.util.HashMap;
 
@@ -51,12 +51,15 @@ public class LoginController {
 //		log.info("referer = {} ", goalUrl);
 		
 		String requestURL = params.get("requestURL");
-		log.info("\n requestURL = {}\n", requestURL);
+		log.info("\n requestURL in params = {}\n", requestURL);
+//		log.info("\n requestURL from request = {}\n", request.getRequestURL());
 		
 		//회원 인증
 		//service에서 회원 조회 및 비밀번호 대조까지 진행
+		int memberSeq = 0;
 		try {
-			if(!loginService.login(params)) {
+			memberSeq = loginService.login(params);
+			if(memberSeq == -1) { //비밀번호가 틀렸으면
 				//비밀번호가 틀리면
 				model.addAttribute("code", MessageEnum.WRONG_PASSWORD.getCode());
 				model.addAttribute("msg", MessageEnum.WRONG_PASSWORD.getMessage());
@@ -74,9 +77,13 @@ public class LoginController {
 		}
 		
 		//로그인 성공하면, 세션에 아이디 저장 후
-		request.getSession().setAttribute("memberId", params.get("memberId"));
+		HttpSession session = request.getSession();
+		session.setAttribute("memberId", params.get("memberId"));
+		session.setAttribute("memberSeq", memberSeq); //로그인 일치시 받아온 MemberSeq를 세션에 저장
 		// 원래 요청 주소로 이동.
-		return "redirect:"+requestURL;
+		return "redirect:"+ (ObjectUtils.isEmpty(requestURL)? "/home.do" : requestURL);
+		//로그인 페이지로
+		
 		//문제 : 한 페이지에서 연속으로 로그인 실패시, login.do로 redirect 요청이 가므로 405 에러 뜸
 		//(post mapping인데 get요청이 가니까)
 		// 이것 역시 PRG패턴을 지키지 않아서 생긴 문제

@@ -38,9 +38,10 @@ public class LoginFilter implements Filter {
 		String requestURI = request.getRequestURI().replace(contextPath,"");
 		HttpSession session = request.getSession();
 		
-		log.info("contextPath={}", contextPath);
-		log.info("requestURL = {}", requestURL);
-		log.info("\n requestURI = {} \n", requestURI);
+//		log.info("requestURI={}", request.getRequestURI());		
+//		log.info("contextPath={}", contextPath);
+//		log.info("requestURL = {}", requestURL);
+//		log.info("\n requestURI = {} \n", requestURI);
 		
 		//로그인 인증이 필요한 페이지에 한해 로그인 검증
 		List<String> urlList = List.of(urlMapping);

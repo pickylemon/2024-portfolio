@@ -20,14 +20,17 @@ public class LoginService {
 	private final LoginDao loginDao;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	public boolean login(HashMap<String, String> params) {
+	public int login(HashMap<String, String> params) {
 		//사용자 입력 아이디로 회원 조회
 		String memberId = params.get("memberId");
 		String passwd = params.get("passwd");
 		try {
 			MemberDto memberDto = loginDao.find(memberId);
 			log.info("\n memberDto={}\n", memberDto);
-			return bCryptPasswordEncoder.matches(passwd, memberDto.getPasswd());
+			if(bCryptPasswordEncoder.matches(passwd, memberDto.getPasswd())){
+				return memberDto.getMemberSeq(); //비밀번호가 일치하면 memberSeq를 반환
+			}
+			return -1; //비밀번호가 틀릴 경우 -1을 반환
 		} catch (DataRetrievalFailureException e) {
 			//memberId로 검색되는 회원이 없는 경우
 			NoSuchMemberException ex = new NoSuchMemberException("해당 아이디의 회원이 없습니다.");

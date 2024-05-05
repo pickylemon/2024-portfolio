@@ -1,6 +1,8 @@
-package com.portfolio.www.controller;
+package com.portfolio.www.forum.notice.controller;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +26,8 @@ public class BoardController {
 	private final BoardService boardService;
 	
 	@GetMapping("/listPage.do") //게시판 페이지(한 페이지) 요청
-	public String listPage(Integer page, Integer size, Model model) {
+	public String listPage(Integer page, Integer size, Model model, HttpServletRequest request) {	
 //		log.info("\n params={} \n", params);
-
-	
 		//현재 페이지(currPage)와 페이지 크기(pageSize)정보가 넘어오지 않았을 경우의 방어코딩
 //		if(!params.containsKey("page")) {
 //			params.put("page", "1"); //가장 첫 페이지

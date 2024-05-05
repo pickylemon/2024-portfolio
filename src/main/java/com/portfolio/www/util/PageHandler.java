@@ -17,6 +17,13 @@ public class PageHandler {
 		this.pageSize = pageSize;
 		this.offset = (currPage - 1) * pageSize;
 	}
+	
+	public void calculatePage(Integer totalPost) {
+		this.startPage = ((currPage-1)/10)*10 + 1;
+		this.totalPage = (totalPost-1) / pageSize + 1;
+		this.endPage = Math.min(startPage + naviSize - 1, totalPage);
+	}
+	
 //	public PageHandler(Integer currPage, Integer pageSize, Integer totalPost) {
 //		this.currPage = currPage;
 //		this.pageSize = pageSize;
@@ -25,13 +32,7 @@ public class PageHandler {
 //		this.totalPage = (totalPost-1) / pageSize + 1;
 //		this.endPage = Math.min(startPage + naviSize - 1, totalPage);
 //	}
-	
-	public void calculatePage(Integer totalPost) {
-		this.startPage = ((currPage-1)/10)*10 + 1;
-		this.totalPage = (totalPost-1) / pageSize + 1;
-		this.endPage = Math.min(startPage + naviSize - 1, totalPage);
-	}
-	
+
 	public void print() {
 		System.out.println("currPage = " + this.currPage);
 		if(this.startPage != 1) {

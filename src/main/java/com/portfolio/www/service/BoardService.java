@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardService {
 	private final BoardDao boardDao;
 	
-	@Transactional
 	public List<BoardDto> getList(PageHandler ph, SearchCondition sc) {
 		List<BoardDto> list = boardDao.getList(ph, sc);
 		ph.calculatePage(boardDao.getTotalCnt(sc));
@@ -33,5 +32,9 @@ public class BoardService {
 	
 	public BoardDto getPost(Integer boardSeq) {
 		return boardDao.getOne(boardSeq);
+	}
+	
+	public void thumUp(int boardSeq, int boardTypeSeq, int memberSeq, String ip) {
+		return boardDao.addLike(boardSeq, boardTypeSeq, memberSeq, ip)
 	}
 }
