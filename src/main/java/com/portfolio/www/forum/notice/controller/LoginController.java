@@ -84,9 +84,6 @@ public class LoginController {
 		return "redirect:"+ (ObjectUtils.isEmpty(requestURL)? "/home.do" : requestURL);
 		//로그인 페이지로
 		
-		//문제 : 한 페이지에서 연속으로 로그인 실패시, login.do로 redirect 요청이 가므로 405 에러 뜸
-		//(post mapping인데 get요청이 가니까)
-		// 이것 역시 PRG패턴을 지키지 않아서 생긴 문제
 	}
 	
 	@GetMapping("/logout.do")

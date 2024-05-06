@@ -37,6 +37,7 @@ String ctx = request.getContextPath();
 		var ctx = '<%= request.getContextPath() %>';
 	</script>	
 	<script src="<%=ctx%>/resources/js/page.js"></script>
+
 	
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg/ko.js"></script>
@@ -44,6 +45,65 @@ String ctx = request.getContextPath();
 	    $('#trumbowyg-demo').trumbowyg({
 	        lang: 'kr'
 	    });
+	    
+	    function thumbClick(boardSeq, boardTypeSeq, elem) {
+	    	console.log('clicked');
+	    	alert('clicked!');
+	    	
+	    	console.log(boardSeq);
+	    	console.log(boardTypeSeq);
+	    	
+	    	let url = '<%=ctx%>/forum/notice/'
+	    	url += boardTypeSeq + '/'
+	    	url += boardSeq + '/'
+	    	url += 'vote.do?isLike='+ elem.getAttribute("data-isLike")
+	    	url += '&thumb=' + elem.getAttribute("data-thumb")
+	    		
+	    			
+	    	$.ajax({    
+	    		type : 'get',           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		dataType : 'text',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log("result = " + result);
+	    			const response = JSON.parse(result);
+	    			console.log("thumb="+response.thumb);
+	    			console.log("!thumb="+!response.thumb);
+	    			console.log("code="+response.code);
+	    			
+	    			if(response.code == 0) { //이전 투표 결과가 없는 경우.
+	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
+	    			} else if (response.code == 1) { //이전 투표결과를 취소
+	    				$("a[data-thumb="+response.thumb+"]").removeClass('active')
+	    			} else { //이전 투표결과를 반대로 
+	    				$("a[data-thumb="+!response.thumb+"]").removeClass('active')
+	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
+	    			}
+	    			
+//		    			if(result == 0) {
+//		    				$(this).attr('id').removeClass('active');
+//		    			} else {
+//		    				$(this).attr('id').addClass('active');
+//		    			}
+	    		},
+	    		error : function(request, status, error) {
+	    			// 결과 에러 콜백함수
+	    			console.log(error)
+	    		}
+	    	});
+	    }
+	    
+
 	</script>
 </head>
 
@@ -61,10 +121,10 @@ String ctx = request.getContextPath();
                                 <h3>${boardDto.title }</h3>
 
                                 <div class="vote">
-                                    <a href="#">
+                                    <a href="#" id="cThumbUpAnchor" data-isLike='Y' data-thumb=true class="${isLike eq 'Y'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
                                         <span class="lnr lnr-thumbs-up"></span>
                                     </a>
-                                    <a href="#">
+                                    <a href="#" id="cThumbDownAnchor" data-isLike='N' data-thumb=false class="${isLike eq 'N'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
                                         <span class="lnr lnr-thumbs-down"></span>
                                     </a>
                                 </div>

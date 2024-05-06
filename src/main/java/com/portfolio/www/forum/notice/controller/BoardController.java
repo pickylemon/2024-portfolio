@@ -3,6 +3,7 @@ package com.portfolio.www.forum.notice.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.service.BoardService;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
@@ -64,9 +66,18 @@ public class BoardController {
 	}
 	
 	@GetMapping("/readPage.do") //개별 게시글 읽기 요청
-	public String readPage(Integer boardSeq, Model model) {
+	public String readPage(Integer boardSeq, Integer boardTypeSeq, HttpSession session, Model model) {
+		int memberSeq = (int)session.getAttribute("memberSeq");
+		String isLike = "";
+		
 		BoardDto boardDto = boardService.getPost(boardSeq);
+		BoardVoteDto dto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
+		if(!ObjectUtils.isEmpty(dto)) {
+			isLike = dto.getIsLike();
+		}
 		model.addAttribute("boardDto", boardDto);
+		model.addAttribute("isLike", isLike);
+		
 		return "forum/notice/read";
 	}
 	

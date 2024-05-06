@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
 
@@ -24,6 +25,10 @@ public class BoardDao extends JdbcTemplate {
 		super(dataSource);
 	}
 	
+	/**
+	 * 게시글 리스트 가져오기 + 페이징
+	 * @return
+	 */
 	public List<BoardDto> getList(PageHandler ph, SearchCondition sc){
 		int offset = ph.getOffset();
 		int pageSize = ph.getPageSize();
@@ -72,8 +77,70 @@ public class BoardDao extends JdbcTemplate {
 		
 		Object[] args = {boardSeq, boardTypeSeq, memberSeq, ip};
 		return update(sql, args);
-		
 	}
+	
+	/**
+	 * 좋아요, 싫어요 이미 존재하는지
+	 */
+	
+	public BoardVoteDto getVote(int boardSeq, int boardTypeSeq, int memberSeq) {
+		String sql = "SELECT * FROM board_vote "
+				+ " WHERE board_seq = ? "
+				+ " AND board_type_seq = ? "
+				+ " AND member_seq = ? ";
+		
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq};
+		
+		//조회 결과가 없으면 EmptyResultDataAccessException던짐
+		return queryForObject(sql, voteRowMapper(), args); 
+	}
+	
+	public int addVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip) {
+		String sql = "INSERT INTO board_vote "
+				+ " (board_seq, board_type_seq, member_seq, is_like, reg_dtm, ip) "
+				+ " VALUES (?, ?, ?, ?, DATE_FORMAT(now(),'%Y%m%d%H%i%s'), ? ) ";
+		
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq, isLike, ip };
+		return update(sql, args);
+	}
+	
+	
+	public int deleteVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike) {
+		String sql = "DELETE FROM board_vote "
+				+ " WHERE board_seq = ? "
+				+ " AND board_type_seq = ? "
+				+ " AND member_seq = ? "
+				+ " AND is_like = ? ";
+		
+		Object[] args = {boardSeq, boardTypeSeq, memberSeq, isLike};
+		return update(sql, args);
+	}
+	
+	public int updateVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip) {
+		String sql = "UPDATE board_vote "
+				+ " SET is_like = ?, "
+				+ " ip = ? "
+				+ " WHERE board_seq = ? "
+				+ " AND board_type_seq = ? "
+				+ " AND member_seq = ? ";
+		
+		Object[] args = { isLike, ip,  boardSeq, boardTypeSeq, memberSeq };
+		
+		return update(sql, args);
+	}
+	
+//	public int updateVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String oldIsLike) {
+//		String sql = "UPDATE board_vote "
+//				+ " SET is_like = ? "
+//				+ " WHERE board_seq = ? "
+//				+ " AND board_type_seq = ? "
+//				+ " AND member_seq = ? "
+//				+ " AND is_like = ? ";
+//		
+//		Object[] args = { isLike, boardSeq, boardTypeSeq, memberSeq, oldIsLike };
+//		
+//		return update(sql, args);
+//	}
 	
 	public RowMapper<BoardDto> rowMapper(){
 		return ((rs, rowNum) -> {
@@ -89,6 +156,21 @@ public class BoardDao extends JdbcTemplate {
 			dto.setRegMemberSeq(rs.getInt("reg_member_seq"));
 			dto.setUpdateDtm(rs.getString("update_dtm"));
 			dto.setUpdateMemberSeq(rs.getInt("update_member_seq"));
+			
+			return dto;
+		});
+	}
+	
+	public RowMapper<BoardVoteDto> voteRowMapper() {
+		return ((rs, rowNum) -> {
+			
+			BoardVoteDto dto = new BoardVoteDto();
+			dto.setBoardSeq(rs.getInt("board_seq"));
+			dto.setBoardTypeSeq(rs.getInt("board_type_seq"));
+			dto.setMemberSeq(rs.getInt("member_seq"));
+			dto.setIsLike(rs.getString("is_like"));
+			dto.setRegDtm(rs.getString("reg_dtm"));
+			dto.setIp(rs.getString("ip"));
 			
 			return dto;
 		});
