@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.portfolio.www.dto.MemberDto;
 import com.portfolio.www.exception.NoSuchMemberException;
-import com.portfolio.www.repository.LoginDao;
+import com.portfolio.www.repository.MemberDao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginService {
-	private final LoginDao loginDao;
+	private final MemberDao memberDao;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	public int login(HashMap<String, String> params) {
@@ -25,7 +25,7 @@ public class LoginService {
 		String memberId = params.get("memberId");
 		String passwd = params.get("passwd");
 		try {
-			MemberDto memberDto = loginDao.find(memberId);
+			MemberDto memberDto = memberDao.find(memberId);
 			log.info("\n memberDto={}\n", memberDto);
 			if(bCryptPasswordEncoder.matches(passwd, memberDto.getPasswd())){
 				return memberDto.getMemberSeq(); //비밀번호가 일치하면 memberSeq를 반환

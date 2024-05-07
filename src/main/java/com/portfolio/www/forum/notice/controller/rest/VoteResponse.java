@@ -8,5 +8,4 @@ import lombok.Getter;
 public class VoteResponse {
 	int code;
 	boolean thumb;
-
 }

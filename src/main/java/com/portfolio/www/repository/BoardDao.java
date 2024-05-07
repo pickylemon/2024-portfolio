@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
-public class BoardDao extends JdbcTemplate {
+public class BoardDao extends JdbcTemplate implements BoardRepository {
 	
 	@Autowired
 	public BoardDao(DataSource dataSource) {
@@ -29,6 +29,7 @@ public class BoardDao extends JdbcTemplate {
 	 * 게시글 리스트 가져오기 + 페이징
 	 * @return
 	 */
+	@Override
 	public List<BoardDto> getList(PageHandler ph, SearchCondition sc){
 		int offset = ph.getOffset();
 		int pageSize = ph.getPageSize();
@@ -45,6 +46,7 @@ public class BoardDao extends JdbcTemplate {
 		
 	}
 	
+	@Override
 	public int getTotalCnt(SearchCondition sc) {
 		String sql = "SELECT count(*) "
 				+ " FROM board b "
@@ -58,6 +60,7 @@ public class BoardDao extends JdbcTemplate {
 		
 	}
 	
+	@Override
 	public BoardDto getOne(Integer boardSeq) {
 		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id"
 				+ " FROM board b "
@@ -69,6 +72,7 @@ public class BoardDao extends JdbcTemplate {
 		
 		return queryForObject(sql, rowMapper(), boardSeq);
 	}
+	
 	
 	public int addLike(int boardSeq, int boardTypeSeq, int memberSeq, String ip) {
 		String sql = "INSERT INTO forum.board_like"
@@ -83,6 +87,7 @@ public class BoardDao extends JdbcTemplate {
 	 * 좋아요, 싫어요 이미 존재하는지
 	 */
 	
+	@Override
 	public BoardVoteDto getVote(int boardSeq, int boardTypeSeq, int memberSeq) {
 		String sql = "SELECT * FROM board_vote "
 				+ " WHERE board_seq = ? "
@@ -95,6 +100,7 @@ public class BoardDao extends JdbcTemplate {
 		return queryForObject(sql, voteRowMapper(), args); 
 	}
 	
+	@Override
 	public int addVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip) {
 		String sql = "INSERT INTO board_vote "
 				+ " (board_seq, board_type_seq, member_seq, is_like, reg_dtm, ip) "
@@ -104,7 +110,7 @@ public class BoardDao extends JdbcTemplate {
 		return update(sql, args);
 	}
 	
-	
+	@Override
 	public int deleteVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike) {
 		String sql = "DELETE FROM board_vote "
 				+ " WHERE board_seq = ? "
@@ -116,6 +122,7 @@ public class BoardDao extends JdbcTemplate {
 		return update(sql, args);
 	}
 	
+	@Override
 	public int updateVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip) {
 		String sql = "UPDATE board_vote "
 				+ " SET is_like = ?, "

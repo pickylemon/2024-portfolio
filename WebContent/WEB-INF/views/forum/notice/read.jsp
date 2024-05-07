@@ -77,9 +77,6 @@ String ctx = request.getContextPath();
 	    			// 결과 성공 콜백함수 
 	    			console.log("result = " + result);
 	    			const response = JSON.parse(result);
-	    			console.log("thumb="+response.thumb);
-	    			console.log("!thumb="+!response.thumb);
-	    			console.log("code="+response.code);
 	    			
 	    			if(response.code == 0) { //이전 투표 결과가 없는 경우.
 	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
@@ -89,15 +86,11 @@ String ctx = request.getContextPath();
 	    				$("a[data-thumb="+!response.thumb+"]").removeClass('active')
 	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
 	    			}
-	    			
-//		    			if(result == 0) {
-//		    				$(this).attr('id').removeClass('active');
-//		    			} else {
-//		    				$(this).attr('id').addClass('active');
-//		    			}
+
 	    		},
 	    		error : function(request, status, error) {
 	    			// 결과 에러 콜백함수
+	    			alert('failed');
 	    			console.log(error)
 	    		}
 	    	});

@@ -3,15 +3,11 @@ package com.portfolio.www.forum.notice.controller.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,10 +28,13 @@ public class RestNoticeController {
 	 *      -> 이전 투표 결과를 삭제(토글처럼 작용)
 	 *  3-2. 이전 투표 결과와 param으로 전달된 isLike가 불일치
 	 *      -> 이전 투표 결과의 isLike를 param으로 받은 isLike로 update    
+	 *      
+	 *  비즈니스 로직인 것 같아서 Service로 옮김
 	 */
 	//이 요청 역시 먼저 로그인 Filter에 의해 걸러져야 한다.
 	@GetMapping("/forum/notice/{boardTypeSeq}/{boardSeq}/vote.do")
-	public ResponseEntity<VoteResponse> vote(
+//	public ResponseEntity<VoteResponse> vote(
+	public VoteResponse vote(
 			@PathVariable("boardSeq") int boardSeq, 
 			@PathVariable("boardTypeSeq") int boardTypeSeq,
 			@RequestParam("isLike") String isLike,
@@ -50,26 +49,14 @@ public class RestNoticeController {
 		//ip 주소 얻기
 		String ip = request.getRemoteAddr();
 		
-		//이미 vote테이블에 값이 존재하는지?
-		BoardVoteDto dto = service.getVote(boardSeq, boardTypeSeq, memberSeq);
-		int code;
-		
-		if(ObjectUtils.isEmpty(dto)) { //투표 결과가 없으면 추가한다.
-			service.addVote(boardSeq, boardTypeSeq, memberSeq, isLike, ip);
-			code = 0;
-		} else if (dto.getIsLike().equals(isLike)) { //이전 투표결과와 같으면 취소한다.
-			service.deleteVote(boardSeq, boardTypeSeq, memberSeq, isLike);
-			code = 1;
-		} else {
-			service.updateVote(boardSeq, boardTypeSeq, memberSeq, isLike, ip); 
-			//이전 투표결과와 다르면 투표결과를 바꾼다.
-			code = 2;
-		}
-		
+		//좋아요(싫어요) 요청에 대한 코드만 반환받는다.
+		//구체적인 처리는 서비스계층에게 위임
+		int code = service.vote(boardSeq, boardTypeSeq, memberSeq, isLike, ip);
+	
 		log.info("code={}", code);
 		
-		return new ResponseEntity<VoteResponse>(new VoteResponse(code, thumb), HttpStatus.OK);
-//		return new VoteResponse(code, thumb);
+//		return new ResponseEntity<VoteResponse>(new VoteResponse(code, thumb), HttpStatus.OK);
+		return new VoteResponse(code, thumb);
 	}
 	
 }
