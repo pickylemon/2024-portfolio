@@ -32,17 +32,135 @@ String ctx = request.getContextPath();
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/resources/template/images/favicon.png">    
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery/jquery-1.12.3.js"></script>
 	<script type="text/javascript">
 		var ctx = '<%= request.getContextPath() %>';
+		var memberSeq = '<%= session.getAttribute("memberSeq") %>';
 	</script>	
 	<script src="<%=ctx%>/resources/js/page.js"></script>
 	<link rel="stylesheet" href="<%=ctx%>/resources/template/css/trumbowyg.min.css">
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg/ko.js"></script>
     <script type="text/javascript">
-	    $('#trumbowyg-demo').trumbowyg({
+    
+	    console.log('${page}')
+		let page = '${page}'
+    
+    	$('#trumbowyg-demo').trumbowyg({
 	        lang: 'kr'
 	    });
+	    
+	    
+	    $(document).ready(function(){
+	    	
+	    	if(page == 'modify') {
+	    		$('#postSave').css('display', 'none')
+	    		$('#postMod').css('display', 'block')
+	    	} else if(page == 'write') {
+	    		$('#postSave').css('display', 'block')
+	    		$('#postMod').css('display', 'none')
+	    	}
+	    	$('#trumbowyg-demo').trumbowyg('html', '${boardDto.content}');
+	    	$('#title').val('${boardDto.title}')
+	    })
+
+	    function boardSave() {
+	    	let boardSaveDto = {}
+	    	boardSaveDto.title = $('#title').val()
+	    	boardSaveDto.content = $('#trumbowyg-demo').trumbowyg('html')
+	    	
+	    	console.log(boardSaveDto)
+	    	
+	    	$.ajax({    
+	    		type : 'post',           
+	    		// 타입 (get, post, put 등등)    
+	    		url : '<%=ctx%>/forum/notice/writePage.do',
+	    		// 요청할 서버url
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		data : JSON.stringify(boardSaveDto),
+	    		dataType : 'json',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log(result);
+	    		
+	    			if(result.code == 1){
+	    				alert(result.msg);
+	    				location.href='<%=ctx%>/forum/notice/listPage.do'
+	    				//성공시, 게시글 정상 등록되었다는 alert와 함께, 게시글 목록으로 redirect
+	    			} else {
+	    				alert(result.msg);
+	    			}
+
+	    		},
+	    		error : function(result) {
+	    			// 결과 에러 콜백함수
+	    			let response = result;
+	    			console.log(response);
+// 	    			const response = JSON.parse(result);
+					let message = response.msg;
+					console.log(typeof message);
+	    			alert(message);
+	    		}
+	    	});
+	    }
+	    
+	    function boardModify() {
+	    	let boardModifyDto = {}
+	    	boardModifyDto.boardSeq = ${boardDto.boardSeq}
+	    	boardModifyDto.title = $('#title').val()
+	    	boardModifyDto.content = $('#trumbowyg-demo').trumbowyg('html')
+	    	boardModifyDto.updateMemberSeq = memberSeq
+	    	
+	    	console.log(boardModifyDto)
+	    	
+	    	let url = '<%=ctx%>/forum/notice/'
+	    	url += ${boardDto.boardSeq}+'/modifyPage.do'
+	    	
+	    	$.ajax({    
+	    		type : 'patch',           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		data : JSON.stringify(boardModifyDto),
+	    		dataType : 'json',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log(result);
+	    		
+	    			if(result.code == 1){
+	    				alert(result.msg);
+	    				location.href='<%=ctx%>/forum/notice/listPage.do'
+	    				//성공시, 게시글 정상 등록되었다는 alert와 함께, 게시글 목록으로 redirect
+	    			} else {
+	    				alert(result.msg);
+	    			}
+
+	    		},
+	    		error : function(result) {
+	    			// 결과 에러 콜백함수
+	    			let response = result;
+	    			console.log(response);
+// 	    			const response = JSON.parse(result);
+					let message = response.msg;
+					console.log(typeof message);
+	    			alert(message);
+	    		}
+	    	});
+	    }
+	    
 	</script>
 </head>
 
@@ -58,7 +176,7 @@ String ctx = request.getContextPath();
                         <form action="#">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required>
+                                <input type="text" placeholder="Enter title here" required id="title" >
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
@@ -75,7 +193,8 @@ String ctx = request.getContextPath();
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn--md btn-primary">Submit Request</button>
+                                <button type="button" id="postSave" class="btn btn--md btn-primary" onclick="javascript:boardSave();">Submit Request</button>
+                                <button type="button" id="postMod" class="btn btn--md btn-primary" onclick="javascript:boardModify();">Modify Request</button>
                             	<a href="<c:url value='/forum/notice/listPage.do'/>" class="btn btn--md btn-light">Cancel</a>
                             </div>
                         </form>
@@ -93,7 +212,7 @@ String ctx = request.getContextPath();
    	<!--//////////////////// JS GOES HERE ////////////////-->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0C5etf1GVmL_ldVAichWwFFVcDfa1y_c"></script>
     <!-- inject:js -->
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery/jquery-1.12.3.js"></script>
+
     <script src="<%=ctx%>/resources/template/js/vendor/jquery/popper.min.js"></script>
     <script src="<%=ctx%>/resources/template/js/vendor/jquery/uikit.min.js"></script>
     <script src="<%=ctx%>/resources/template/js/vendor/bootstrap.min.js"></script>

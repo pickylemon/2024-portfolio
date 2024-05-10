@@ -12,7 +12,7 @@
 This is Home
 <h3><a href="<c:url value='/loginPage.do'/>">Sign in HERE</a></h3>
 <h3><a href="<c:url value='/logout.do'/>">Sign out HERE</a></h3>
-<h3><a href="<c:url value='/board/listPage.do'/>">BOARD</a></h3>
+<h3><a href="<c:url value='/forum/notice/listPage.do'/>">BOARD</a></h3>
 
 <script>
 const msg = '${msg}'

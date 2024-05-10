@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardModifyDto;
+import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
@@ -40,6 +42,7 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 				+ " ON b.board_type_seq = bt.board_type_seq "
 				+ " JOIN member m "
 				+ " ON b.reg_member_seq = m.member_seq "
+				+ " ORDER BY b.board_seq DESC "
 				+ " LIMIT ?, ?";
 		
 		return query(sql, rowMapper(), offset, pageSize);
@@ -148,6 +151,36 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 //		
 //		return update(sql, args);
 //	}
+	
+	
+	/**
+	 * 게시글 저장(insert)
+	 * @param dto
+	 * @param memberSeq
+	 * @return
+	 */
+	@Override
+	public int save(BoardSaveDto dto, int memberSeq) {
+		String sql = "INSERT INTO board "
+				+ " (board_type_seq, title, content, reg_member_seq, reg_dtm) "
+				+ " VALUES (?, ?, ?, ?, DATE_FORMAT(now(),'%Y%m%d%H%i%s'))";
+				
+		Object[] args = {dto.getBoardTypeSeq(), dto.getTitle(), dto.getContent(), memberSeq};
+		return update(sql, args);
+	}
+	
+	@Override
+	public int update(BoardModifyDto dto) {
+		String sql = "UPDATE board "
+				+ "SET title = ? "
+				+ ", content = ? "
+				+ ", update_member_seq = ? "
+				+ ", update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s') "
+				+ " WHERE board_seq = ?";
+		
+		Object[] args = {dto.getTitle(), dto.getContent(), dto.getUpdateMemberSeq(), dto.getBoardSeq()};
+		return update(sql, args);
+	}
 	
 	public RowMapper<BoardDto> rowMapper(){
 		return ((rs, rowNum) -> {

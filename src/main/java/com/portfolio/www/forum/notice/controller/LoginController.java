@@ -78,7 +78,7 @@ public class LoginController {
 		
 		//로그인 성공하면, 세션에 아이디 저장 후
 		HttpSession session = request.getSession();
-		session.setAttribute("memberId", params.get("memberId"));
+//		session.setAttribute("memberId", params.get("memberId"));
 		session.setAttribute("memberSeq", memberSeq); //로그인 일치시 받아온 MemberSeq를 세션에 저장
 		// 원래 요청 주소로 이동.
 		return "redirect:"+ (ObjectUtils.isEmpty(requestURL)? "/home.do" : requestURL);
@@ -88,8 +88,8 @@ public class LoginController {
 	
 	@GetMapping("/logout.do")
 	public String logout(HttpSession session, RedirectAttributes rattr) {
-		String memberId = (String)session.getAttribute("memberId");
-		if(!ObjectUtils.isEmpty(memberId)) {
+		String memberSeq = (String)session.getAttribute("memberSeq");
+		if(!ObjectUtils.isEmpty(memberSeq)) {
 			session.invalidate(); //세션 invalidate 후
 			rattr.addFlashAttribute("msg", "정상적으로 로그아웃 되었습니다.");
 		}//나중에 view에서 로그인이 된 경우에만 로그아웃 버튼이 보이도록 만들어야 함.

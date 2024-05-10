@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginFilter implements Filter {
 	
-	private String[] urlMapping = { LoginAuthEnum.BOARD.getUrl(), 
+	private String[] urlMapping = { 
+			LoginAuthEnum.BOARD.getUrl(), 
 			LoginAuthEnum.DEVELOP.getUrl(), 
 			LoginAuthEnum.SALES.getUrl(),
 			LoginAuthEnum.QA.getUrl(),
@@ -38,16 +39,18 @@ public class LoginFilter implements Filter {
 		String requestURI = request.getRequestURI().replace(contextPath,"");
 		HttpSession session = request.getSession();
 		
-//		log.info("requestURI={}", request.getRequestURI());		
-//		log.info("contextPath={}", contextPath);
-//		log.info("requestURL = {}", requestURL);
-//		log.info("\n requestURI = {} \n", requestURI);
+		log.info("requestURI={}", request.getRequestURI());		
+		log.info("contextPath={}", contextPath);
+		log.info("requestURL = {}", requestURL);
+		log.info("\n requestURI = {} \n", requestURI);
 		
 		//로그인 인증이 필요한 페이지에 한해 로그인 검증
 		List<String> urlList = List.of(urlMapping);
 		if(urlList.stream().anyMatch(url -> requestURI.startsWith(url))) {
 			//로그인이 되어 있지 않으면 로그인 페이지로 redirect
-			if(ObjectUtils.isEmpty(session.getAttribute("memberId"))) {
+			log.info("\n here \n");
+			if(ObjectUtils.isEmpty(session.getAttribute("memberSeq"))) {
+				log.info("\n here2 \n");
 				response.sendRedirect(contextPath+"/loginPage.do?url="+requestURL);
 			}
 		}

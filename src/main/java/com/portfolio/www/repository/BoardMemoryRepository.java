@@ -6,6 +6,8 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardModifyDto;
+import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.entity.Board;
 import com.portfolio.www.util.PageHandler;
@@ -77,6 +79,18 @@ public class BoardMemoryRepository implements BoardRepository{
 		
 	}
 	
+	@Override
+	public int save(BoardSaveDto dto, int memberSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int update(BoardModifyDto dto) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 	private BoardVoteDto toBoardVoteDto(Board board) {
 		return new BoardVoteDto(
 				board.getBoardSeq(), 
@@ -103,6 +117,10 @@ public class BoardMemoryRepository implements BoardRepository{
 		store.entrySet().forEach(System.out::println);
 		System.out.println("==========================");
 	}
+
+
+
+
 	
 
 

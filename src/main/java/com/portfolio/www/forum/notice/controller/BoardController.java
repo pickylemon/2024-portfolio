@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.portfolio.www.dto.BoardDto;
@@ -22,11 +23,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/board")
+//@RequestMapping("/board")
+@RequestMapping("/forum/notice")
 @Slf4j
 public class BoardController {
 	private final BoardService boardService;
 	
+	/**
+	 * 게시판 목록 페이지 요청
+	 * @param page
+	 * @param size
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	@GetMapping("/listPage.do") //게시판 페이지(한 페이지) 요청
 	public String listPage(Integer page, Integer size, Model model, HttpServletRequest request) {	
 //		log.info("\n params={} \n", params);
@@ -59,14 +69,18 @@ public class BoardController {
 		return "forum/notice/list";
 	}
 	
-	@GetMapping("/writePage.do") //글쓰기 페이지 요청
-	public String writePage() {
-		
-		return "forum/notice/write";
-	}
-	
-	@GetMapping("/readPage.do") //개별 게시글 읽기 요청
+
+	/**
+	 * 개별 게시물 읽기 요청
+	 * @param boardSeq
+	 * @param boardTypeSeq
+	 * @param session
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/readPage.do") 
 	public String readPage(Integer boardSeq, Integer boardTypeSeq, HttpSession session, Model model) {
+		log.info("session.getAttribute()={}",session.getAttribute("597875B21C949A70938E6250A7D7E122")) ;
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		String isLike = "";
 		
@@ -81,6 +95,30 @@ public class BoardController {
 		return "forum/notice/read";
 	}
 	
+	/**
+	 * 게시판 수정 페이지 요청
+	 * @param boardSeq
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/{boardSeq}/modifyPage.do")
+	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, Model model) {
+		log.info("boardSeq={}", boardSeq);
+		BoardDto boardDto = boardService.getPost(boardSeq);
+		model.addAttribute("boardDto", boardDto);
+		model.addAttribute("page", "modify");
+		
+		return "forum/notice/write";
+	}
 	
+	/**
+	 * 글쓰기 페이지 요청
+	 * @return
+	 */
+	@GetMapping("/writePage.do") 
+	public String writePage(Model model) {
+		model.addAttribute("page", "write");
+		return "forum/notice/write";
+	}
 	
 }

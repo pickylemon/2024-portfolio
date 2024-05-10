@@ -34,6 +34,14 @@ String ctx = request.getContextPath();
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/resources/template/images/favicon.png">    
 	<script type="text/javascript">
 		var ctx = '<%= request.getContextPath() %>';
+		
+		let code = '${code}'
+		let msg = '${msg}'
+		
+		if(code == 1) {
+			alert(msg);
+		}
+		
 	</script>	
 	<script src="<%=ctx%>/resources/js/page.js"></script>
 </head>
@@ -66,7 +74,7 @@ String ctx = request.getContextPath();
                                         	<tr>
                                         		<td>${item.boardSeq }</td>
                                         		<td>
-                                        		<a href="<c:url value='/board/readPage.do?boardSeq=${item.boardSeq }&boardTypeSeq=${item.boardTypeSeq }'/>">
+                                        		<a href="<c:url value='/forum/notice/readPage.do?boardSeq=${item.boardSeq }&boardTypeSeq=${item.boardTypeSeq }'/>">
                                         		${item.title }
                                         		</a></td>
                                         		<td>${item.regDtm }</td>
@@ -120,12 +128,12 @@ String ctx = request.getContextPath();
 				                            <div class="nav-links">
 <%-- 				                                <c:url value='/forum/notice/list.do?page=1&size=10'/> --%>
 												<c:if test="${ph.startPage ne 1 }">
-													<a class="prev page-numbers" href="<c:url value='/board/listPage.do?page=${ph.startPage-1 }&size=${ph.pageSize }'/>">
+													<a class="prev page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${ph.startPage-1 }&size=${ph.pageSize }'/>">
 					                                    <span class="lnr lnr-arrow-left"></span>
 					                                </a>
 												</c:if>
 												<c:forEach var="i" begin="${ph.startPage }" end="${ph.endPage }">
-													<a class="page-numbers" href="<c:url value='/board/listPage.do?page=${i }&size=${ph.pageSize }'/>">${i }</a>
+													<a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${i }&size=${ph.pageSize }'/>">${i }</a>
 												</c:forEach>
 <%-- 				                                <a class="page-numbers current" href="<c:url value='/forum/notice/listPage.do?page=1&size=10'/>">1</a> --%>
 <%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=2&size=10'/>">2</a> --%>
@@ -137,7 +145,7 @@ String ctx = request.getContextPath();
 <%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=8&size=10'/>">8</a> --%>
 <%-- 				                                <a class="page-numbers" href="<c:url value='/forum/notice/listPage.do?page=9&size=10'/>">9</a> --%>
 				                                <c:if test="${ph.endPage ne ph.totalPage }">
-													<a class="next page-numbers" href="<c:url value='/board/listPage.do?page=${ph.endPage+1 }&size=${ph.pageSize }'/>">
+													<a class="next page-numbers" href="<c:url value='/forum/notice/listPage.do?page=${ph.endPage+1 }&size=${ph.pageSize }'/>">
 					                                    <span class="lnr lnr-arrow-right"></span>
 					                                </a>
 												</c:if>

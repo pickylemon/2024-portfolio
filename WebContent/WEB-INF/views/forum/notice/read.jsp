@@ -42,9 +42,16 @@ String ctx = request.getContextPath();
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg.min.js"></script>
     <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg/ko.js"></script>
     <script type="text/javascript">
+     	let boardSeq = ${boardDto.boardSeq}
+     	let memberSeq = <%= session.getAttribute("memberSeq")%>
+     	
+     	console.log("sessionMemberSeq=" + memberSeq)
+     	console.log("dtoMemberSeq="+${boardDto.regMemberSeq})
+     	
 	    $('#trumbowyg-demo').trumbowyg({
 	        lang: 'kr'
 	    });
+
 	    
 	    function thumbClick(boardSeq, boardTypeSeq, elem) {
 	    	console.log('clicked');
@@ -96,6 +103,39 @@ String ctx = request.getContextPath();
 	    	});
 	    }
 	    
+	    
+	    function deletePost(){
+	    	if(!confirm('게시글을 정말 삭제하시겠습니까?')){
+	    		return;
+	    	}
+	    	
+	    	$.ajax({    
+	    		type : 'delete',           
+	    		// 타입 (get, post, put 등등)    
+	    		url : '<%=ctx%>/forum/notice/'+boardSeq,
+	    		// 요청할 서버url
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		dataType : 'text',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log("result = " + result);
+	    			const response = JSON.parse(result);
+	    			
+	    		},
+	    		error : function(request, status, error) {
+	    			// 결과 에러 콜백함수
+	    			alert('failed');
+	    			console.log(error)
+	    		}
+	    	});
+	    }
+	    
 
 	</script>
 </head>
@@ -104,7 +144,7 @@ String ctx = request.getContextPath();
     <!--================================
             START DASHBOARD AREA
     =================================-->
-    <section class="support_threads_area section--padding2">
+    <section class="support_threads_area section--padding2">    
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -130,6 +170,12 @@ String ctx = request.getContextPath();
                             </div>
                             <p style="    margin-bottom: 0; margin-top: 19px;">
                             	${boardDto.content }</p>
+                            	
+                            <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
+                            <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
+                            	<a href="<c:url value='/forum/notice/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a>
+                            	<button type="button" id="delBtn">글 삭제하기</button>
+                            </c:if>
                         </div>
                         <!-- end .forum_issue -->
 

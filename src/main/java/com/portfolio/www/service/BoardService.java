@@ -2,12 +2,15 @@ package com.portfolio.www.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardModifyDto;
+import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.repository.BoardRepository;
 import com.portfolio.www.util.PageHandler;
@@ -95,4 +98,30 @@ public class BoardService {
 //			int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip) {
 //		
 //	}
+	
+	/**
+	 * 게시글 저장
+	 * @param dto
+	 * @param memberSeq
+	 * @return
+	 */
+	public int savePost(BoardSaveDto dto, int memberSeq) {
+		int code = 0;
+		try {
+			code = boardRepository.save(dto, memberSeq);
+		} catch(DataAccessException e) {
+			//게시글 등록에 실패하면
+			log.info("e.getMessage()={}", e.getMessage());
+		}
+		return code;
+	}
+	
+	@Transactional
+	public int modify(BoardModifyDto modifyDto) {
+		int code = boardRepository.update(modifyDto);
+		log.info("code={}",code);
+		return code;
+	}
+	
+	
 }
