@@ -116,12 +116,28 @@ public class BoardService {
 		return code;
 	}
 	
-	@Transactional
+	
+	/**
+	 * 게시글 수정
+	 * @param modifyDto
+	 * @return
+	 */
 	public int modify(BoardModifyDto modifyDto) {
 		int code = boardRepository.update(modifyDto);
 		log.info("code={}",code);
 		return code;
 	}
 	
+	
+	/**
+	 * 게시글 삭제
+	 * @param boardSeq
+	 * @return
+	 */
+	public int delete(Integer boardSeq, Integer boardTypeSeq) {
+		int code = boardRepository.delete(boardSeq, boardTypeSeq);
+		log.info("code={}", code);
+		return code;
+	}
 	
 }

@@ -176,9 +176,20 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 				+ ", content = ? "
 				+ ", update_member_seq = ? "
 				+ ", update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s') "
-				+ " WHERE board_seq = ?";
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ? ";
 		
-		Object[] args = {dto.getTitle(), dto.getContent(), dto.getUpdateMemberSeq(), dto.getBoardSeq()};
+		Object[] args = {dto.getTitle(), dto.getContent(), dto.getUpdateMemberSeq(), dto.getBoardSeq(), dto.getBoardTypeSeq()};
+		return update(sql, args);
+	}
+	
+	@Override //board의 pk는 boardSeq와 boardTypeSeq 복합 pk
+	public int delete(Integer boardSeq, Integer boardTypeSeq) {
+		String sql = "DELETE FROM board "
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = { boardSeq, boardTypeSeq };
 		return update(sql, args);
 	}
 	
@@ -215,5 +226,7 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 			return dto;
 		});
 	}
+
+
 
 }

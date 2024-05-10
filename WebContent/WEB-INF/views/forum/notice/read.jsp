@@ -104,15 +104,18 @@ String ctx = request.getContextPath();
 	    }
 	    
 	    
-	    function deletePost(){
+	    function deletePage(){
 	    	if(!confirm('게시글을 정말 삭제하시겠습니까?')){
 	    		return;
 	    	}
 	    	
+	    	let url = '<%=ctx%>/forum/notice/'+${boardDto.boardTypeSeq}
+	    	url += '/'+ ${boardDto.boardSeq} +'/deletePage.do'
+	    	
 	    	$.ajax({    
 	    		type : 'delete',           
 	    		// 타입 (get, post, put 등등)    
-	    		url : '<%=ctx%>/forum/notice/'+boardSeq,
+	    		url : url,
 	    		// 요청할 서버url
 	    		async : true,
 	    		// 비동기화 여부 (default : true)
@@ -121,11 +124,14 @@ String ctx = request.getContextPath();
 	    			"Content-Type" : "application/json",
 	    			"accept" : "application/json"
 	    		},
-	    		dataType : 'text',
+// 	    		dataType : 'text',
 	    		success : function(result) {
 	    			// 결과 성공 콜백함수 
-	    			console.log("result = " + result);
-	    			const response = JSON.parse(result);
+	    			console.log(result);
+	    			alert(result.msg)
+	    			if(result.code == 1){
+	    				location.href='<%=ctx%>/forum/notice/listPage.do'
+	    			}
 	    			
 	    		},
 	    		error : function(request, status, error) {
@@ -173,8 +179,8 @@ String ctx = request.getContextPath();
                             	
                             <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
                             <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
-                            	<a href="<c:url value='/forum/notice/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a>
-                            	<button type="button" id="delBtn">글 삭제하기</button>
+                            	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a>
+                            	<button type="button" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</button>
                             </c:if>
                         </div>
                         <!-- end .forum_issue -->

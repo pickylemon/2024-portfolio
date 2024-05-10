@@ -3,6 +3,7 @@ package com.portfolio.www.forum.notice.controller.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,7 +73,7 @@ public class RestNoticeController {
 	 * @return
 	 */
 	@PostMapping("/writePage.do")
-	public SaveResponse save(@RequestBody BoardSaveDto boardSaveDto, HttpSession session) {
+	public BoardResponse save(@RequestBody BoardSaveDto boardSaveDto, HttpSession session) {
 		//1. TODO dto에 대한 validation (추후 처리) 
 		//2. BoardService호출 
 		//로그인이 전제되어야지만 게시글 작성이 가능하다.
@@ -88,14 +89,14 @@ public class RestNoticeController {
 		//4-1. 게시글 업로드 성공하면 게시판 1페이지로 요청 (PRG 패턴 적용)
 		//4-2. 게시글 업로드 실패하면 다시 게시글 작성 페이지로 이동(+작성 내용을 모델에 담아서)
 		if (code == 1) {
-			return new SaveResponse(MessageEnum.POST_SUCCESS.getCode(), MessageEnum.POST_SUCCESS.getMessage());
+			return new BoardResponse(MessageEnum.POST_SUCCESS.getCode(), MessageEnum.POST_SUCCESS.getMessage());
 //			return new ResponseEntity<SaveResponse>(
 //					new SaveResponse(
 //							MessageEnum.POST_SUCCESS.getCode(), MessageEnum.POST_SUCCESS.getMessage())
 //					,HttpStatus.OK);
 
 		} else {
-			return new SaveResponse(
+			return new BoardResponse(
 					MessageEnum.POST_FAIL.getCode(), MessageEnum.POST_FAIL.getMessage());
 //			return new ResponseEntity<SaveResponse>(
 //					new SaveResponse(
@@ -110,17 +111,39 @@ public class RestNoticeController {
 	 * @param boardModifyDto
 	 * @return
 	 */
-	@PatchMapping("/{boardSeq}/modifyPage.do")
-	public SaveResponse modfiy(@RequestBody BoardModifyDto boardModifyDto) {
+	@PatchMapping("/{boardTypeSeq}/{boardSeq}/modifyPage.do")
+	public BoardResponse modfiy(@RequestBody BoardModifyDto boardModifyDto) {
 		//게시글 수정
 		log.info("\n boardModifyDto={} \n", boardModifyDto);
 		//게시글 작성자와 수정자의 memberSeq가 다르면 수정 불가능하게 막기
 		int code = boardService.modify(boardModifyDto);
 		if (code == 1) {
-			return new SaveResponse(MessageEnum.MODIFY_SUCCESS.getCode(), MessageEnum.MODIFY_SUCCESS.getMessage());
+			return new BoardResponse(MessageEnum.MODIFY_SUCCESS.getCode(), MessageEnum.MODIFY_SUCCESS.getMessage());
 		} else {
-			return new SaveResponse(
+			return new BoardResponse(
 					MessageEnum.MODIFY_FAIL.getCode(), MessageEnum.MODIFY_FAIL.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * 게시글 삭제
+	 * @param boardSeq
+	 * @return
+	 */
+	@DeleteMapping("/{boardTypeSeq}/{boardSeq}/deletePage.do")
+	public BoardResponse delete(
+			@PathVariable("boardSeq") Integer boardSeq, 
+			@PathVariable("boardTypeSeq") Integer boardTypeSeq) {
+		//게시글 삭제
+		log.info("\n boardSeq={} \n", boardSeq);
+		int code = boardService.delete(boardSeq, boardTypeSeq);
+		
+		if (code == 1) {
+			return new BoardResponse(MessageEnum.DEL_SUCCESS.getCode(), MessageEnum.DEL_SUCCESS.getMessage());
+		} else {
+			return new BoardResponse(
+					MessageEnum.DEL_FAIL.getCode(), MessageEnum.DEL_FAIL.getMessage());
 		}
 	}
 	

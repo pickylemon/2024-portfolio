@@ -113,6 +113,7 @@ String ctx = request.getContextPath();
 	    function boardModify() {
 	    	let boardModifyDto = {}
 	    	boardModifyDto.boardSeq = ${boardDto.boardSeq}
+	    	boardModifyDto.boardTypeSeq = ${boardDto.boardTypeSeq}
 	    	boardModifyDto.title = $('#title').val()
 	    	boardModifyDto.content = $('#trumbowyg-demo').trumbowyg('html')
 	    	boardModifyDto.updateMemberSeq = memberSeq
@@ -120,6 +121,7 @@ String ctx = request.getContextPath();
 	    	console.log(boardModifyDto)
 	    	
 	    	let url = '<%=ctx%>/forum/notice/'
+	    	url += ${boardDto.boardTypeSeq}+'/'
 	    	url += ${boardDto.boardSeq}+'/modifyPage.do'
 	    	
 	    	$.ajax({    

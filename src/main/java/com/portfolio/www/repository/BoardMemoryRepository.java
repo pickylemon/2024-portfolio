@@ -91,6 +91,13 @@ public class BoardMemoryRepository implements BoardRepository{
 		return 0;
 	}
 	
+	@Override
+	public int delete(Integer boardSeq, Integer boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	
 	private BoardVoteDto toBoardVoteDto(Board board) {
 		return new BoardVoteDto(
 				board.getBoardSeq(), 
@@ -117,11 +124,5 @@ public class BoardMemoryRepository implements BoardRepository{
 		store.entrySet().forEach(System.out::println);
 		System.out.println("==========================");
 	}
-
-
-
-
-	
-
 
 }

@@ -28,5 +28,7 @@ public interface BoardRepository {
 	int save(BoardSaveDto dto, int memberSeq);
 	
 	int update(BoardModifyDto dto);
+	
+	int delete(Integer boardSeq, Integer boardTypeSeq);
 
 }

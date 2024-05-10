@@ -88,11 +88,14 @@ public class LoginController {
 	
 	@GetMapping("/logout.do")
 	public String logout(HttpSession session, RedirectAttributes rattr) {
-		String memberSeq = (String)session.getAttribute("memberSeq");
-		if(!ObjectUtils.isEmpty(memberSeq)) {
-			session.invalidate(); //세션 invalidate 후
-			rattr.addFlashAttribute("msg", "정상적으로 로그아웃 되었습니다.");
-		}//나중에 view에서 로그인이 된 경우에만 로그아웃 버튼이 보이도록 만들어야 함.
+		if(!ObjectUtils.isEmpty(session.getAttribute("memberSeq"))) {
+			int memberSeq = (int)session.getAttribute("memberSeq");
+			if(!ObjectUtils.isEmpty(memberSeq)) {
+				session.invalidate(); //세션 invalidate 후
+				rattr.addFlashAttribute("msg", "정상적으로 로그아웃 되었습니다.");
+			}//나중에 view에서 로그인이 된 경우에만 로그아웃 버튼이 보이도록 만들어야 함.
+		}
+	
 		return "redirect:/home.do"; //홈으로 redirect
 	}
 	

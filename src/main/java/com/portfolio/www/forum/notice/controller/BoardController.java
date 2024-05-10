@@ -101,7 +101,7 @@ public class BoardController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/{boardSeq}/modifyPage.do")
+	@GetMapping("/{boardTypeSeq}/{boardSeq}/modifyPage.do")
 	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, Model model) {
 		log.info("boardSeq={}", boardSeq);
 		BoardDto boardDto = boardService.getPost(boardSeq);
