@@ -124,16 +124,19 @@ public class BoardService {
 		try {
 			//1. 게시글 데이터 DB에 저장
 			int boardSeq = boardRepository.save(dto); //내부적으로 keyholder를 사용해 pk반환
-				
+			
+		
 			for(MultipartFile mf : mfs) { //첨부파일 배열에 대해 루프 돌림
-				//2. 첨부파일 물리적 저장 및	
-				File destfile = fileUtil.saveFiles(mf);
-				//3-1. BoardAttachDto 생성
-				BoardAttachDto attachDto = BoardAttachDto.makeBoardAttachDto(mf, destfile);
-				attachDto.setBoardSeq(boardSeq);
-				attachDto.setBoardTypeSeq(dto.getBoardTypeSeq());
-				//3-2. 첨부파일 메타데이터 DB에 저장
-				boardAttachRepository.saveAttachFile(attachDto);
+				if(!mf.isEmpty()) {
+					//2. 첨부파일 물리적 저장 및	
+					File destfile = fileUtil.saveFiles(mf);
+					//3-1. BoardAttachDto 생성
+					BoardAttachDto attachDto = BoardAttachDto.makeBoardAttachDto(mf, destfile);
+					attachDto.setBoardSeq(boardSeq);
+					attachDto.setBoardTypeSeq(dto.getBoardTypeSeq());
+					//3-2. 첨부파일 메타데이터 DB에 저장
+					boardAttachRepository.saveAttachFile(attachDto);
+				}
 			}
 		} catch(DataAccessException e) {
 			//게시글 등록에 실패하면

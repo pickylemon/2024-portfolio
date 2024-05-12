@@ -11,12 +11,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.portfolio.www.exception.FileSaveException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class FileUtil {
 	//파일을 물리적으로 저장하는 역할을 하는 클래스
 	private static String SAVE_PATH = "C:\\dev\\workspace\\attFile\\";
 	
 	public File saveFiles(MultipartFile mf) {
+		
+		log.info("mf isEmpty?={}", mf.isEmpty());
+//		log.info("mf isEmpty?={}", ObjectUtils.isEmpty(mf)); ObjectUtils는 여기서는 제대로된 결과 안나옴.
 		
 		File destfile = new File(getSavePath()); //'오늘' 날짜를 기준으로 동적으로 생성한 경로로 File 객체 생성'
 		
@@ -66,7 +72,9 @@ public class FileUtil {
 	 * @return
 	 */
 	private String getExtension(String originalFileName) {
+		log.info("originalFileName = " + originalFileName);
 		int idx = originalFileName.lastIndexOf('.');
+		log.info("idx={}", idx);
 		return originalFileName.substring(idx);
 	}
 	

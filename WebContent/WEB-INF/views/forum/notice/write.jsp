@@ -188,10 +188,10 @@ String ctx = request.getContextPath();
             <div class="row">
                 <div class="col-lg-12">
                     <div class="question-form cardify p-4">
-                        <form action="<%=ctx %>/forum/notice/write.do" method="post" enctype="multipart/form-data">
+                        <form action="<%=ctx %>/forum/notice/1/write.do" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required id="title" >
+                                <input type="text" placeholder="Enter title here" required name="title" >
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
@@ -203,24 +203,24 @@ String ctx = request.getContextPath();
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
+                                        <input type="file" name="attFiles" style="display:inline-block;" >
                                     </label>
                                     <label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
+                                        <input type="file" name="attFiles" style="display:inline-block;" >
                                     </label>
                                     <label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
+                                        <input type="file" name="attFiles" style="display:inline-block;" >
                                     </label>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button type="button" id="postSave" class="btn btn--md btn-primary">Submit Request</button>      
+                                <button type="submit" id="postSave" class="btn btn--md btn-primary">Submit Request</button>      
                             	<a href="<c:url value='/forum/notice/listPage.do'/>" class="btn btn--md btn-light">Cancel</a>
                             </div>
                         </form>

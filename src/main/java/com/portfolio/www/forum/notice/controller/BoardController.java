@@ -1,5 +1,6 @@
 package com.portfolio.www.forum.notice.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class BoardController {
 	 * @param mReq
 	 * @return
 	 */
-	@PostMapping("/forum/notice/{BoardTypeSeq}/write.do")
+	@PostMapping("/{boardTypeSeq}/write.do")
 	public String write(
 			@PathVariable("boardTypeSeq") int boardTypeSeq,
 			@RequestParam HashMap<String, String> params,
@@ -138,6 +139,7 @@ public class BoardController {
 			MultipartFile[] attFiles, Model model, RedirectAttributes rattr) {
 		//MultipartHttpServletRequest에 대해서도 알아보기(ex.getFileMap)
 		
+		log.info("attFiles.length={}, attFilesArr={}", attFiles.length, Arrays.toString(attFiles));
 		//게시글 관련 데이터
 		int regMemberSeq = (int)session.getAttribute("memberSeq");
 		String title = params.get("title");
