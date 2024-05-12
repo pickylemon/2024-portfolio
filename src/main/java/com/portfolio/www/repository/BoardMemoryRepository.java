@@ -80,7 +80,7 @@ public class BoardMemoryRepository implements BoardRepository{
 	}
 	
 	@Override
-	public int save(BoardSaveDto dto, int memberSeq) {
+	public int save(BoardSaveDto dto) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

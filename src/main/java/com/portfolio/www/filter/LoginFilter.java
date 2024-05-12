@@ -37,26 +37,28 @@ public class LoginFilter implements Filter {
 		String requestURL = request.getRequestURL().toString();
 		String contextPath = request.getContextPath();
 		String requestURI = request.getRequestURI().replace(contextPath,"");
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
 		
-		log.info("requestURI={}", request.getRequestURI());		
-		log.info("contextPath={}", contextPath);
-		log.info("requestURL = {}", requestURL);
-		log.info("\n requestURI = {} \n", requestURI);
+//		log.info("referer={}", request.getHeader("referer"));
+//		log.info("requestURI={}", request.getRequestURI());		
+//		log.info("contextPath={}", contextPath);
+//		log.info("requestURL = {}", requestURL);
+//		log.info("requestURI = {}", requestURI);
 		
 		//로그인 인증이 필요한 페이지에 한해 로그인 검증
 		List<String> urlList = List.of(urlMapping);
 		if(urlList.stream().anyMatch(url -> requestURI.startsWith(url))) {
+			log.info("로그인 검증 대상 페이지");
 			//로그인이 되어 있지 않으면 로그인 페이지로 redirect
-			log.info("\n here \n");
-			if(ObjectUtils.isEmpty(session.getAttribute("memberSeq"))) {
-				log.info("\n here2 \n");
-				response.sendRedirect(contextPath+"/loginPage.do?url="+requestURL);
+			if(session == null || ObjectUtils.isEmpty(session.getAttribute("memberSeq"))) {
+				log.info("로그인 페이지로 이동");
+				response.sendRedirect(request.getContextPath()+"/loginPage.do?url="+requestURL);
+				return;
+			} else {
+//				log.info("session.new?={}", session.isNew());
+//				log.info("session.getAttribute={}", (int)session.getAttribute("memberSeq"));
 			}
 		}
-		
 		chain.doFilter(request, response);
-		
 	}
-
 }
