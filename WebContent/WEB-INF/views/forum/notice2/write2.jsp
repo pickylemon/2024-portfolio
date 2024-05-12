@@ -52,11 +52,20 @@ String ctx = request.getContextPath();
 	    
 	    
 	    $(document).ready(function(){
+// 	    	같은 뷰를 사용하지만
+// 	    	게시글 작성일 때와 게시글 수정일 때 보이는 버튼이 다르다
+	    	if(page == 'modify') {
+	    		$('#postSave').css('display', 'none')
+	    		$('#postMod').css('display', 'block')
+	    	} else if(page == 'write') {
+	    		$('#postSave').css('display', 'block')
+	    		$('#postMod').css('display', 'none')
+	    	}
 	    	
-	    	//게시글 등록에 실패해서 다시 이 뷰로 올 경우, 
-	    	//사용자 입력 내용을 그대로 전달받아 뿌려줌 
-	    	$('#trumbowyg-demo').trumbowyg('html', '${params.content}');
-	    	$('#title').val('${params.title}');
+	    	//게시글 수정페이지 요청으로 이 뷰에 왔을 경우, 
+	    	//제목과 내용에 해당 데이터를 뿌려준다.
+	    	$('#trumbowyg-demo').trumbowyg('html', '${boardDto.content}');
+	    	$('#title').val('${boardDto.title}')
 	    })
 
 	    function boardSave() {
@@ -203,24 +212,13 @@ String ctx = request.getContextPath();
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
-                                    </label>
-                                    <label>Attachments</label>
-                                    <label>
-                                        <span class="lnr lnr-paperclip"></span> Add File
-                                        <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
-                                    </label>
-                                    <label>Attachments</label>
-                                    <label>
-                                        <span class="lnr lnr-paperclip"></span> Add File
-                                        <span>or Drop Files Here</span>
-                                        <input type="file" name="attFiles" style="display:inline-block;" multiple>
+                                        <input type="file" name="attchedFiles" style="display:inline-block;" multiple>
                                     </label>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button type="button" id="postSave" class="btn btn--md btn-primary">Submit Request</button>      
+                                <button type="button" id="postSave" class="btn btn--md btn-primary" onclick="javascript:boardSave();">Submit Request</button>
+                                <button type="button" id="postMod" class="btn btn--md btn-primary" onclick="javascript:boardModify();">Modify Request</button>
                             	<a href="<c:url value='/forum/notice/listPage.do'/>" class="btn btn--md btn-light">Cancel</a>
                             </div>
                         </form>

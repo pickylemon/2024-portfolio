@@ -18,6 +18,6 @@ public class BoardModifyDto {
 	private int boardTypeSeq;
 	@NotEmpty
 	private int updateMemberSeq;
-	private UploadFile file;
+	
 
 }

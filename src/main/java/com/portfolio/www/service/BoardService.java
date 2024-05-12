@@ -1,5 +1,6 @@
 package com.portfolio.www.service;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -7,12 +8,17 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.portfolio.www.dto.BoardAttachDto;
 import com.portfolio.www.dto.BoardDto;
 import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
+import com.portfolio.www.exception.FileSaveException;
+import com.portfolio.www.repository.BoardAttachRepository;
 import com.portfolio.www.repository.BoardRepository;
+import com.portfolio.www.util.FileUtil;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
 
@@ -25,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class BoardService {
 	private final BoardRepository boardRepository;
+	private final BoardAttachRepository boardAttachRepository;
+	private final FileUtil fileUtil;
 	
 	/*
 	 * 게시글 리스트 가져오기
@@ -99,19 +107,40 @@ public class BoardService {
 //		
 //	}
 	
+
 	/**
 	 * 게시글 저장
+	 * * 게시글에 대한 insert와 첨부파일의 물리적 저장, insert가 모두 하나의 Tx
+	 * 1. 게시글 데이터 DB 저장
+	 * 2. 파일을 물리적으로 저장
+	 * 3. 파일에 대한 메타 정보를 DB에 저장
 	 * @param dto
-	 * @param memberSeq
+	 * @param mfs
 	 * @return
 	 */
-	public int savePost(BoardSaveDto dto, int memberSeq) {
-		int code = 0;
+	@Transactional
+	public int savePost(BoardSaveDto dto, MultipartFile[] mfs) {
+		int code = 1;
 		try {
-			code = boardRepository.save(dto, memberSeq);
+			//1. 게시글 데이터 DB에 저장
+			int boardSeq = boardRepository.save(dto); //내부적으로 keyholder를 사용해 pk반환
+				
+			for(MultipartFile mf : mfs) { //첨부파일 배열에 대해 루프 돌림
+				//2. 첨부파일 물리적 저장 및	
+				File destfile = fileUtil.saveFiles(mf);
+				//3-1. BoardAttachDto 생성
+				BoardAttachDto attachDto = BoardAttachDto.makeBoardAttachDto(mf, destfile);
+				attachDto.setBoardSeq(boardSeq);
+				attachDto.setBoardTypeSeq(dto.getBoardTypeSeq());
+				//3-2. 첨부파일 메타데이터 DB에 저장
+				boardAttachRepository.saveAttachFile(attachDto);
+			}
 		} catch(DataAccessException e) {
 			//게시글 등록에 실패하면
 			log.info("e.getMessage()={}", e.getMessage());
+			code = -1;
+		} catch(FileSaveException e) {
+			code = -2; //사용자에게 게시글 등록 실패 이유를 전달하기 위해 굳이 code를 나눴다.
 		}
 		return code;
 	}

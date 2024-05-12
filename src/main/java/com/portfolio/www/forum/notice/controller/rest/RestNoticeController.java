@@ -1,5 +1,7 @@
 package com.portfolio.www.forum.notice.controller.rest;
 
+import java.util.Arrays;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
@@ -73,16 +77,23 @@ public class RestNoticeController {
 	 * @return
 	 */
 	@PostMapping("/writePage.do")
-	public BoardResponse save(@RequestBody BoardSaveDto boardSaveDto, HttpSession session) {
+	public BoardResponse save(@RequestPart(value = "boardSaveDto") BoardSaveDto boardSaveDto, 
+								@RequestPart(value = "files", required = false) MultipartFile[] files, 
+								HttpSession session, HttpServletRequest request) {
 		//1. TODO dto에 대한 validation (추후 처리) 
 		//2. BoardService호출 
 		//로그인이 전제되어야지만 게시글 작성이 가능하다.
 		//즉, 로그인 상태라면 세션에 memberSeq가 항상있는데도 null체크를 해야할까?
 		
+		log.info("content-type = {}", request.getHeader("content-type"));
+		log.info("content-type = {}", request.getContentType());
+		
+		
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		boardSaveDto.setBoardTypeSeq(1); //지금은 하드코딩인데, 원래는 어디로부터 가져와야 하지?
 		log.info("memberSeq={}",memberSeq);
 		log.info("boardSaveDto={}",boardSaveDto);
+		log.info("files={}", Arrays.toString(files));
 		int code = boardService.savePost(boardSaveDto, memberSeq);
 		
 		//4. 게시글 업로드 결과에 따라 

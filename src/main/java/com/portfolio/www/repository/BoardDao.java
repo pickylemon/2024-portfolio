@@ -1,5 +1,7 @@
 package com.portfolio.www.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -7,6 +9,8 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardDto;
@@ -155,18 +159,32 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 	
 	/**
 	 * 게시글 저장(insert)
+	 * 게시글 번호가 board_attach에 필요함
 	 * @param dto
 	 * @param memberSeq
-	 * @return
+	 * @return **keyHolder에 저장한 pk를 반환**
 	 */
 	@Override
-	public int save(BoardSaveDto dto, int memberSeq) {
+	public int save(BoardSaveDto dto) {
 		String sql = "INSERT INTO board "
 				+ " (board_type_seq, title, content, reg_member_seq, reg_dtm) "
 				+ " VALUES (?, ?, ?, ?, DATE_FORMAT(now(),'%Y%m%d%H%i%s'))";
-				
-		Object[] args = {dto.getBoardTypeSeq(), dto.getTitle(), dto.getContent(), memberSeq};
-		return update(sql, args);
+			
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		update(con -> { 
+			PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			ps.setInt(1, dto.getBoardTypeSeq());
+			ps.setString(2, dto.getTitle());
+			ps.setString(3, dto.getContent());
+			ps.setInt(4, dto.getRegMemberSeq());
+			
+			return ps;
+			
+		}, keyHolder);
+		
+		return keyHolder.getKey().intValue();
 	}
 	
 	@Override
@@ -192,6 +210,8 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 		Object[] args = { boardSeq, boardTypeSeq };
 		return update(sql, args);
 	}
+	
+
 	
 	public RowMapper<BoardDto> rowMapper(){
 		return ((rs, rowNum) -> {

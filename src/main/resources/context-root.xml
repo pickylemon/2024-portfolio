@@ -45,5 +45,6 @@
 <bean name="bCryptPasswordEncoder" 
 	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
+<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
 </beans>

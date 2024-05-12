@@ -25,7 +25,7 @@ public interface BoardRepository {
 	
 	int updateVote(int boardSeq, int boardTypeSeq, int memberSeq, String isLike, String ip);
 	
-	int save(BoardSaveDto dto, int memberSeq);
+	int save(BoardSaveDto dto);
 	
 	int update(BoardModifyDto dto);
 	
