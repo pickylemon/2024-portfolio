@@ -61,6 +61,17 @@ public class FileUtil {
 			}
 		}
 	}
+	
+	/*
+	 * file.delete()는 삭제에 성공하면 true, 실패하면 false다
+	 * 삭제에 실패했다고 IOException을 던지진 않는 듯..?
+	 * 소스 찾아보면 SecurityException만 명시되어 있음
+	 * */
+	public void deleteFile(File delFile) {
+		if(delFile.exists()) {
+			delFile.delete();
+		}
+	}
 
 	/**
 	 * 파일의 저장 경로(SAVE_PATH\YYYY\MM\DD)를 구하는 메서드

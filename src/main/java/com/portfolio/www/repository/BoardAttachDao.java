@@ -58,8 +58,11 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 	
 	@Override
 	public int deleteOne(int attachSeq) {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "DELETE FROM forum.board_attach "
+				+ " WHERE attach_seq = ?";
+		Object[] args = {attachSeq};
+		
+		return update(sql, args);
 	}
 
 

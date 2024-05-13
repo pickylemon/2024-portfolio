@@ -93,7 +93,7 @@ public class BoardController {
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		String isLike = "";
 		
-		BoardDto boardDto = boardService.getPost(boardSeq);
+		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		//List<BoardCommentDto> comments = boardCommentService.getList(boardSeq, boardTypeSeq);
@@ -118,13 +118,16 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/notice/{boardTypeSeq}/{boardSeq}/modifyPage.do")
-	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, Model model) {
-		log.info("boardSeq={}", boardSeq);
-		BoardDto boardDto = boardService.getPost(boardSeq);
+	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, 
+							@PathVariable("boardTypeSeq") Integer boardTypeSeq,
+							Model model) {
+		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
+		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		model.addAttribute("boardDto", boardDto);
+		model.addAttribute("attFileList", attFileList);
 		model.addAttribute("page", "modify");
 		
-		return "forum/notice/write";
+		return "forum/notice/modify";
 	}
 	
 	/**
@@ -181,6 +184,23 @@ public class BoardController {
 			model.addAttribute("boardSaveDto", saveDto);
 			return "forum/notice/write";
 	}
+	
+	/**
+	 * 게시물 수정 요청
+	 * @param params
+	 * @param attFiles
+	 * @param model
+	 * @param rattr
+	 * @return
+	 */
+	@PostMapping("/notice/{boardTypeSeq}/{boardSeq}/modify.do")
+	public String modify(
+			@RequestParam HashMap<String, String> params,
+			MultipartFile[] attFiles, Model model, RedirectAttributes rattr) {
+		
+		return "home";
+	}	
+	
 	
 	@GetMapping("/download.do")
 	public String download(@RequestParam(required=false) Integer attachSeq, Model model) {

@@ -193,7 +193,7 @@ String ctx = request.getContextPath();
                             <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
                             <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
                             	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a><br>
-                            	<button type="button" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</button><br>
+                            	<a href="#" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</a><br>
                             </c:if>
                         </div>
                         <!-- end .forum_issue -->

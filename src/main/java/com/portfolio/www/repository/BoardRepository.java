@@ -14,7 +14,7 @@ public interface BoardRepository {
 	
 	int getTotalCnt(SearchCondition sc);
 	
-	BoardDto getOne(Integer boardSeq);
+	BoardDto getOne(Integer boardSeq, Integer boardTypeSeq);
 	
 	BoardVoteDto getVote(int boardSeq, int boardTypeSeq, int memberSeq);
 	

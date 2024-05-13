@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -161,4 +162,17 @@ public class RestNoticeController {
 		}
 	}
 	
+	/**
+	 * 게시물 수정 페이지 - 개별 파일 삭제 요청
+	 * @param attachSeq
+	 * @return
+	 */
+	@DeleteMapping("/{attachSeq}/deleteFile.do")
+	public ResponseEntity<String> deleteFile(@PathVariable("attachSeq") Integer attachSeq) {
+		int code = boardService.deleteFile(attachSeq);
+		if(code == 1) {
+			return ResponseEntity.ok("FILE_DEL_OK");
+		} 
+		return ResponseEntity.badRequest().body("FILE_DEL_FAIL");
+	}
 }

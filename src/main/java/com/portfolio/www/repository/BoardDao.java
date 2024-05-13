@@ -68,16 +68,17 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 	}
 	
 	@Override
-	public BoardDto getOne(Integer boardSeq) {
+	public BoardDto getOne(Integer boardSeq, Integer boardTypeSeq) {
 		String sql = "SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id"
 				+ " FROM board b "
 				+ " JOIN board_type bt "
 				+ " ON b.board_type_seq = bt.board_type_seq "
 				+ " JOIN member m "
 				+ " ON b.reg_member_seq = m.member_seq "
-				+ " WHERE b.board_seq = ?";
+				+ " WHERE b.board_seq = ?"
+				+ " AND b.board_type_seq = ?";
 		
-		return queryForObject(sql, rowMapper(), boardSeq);
+		return queryForObject(sql, rowMapper(), boardSeq, boardTypeSeq);
 	}
 	
 	

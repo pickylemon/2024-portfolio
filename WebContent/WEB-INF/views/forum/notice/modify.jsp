@@ -52,86 +52,40 @@ String ctx = request.getContextPath();
 	    
 	    
 	    $(document).ready(function(){
-// 	    	같은 뷰를 사용하지만
-// 	    	게시글 작성일 때와 게시글 수정일 때 보이는 버튼이 다르다
-	    	if(page == 'modify') {
-	    		$('#postSave').css('display', 'none')
-	    		$('#postMod').css('display', 'block')
-	    	} else if(page == 'write') {
-	    		$('#postSave').css('display', 'block')
-	    		$('#postMod').css('display', 'none')
-	    	}
-	    	
-	    	//게시글 수정페이지 요청으로 이 뷰에 왔을 경우, 
-	    	//제목과 내용에 해당 데이터를 뿌려준다.
-	    	if(${boardDto.content})
+	    	//게시물 정보 뿌려주기
 	    	$('#trumbowyg-demo').trumbowyg('html', '${boardDto.content}');
 	    	$('#title').val('${boardDto.title}')
 	    })
-
-	    function boardSave() {
-	    	let formData = new FormData()
-	    	let dto = {};
-	    	dto.title = $('#title').val()
-	    	dto.content = $('#trumbowyg-demo').trumbowyg('html')
-	    	let boardSaveDto = JSON.stringify(dto);
-	    	formData.append('boardSaveDto', new Blob([dto], { type: 'application/json' }));
-	    	formData.append("files", $('input[type=file	]')[0].files[0]);
-	    	
-	    	console.dir($('input[type=file	]')[0].files);
-// 	    	boardSaveDto.title = $('#title').val()
-// 	    	boardSaveDto.content = $('#trumbowyg-demo').trumbowyg('html')
-	    	
-	    	console.dir(boardSaveDto)
-	    	
-	    	for (var key of formData.keys()) {
-			    console.log(key);
-			  }
-			  for (var value of formData.values()) {
-			    console.log(value);
-			  }
-	    	
+	    
+	    //개별 파일 삭제 ajax 요청
+	    function deleteFile(attachSeq){
 	    	$.ajax({    
-	    		type : 'post',           
-	    		// 타입 (get, post, put 등등)    
-	    		url : '<%=ctx%>/forum/notice/writePage.do',
-	    		// 요청할 서버url
+	    		type : 'delete',             
+	    		url : '<%=ctx%>/forum/notice/'+attachSeq+'/deleteFile.do',
 	    		async : true,
-	    		// 비동기화 여부 (default : true)
 	    		headers : {
-	    			// Http header
-// 	    			"Content-Type" : "application/json",
+	    			"Content-Type" : "application/json",
 	    			"accept" : "application/json"
 	    		},
-	    		cache: false,
-	            contentType: false,
-	            processData: false,
-	    		data : formData,
-	    		dataType : 'json',
+	    		dataType : 'text',
 	    		success : function(result) {
 	    			// 결과 성공 콜백함수 
-	    			console.log(result);
-	    		
-	    			if(result.code == 1){
-	    				alert(result.msg);
-	    				location.href='<%=ctx%>/forum/notice/listPage.do'
-	    				//성공시, 게시글 정상 등록되었다는 alert와 함께, 게시글 목록으로 redirect
-	    			} else {
-	    				alert(result.msg);
+	    			if(result == "FILE_DEL_OK"){
+	    				alert("첨부파일을 성공적으로 삭제했습니다.")
+	  					location.href='<%=ctx%>/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'
+	    			} else if(result == "FILE_DEL_FAIL"){
+	    				alert("첨부파일 삭제에 실패했습니다.");
 	    			}
-
-	    		},
+    			},
 	    		error : function(result) {
 	    			// 결과 에러 콜백함수
 	    			let response = result;
 	    			console.log(response);
-// 	    			const response = JSON.parse(result);
-					let message = response.msg;
-					console.log(typeof message);
-	    			alert(message);
 	    		}
 	    	});
+	    	
 	    }
+
 	    
 	    function boardModify() {
 	    	let boardModifyDto = {}
@@ -198,7 +152,7 @@ String ctx = request.getContextPath();
             <div class="row">
                 <div class="col-lg-12">
                     <div class="question-form cardify p-4">
-                        <form action="<%=ctx %>/forum/notice/write.do" method="post" enctype="multipart/form-data">
+                        <form action="<%=ctx %>/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modify.do" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
                                 <input type="text" placeholder="Enter title here" required id="title" >
@@ -209,29 +163,27 @@ String ctx = request.getContextPath();
                             </div>
                             <div class="form-group">
                                 <div class="attachments">
-                                    <label>Attachments</label>
+                                <c:set var="listSize" value='${attFileList.size() }'/>
+                                <c:forEach items="${attFileList }" var="attFile">
+                                	<div> 
+										첨부 파일 : ${attFile.orgFileNm } (${attFile.fileSize })
+										<button type="button" onclick="javascript:deleteFile(${attFile.attachSeq})">삭제</button>
+                                	</div>
+                                </c:forEach>
+                                
+                                <!--  첨부파일은 총 3개까지 추가 가능 -->
+                                <c:forEach begin='${listSize +1}' end="3" step="1">
+                                	<label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attchedFiles" style="display:inline-block;" multiple>
+                                        <input type="file" name="attchedFiles" style="display:inline-block;" >
                                     </label>
-                                    <label>Attachments</label>
-                                    <label>
-                                        <span class="lnr lnr-paperclip"></span> Add File
-                                        <span>or Drop Files Here</span>
-                                        <input type="file" name="attchedFiles" style="display:inline-block;" multiple>
-                                    </label>
-                                    <label>Attachments</label>
-                                    <label>
-                                        <span class="lnr lnr-paperclip"></span> Add File
-                                        <span>or Drop Files Here</span>
-                                        <input type="file" name="attchedFiles" style="display:inline-block;" multiple>
-                                    </label>
+                                </c:forEach>                              
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button type="button" id="postSave" class="btn btn--md btn-primary" onclick="javascript:boardSave();">Submit Request</button>
-                                <button type="button" id="postMod" class="btn btn--md btn-primary" onclick="javascript:boardModify();">Modify Request</button>
+                                <button type="submit" id="postMod" class="btn btn--md btn-primary">Modify Request</button>
                             	<a href="<c:url value='/forum/notice/listPage.do'/>" class="btn btn--md btn-light">Cancel</a>
                             </div>
                         </form>
