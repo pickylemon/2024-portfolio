@@ -1,8 +1,10 @@
 package com.portfolio.www.forum.notice.controller;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.portfolio.www.dto.BoardAttachDto;
 import com.portfolio.www.dto.BoardDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
@@ -31,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 //@RequestMapping("/board")
-@RequestMapping("/forum/notice")
+@RequestMapping("/forum")
 @Slf4j
 public class BoardController {
 	private final BoardService boardService;
@@ -45,7 +48,7 @@ public class BoardController {
 	 * @return 
 	 * * pageHandler와 검색 조건을 넘겨서 해당 페이지에 맞는 게시판 목록을 반환받고 모델에 담아 뷰로 넘김
 	 */
-	@GetMapping("/listPage.do") //게시판 페이지(한 페이지) 요청
+	@GetMapping("/notice/listPage.do") //게시판 페이지(한 페이지) 요청
 	public String listPage(Integer page, Integer size, Model model, HttpServletRequest request) {	
 		if(ObjectUtils.isEmpty(page)) {
 			page = 1;
@@ -70,6 +73,7 @@ public class BoardController {
 
 	/**
 	 * 개별 게시물 읽기 요청
+	 * 게시글 제목, 내용 (BoardDto), 좋아요/싫어요(boardVoteDto), 첨부파일(boardAttachDto), 댓글(boardCommentDto)
 	 * Model에 BoardDto, BoardVoteDto(의 isLike), BoardAttachDto, List<BoardCommentDto> 담아서 전달
 	 * @param boardSeq
 	 * @param boardTypeSeq
@@ -77,7 +81,7 @@ public class BoardController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/readPage.do") 
+	@GetMapping("/notice/readPage.do") 
 	public String readPage(Integer boardSeq, Integer boardTypeSeq, HttpSession session, Model model) {
 
 		int memberSeq = (int)session.getAttribute("memberSeq");
@@ -85,13 +89,16 @@ public class BoardController {
 		
 		BoardDto boardDto = boardService.getPost(boardSeq);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
+		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		//List<BoardCommentDto> comments = boardCommentService.getList(boardSeq, boardTypeSeq);
+		
 		if(!ObjectUtils.isEmpty(voteDto)) {
 			//해당 게시글에 대한 좋아요/싫어요 투표 결과가 있으면 꺼내기
 			isLike = voteDto.getIsLike();
 		}
 		model.addAttribute("boardDto", boardDto);
 		model.addAttribute("isLike", isLike);
+		model.addAttribute("attFileList", attFileList);
 //		model.addAttribute("comments", comments);
 		
 		return "forum/notice/read";
@@ -103,7 +110,7 @@ public class BoardController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/{boardTypeSeq}/{boardSeq}/modifyPage.do")
+	@GetMapping("/notice/{boardTypeSeq}/{boardSeq}/modifyPage.do")
 	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, Model model) {
 		log.info("boardSeq={}", boardSeq);
 		BoardDto boardDto = boardService.getPost(boardSeq);
@@ -117,7 +124,7 @@ public class BoardController {
 	 * 글쓰기 페이지 요청
 	 * @return
 	 */
-	@GetMapping("/writePage.do") 
+	@GetMapping("/notice/writePage.do") 
 	public String writePage(Model model) {
 		model.addAttribute("page", "write");
 		return "forum/notice/write";
@@ -131,13 +138,15 @@ public class BoardController {
 	 * @param mReq
 	 * @return
 	 */
-	@PostMapping("/{boardTypeSeq}/write.do")
+	@PostMapping("/notice/{boardTypeSeq}/write.do")
 	public String write(
 			@PathVariable("boardTypeSeq") int boardTypeSeq,
 			@RequestParam HashMap<String, String> params,
 			HttpSession session,
 			MultipartFile[] attFiles, Model model, RedirectAttributes rattr) {
 		//MultipartHttpServletRequest에 대해서도 알아보기(ex.getFileMap)
+		
+		params.entrySet().forEach(System.out::println);
 		
 		log.info("attFiles.length={}, attFilesArr={}", attFiles.length, Arrays.toString(attFiles));
 		//게시글 관련 데이터
@@ -159,7 +168,30 @@ public class BoardController {
 			model.addAttribute("msg", "첨부파일 등록에 오류가 발생해 게시글 등록에 실패하였습니다.");
 		}
 		//게시글 등록에 실패한 경우에도, 사용자가 입력한 정보가 사라지면 안되고 그대로 다시 뷰에 뿌려주어야함
-			model.addAllAttributes(params);
+			model.addAttribute("boardSaveDto", saveDto);
 			return "forum/notice/write";
+	}
+	
+	@GetMapping("/download.do")
+	public String download(@RequestParam(required=false) Integer attachSeq, Model model) {
+		if(attachSeq == null) { 
+			//queryString없이 온 요청은 전체 다운로드
+			//해당 게시글의 모든 파일을 압축해서 다운로드 
+			
+		} else { //single 첨부파일 다운로드
+			log.info("attachSeq={}", attachSeq);
+			
+			BoardAttachDto attachDto = boardService.getSingleAttFileInfo(attachSeq);
+			File file = new File(attachDto.getSavePath());
+			Map<String, Object> fileInfo = new HashMap();
+			
+			fileInfo.put("orgFileNm", attachDto.getOrgFileNm());
+			fileInfo.put("file", file);
+			
+			model.addAttribute("fileInfo", fileInfo);
+			
+		}
+		
+		return "fileDownloadView"; //beanNameViewResolver에 의해 view이름으로 해석됨
 	}
 }

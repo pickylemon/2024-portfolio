@@ -55,8 +55,12 @@ String ctx = request.getContextPath();
 	    	
 	    	//게시글 등록에 실패해서 다시 이 뷰로 올 경우, 
 	    	//사용자 입력 내용을 그대로 전달받아 뿌려줌 
-	    	$('#trumbowyg-demo').trumbowyg('html', '${params.content}');
-	    	$('#title').val('${params.title}');
+	    	$('#trumbowyg-demo').trumbowyg('html', '${boardSaveDto.content}');
+	    	$('#title').val('${boardSaveDto.title}');
+	    	
+	    	if(${msg ne null}){
+	    		alert('${msg}')
+	    	}
 	    })
 
 	    function boardSave() {
@@ -191,7 +195,7 @@ String ctx = request.getContextPath();
                         <form action="<%=ctx %>/forum/notice/1/write.do" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required name="title" >
+                                <input type="text" placeholder="Enter title here" required id="title" name="title" >
                             </div>
                             <div class="form-group">
                                 <label>Description</label>

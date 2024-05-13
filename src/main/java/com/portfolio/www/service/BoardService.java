@@ -52,6 +52,26 @@ public class BoardService {
 	}
 	
 	/**
+	 * 해당 게시글(boardSeq + boardTypeSeq) 의 모든 첨부파일 정보 가져오기
+	 * @param boardSeq
+	 * @param boardTypeSeq
+	 * @return
+	 */
+	public List<BoardAttachDto> getAttFileInfoList(int boardSeq, int boardTypeSeq) {
+		return boardAttachRepository.getList(boardSeq, boardTypeSeq);
+	}
+	
+	/**
+	 * 특정 첨부파일의 정보 가져오기
+	 * @param attachSeq
+	 * @return 
+	 */
+	public BoardAttachDto getSingleAttFileInfo(Integer attachSeq) {
+		return boardAttachRepository.getOne(attachSeq);
+	}
+	
+	
+	/**
 	 * 
 	 * 좋아요, 싫어요 반영하기
 	 */
@@ -136,6 +156,7 @@ public class BoardService {
 					attachDto.setBoardTypeSeq(dto.getBoardTypeSeq());
 					//3-2. 첨부파일 메타데이터 DB에 저장
 					boardAttachRepository.saveAttachFile(attachDto);
+					
 				}
 			}
 		} catch(DataAccessException e) {
@@ -147,7 +168,7 @@ public class BoardService {
 		}
 		return code;
 	}
-	
+
 	
 	/**
 	 * 게시글 수정
@@ -171,5 +192,7 @@ public class BoardService {
 		log.info("code={}", code);
 		return code;
 	}
+
+
 	
 }

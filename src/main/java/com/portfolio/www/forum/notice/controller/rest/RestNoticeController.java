@@ -94,7 +94,7 @@ public class RestNoticeController {
 		log.info("memberSeq={}",memberSeq);
 		log.info("boardSaveDto={}",boardSaveDto);
 		log.info("files={}", Arrays.toString(files));
-		int code = boardService.savePost(boardSaveDto, memberSeq);
+		int code = boardService.savePost(boardSaveDto, files);
 		
 		//4. 게시글 업로드 결과에 따라 
 		//4-1. 게시글 업로드 성공하면 게시판 1페이지로 요청 (PRG 패턴 적용)
@@ -116,6 +116,7 @@ public class RestNoticeController {
 		}
 		
 	}
+	
 	
 	/**
 	 * 게시글 수정

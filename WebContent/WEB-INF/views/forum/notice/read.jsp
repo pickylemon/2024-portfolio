@@ -176,11 +176,24 @@ String ctx = request.getContextPath();
                             </div>
                             <p style="    margin-bottom: 0; margin-top: 19px;">
                             	${boardDto.content }</p>
-                            	
+                            <br/><br/><br/><br/>
+                            <c:if test="${attFileList.size() != 0}">
+	                            <c:forEach items="${attFileList }" var="attFile">
+	                            	<a href="<%=ctx%>/forum/download.do?attachSeq=${attFile.attachSeq}">다운로드 : ${attFile.orgFileNm } (${attFile.fileSize })</a>
+	                            	<br>
+	                            </c:forEach>
+	                            <br>
+	                            <br>
+                            </c:if>
+                            <c:if test="${attFileList.size() > 1}">
+                            	<a href="<%=ctx%>/forum/download.do">파일 전체 다운로드</a>
+                            	<br>
+                            </c:if>
+                            
                             <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
                             <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
-                            	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a>
-                            	<button type="button" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</button>
+                            	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a><br>
+                            	<button type="button" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</button><br>
                             </c:if>
                         </div>
                         <!-- end .forum_issue -->

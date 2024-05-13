@@ -1,9 +1,12 @@
 package com.portfolio.www.repository;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardAttachDto;
@@ -33,7 +36,53 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 	public int delete() {
 		return 0;
 	}
-	
-	
 
+	/**
+	 * 첨부파일info 리스트 가져오기
+	 */
+	@Override
+	public List<BoardAttachDto> getList(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT attach_seq, board_seq, board_type_seq, org_file_nm, "
+				+ " save_path, chng_file_nm, file_size, file_type, access_uri, reg_dtm "
+				+ " FROM forum.board_attach "
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return query(sql, rowMapper(), args);
+	}
+	
+	
+	/**
+	 * 첨부파일 info 하나 가져오기
+	 */
+	@Override
+	public BoardAttachDto getOne(Integer attachSeq) {
+		String sql = "SELECT attach_seq, board_seq, board_type_seq, org_file_nm, "
+				+ " save_path, chng_file_nm, file_size, file_type, access_uri, reg_dtm "
+				+ " FROM forum.board_attach "
+				+ " WHERE attach_seq = ?";
+		
+		return queryForObject(sql, rowMapper(), attachSeq);
+	}
+	
+	
+	public RowMapper<BoardAttachDto> rowMapper(){
+		return ((rs, rowNum) -> {
+			BoardAttachDto dto = new BoardAttachDto();
+			dto.setBoardSeq(rs.getInt("board_seq"));
+			dto.setBoardTypeSeq(rs.getInt("board_type_seq"));
+			dto.setAccessUri(rs.getString("access_uri"));
+			dto.setAttachSeq(rs.getInt("attach_seq"));
+			dto.setChngFileNm(rs.getString("chng_file_nm"));
+			dto.setFileSize(rs.getInt("file_size"));
+			dto.setRegDtm(rs.getString("reg_dtm"));
+			dto.setSavePath(rs.getString("save_path"));
+			dto.setFileType(rs.getString("file_type"));
+			dto.setOrgFileNm(rs.getString("org_file_nm"));
+			
+			return dto;
+		});
+	}
 }
