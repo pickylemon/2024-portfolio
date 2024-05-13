@@ -1,5 +1,6 @@
 package com.portfolio.www.forum.notice.controller;
 
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class BoardController {
 		// FIXME validation 필요
 		//queryparam으로 boardSeq와 boardTypeSeq가 넘어가야하는데 param없이 readPage.do로 접근했을 경우
 		//500에러가 터짐. 
-		
+
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		String isLike = "";
 		
@@ -94,7 +95,7 @@ public class BoardController {
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		//List<BoardCommentDto> comments = boardCommentService.getList(boardSeq, boardTypeSeq);
-		
+
 		if(!ObjectUtils.isEmpty(voteDto)) {
 			//해당 게시글에 대한 좋아요/싫어요 투표 결과가 있으면 꺼내기
 			isLike = voteDto.getIsLike();
@@ -102,6 +103,7 @@ public class BoardController {
 		model.addAttribute("boardDto", boardDto);
 		model.addAttribute("isLike", isLike);
 		model.addAttribute("attFileList", attFileList);
+
 //		model.addAttribute("comments", comments);
 		
 		return "forum/notice/read";
@@ -141,6 +143,7 @@ public class BoardController {
 	 * @param mReq
 	 * @return
 	 */
+
 	@PostMapping("/notice/{boardTypeSeq}/write.do")
 	public String write(
 			@PathVariable("boardTypeSeq") int boardTypeSeq,
@@ -150,8 +153,8 @@ public class BoardController {
 		//MultipartHttpServletRequest에 대해서도 알아보기(ex.getFileMap)
 		
 		params.entrySet().forEach(System.out::println);
-		
 		log.info("attFiles.length={}, attFilesArr={}", attFiles.length, Arrays.toString(attFiles));
+
 		//게시글 관련 데이터
 		int regMemberSeq = (int)session.getAttribute("memberSeq");
 		String title = params.get("title");
@@ -171,6 +174,7 @@ public class BoardController {
 			model.addAttribute("msg", "첨부파일 등록에 오류가 발생해 게시글 등록에 실패하였습니다.");
 		}
 		//게시글 등록에 실패한 경우에도, 사용자가 입력한 정보가 사라지면 안되고 그대로 다시 뷰에 뿌려주어야함
+
 			model.addAttribute("boardSaveDto", saveDto);
 			return "forum/notice/write";
 	}

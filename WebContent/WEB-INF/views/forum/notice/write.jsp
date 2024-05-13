@@ -55,12 +55,14 @@ String ctx = request.getContextPath();
 	    	
 	    	//게시글 등록에 실패해서 다시 이 뷰로 올 경우, 
 	    	//사용자 입력 내용을 그대로 전달받아 뿌려줌 
+
 	    	$('#trumbowyg-demo').trumbowyg('html', '${boardSaveDto.content}');
 	    	$('#title').val('${boardSaveDto.title}');
 	    	
 	    	if(${msg ne null}){
 	    		alert('${msg}')
 	    	}
+
 	    })
 
 	    function boardSave() {
@@ -208,18 +210,21 @@ String ctx = request.getContextPath();
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
                                         <input type="file" name="attFiles" style="display:inline-block;" >
+
                                     </label>
                                     <label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
                                         <input type="file" name="attFiles" style="display:inline-block;" >
+
                                     </label>
                                     <label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
                                         <input type="file" name="attFiles" style="display:inline-block;" >
+
                                     </label>
                                 </div>
                             </div>

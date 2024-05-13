@@ -22,10 +22,9 @@ public class FileUtil {
 	private static String SAVE_PATH = "C:\\dev\\workspace\\attFile\\";
 	
 	public File saveFiles(MultipartFile mf) {
-		
 		log.info("mf isEmpty?={}", mf.isEmpty());
 //		log.info("mf isEmpty?={}", ObjectUtils.isEmpty(mf)); ObjectUtils는 여기서는 제대로된 결과 안나옴.
-		
+
 		File destfile = new File(getSavePath()); //'오늘' 날짜를 기준으로 동적으로 생성한 경로로 File 객체 생성'
 		
 		try {
@@ -62,7 +61,7 @@ public class FileUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * 파일의 저장 경로(SAVE_PATH\YYYY\MM\DD)를 구하는 메서드
 	 * @return
@@ -96,6 +95,5 @@ public class FileUtil {
 		log.info("idx={}", idx);
 		return originalFileName.substring(idx);
 	}
-	
 
 }

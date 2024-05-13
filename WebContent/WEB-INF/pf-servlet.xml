@@ -38,13 +38,11 @@
 		<property name="maxInMemorySize" value="1000000000"></property>
 	</bean>
 	
+
 <!-- 	<bean id="fileDownloadView" class="com.pf.www.util.view.FileDownloadView"/> -->
 	<bean id="fileViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
 		<property name="order" value="0" />
 	</bean>
-	
-<!-- 	<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"> -->
-<!-- 	</bean> -->
 
 
 </beans>
