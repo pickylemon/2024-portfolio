@@ -28,6 +28,7 @@ String ctx = request.getContextPath();
     <link rel="stylesheet" href="<%=ctx%>/resources/template/css/trumbowyg.min.css">
     <link rel="stylesheet" href="<%=ctx%>/resources/template/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="<%=ctx%>/resources/template/css/style.css">
+    <script src="https://kit.fontawesome.com/99823c8069.js" crossorigin="anonymous"></script>
     <!-- endinject -->
 
     <!-- Favicon -->
@@ -75,7 +76,10 @@ String ctx = request.getContextPath();
                                         		<td>${item.boardSeq }</td>
                                         		<td>
                                         		<a href="<c:url value='/forum/notice/readPage.do?boardSeq=${item.boardSeq }&boardTypeSeq=${item.boardTypeSeq }'/>">
-                                        		${item.title }
+                                        		${item.title } [${item.boardCommentCnt }]
+                                        		<c:if test="${item.attFileCnt > 0}">
+                                        			<i class="fas fa-solid fa-paperclip"></i>
+                                        		</c:if>
                                         		</a></td>
                                         		<td>${item.regDtm }</td>
                                         		<td>${item.regMemberId }</td>

@@ -48,6 +48,7 @@ public class BoardController {
 	 * @param request
 	 * @return 
 	 * * pageHandler와 검색 조건을 넘겨서 해당 페이지에 맞는 게시판 목록을 반환받고 모델에 담아 뷰로 넘김
+	 * * 첨부파일 유무와 댓글 갯수도 같이 넘겨야 함.(boardDto에 담아서)
 	 */
 	@GetMapping("/notice/listPage.do") //게시판 페이지(한 페이지) 요청
 	public String listPage(Integer page, Integer size, Model model, HttpServletRequest request) {	
@@ -62,6 +63,7 @@ public class BoardController {
 		SearchCondition sc = new SearchCondition(); //나중에 검색조건 추가하면 생성자 수정필요
 		
 		List<BoardDto> list = boardService.getList(ph, sc);
+		
 		
 		log.info("\n pageHandler={} \n",ph);
 		model.addAttribute("ph", ph);
@@ -165,6 +167,7 @@ public class BoardController {
 		int code = boardService.savePost(saveDto, attFiles);
 		if(code == 1) {
 			//성공적으로 게시글+첨부파일이 등록된 경우
+			rattr.addFlashAttribute("code", 1);
 			rattr.addFlashAttribute("msg", "게시글 등록이 성공적으로 완료되었습니다.");
 			return "redirect:/forum/notice/listPage.do"; //목록으로 이동
 		} else if (code == -1) {

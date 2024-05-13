@@ -18,5 +18,8 @@ public class BoardDto {
 	private int updateMemberSeq;	
 	
 	private String regMemberId; //이건 board테이블에 없고, member테이블에 있는 정보.
+	
+	private int attFileCnt;
+	private int boardCommentCnt;
 
 }

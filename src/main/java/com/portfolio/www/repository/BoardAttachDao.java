@@ -33,6 +33,20 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 		return update(sql, args);
 	}
 	
+	/**
+	 * 해당 게시물의 첨부파일 갯수를 세기
+	 */
+	
+	@Override
+	public int count(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT count(*) FROM forum.board_attach "
+				+ " WHERE board_seq = ? "
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		return queryForObject(sql, Integer.class, args);
+	}
+	
 	@Override
 	public int deleteList(int boardSeq, int boardTypeSeq) {
 		String sql = "DELETE FROM forum.board_attach "
@@ -98,6 +112,8 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 			return dto;
 		});
 	}
+
+
 
 
 }

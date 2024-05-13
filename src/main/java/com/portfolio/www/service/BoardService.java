@@ -36,11 +36,20 @@ public class BoardService {
 	private final FileUtil fileUtil;
 	
 	/*
-	 * 게시글 리스트 가져오기
+	 * 게시글 리스트 가져오기(첨부파일 갯수, 댓글 갯수 목록도 포함시켜서)
 	 */
 	public List<BoardDto> getList(PageHandler ph, SearchCondition sc) {
 		List<BoardDto> list = boardRepository.getList(ph, sc);
 		ph.calculatePage(boardRepository.getTotalCnt(sc));
+		
+		for(BoardDto dto : list) {
+			int boardSeq = dto.getBoardSeq();
+			int boardTypeSeq = dto.getBoardTypeSeq();
+			int attFileCnt = boardAttachRepository.count(boardSeq, boardTypeSeq);
+//			int commentCnt = boardCommentRepository.count(dto);
+			dto.setAttFileCnt(attFileCnt);
+//			dto.setBoardCommentCnt(commentCnt);
+		}
 		return list;
 	}
 	
@@ -145,6 +154,7 @@ public class BoardService {
 		try {
 			//1. 게시글 데이터 DB에 저장
 			int boardSeq = boardRepository.save(dto); //내부적으로 keyholder를 사용해 pk반환
+			log.info("boardSeq={}", boardSeq);
 
 			for(MultipartFile mf : mfs) { //첨부파일 배열에 대해 루프 돌림
 				if(!mf.isEmpty()) {
@@ -155,6 +165,7 @@ public class BoardService {
 					attachDto.setBoardSeq(boardSeq);
 					attachDto.setBoardTypeSeq(dto.getBoardTypeSeq());
 					//3-2. 첨부파일 메타데이터 DB에 저장
+					log.info("attachDto={}", attachDto);
 					boardAttachRepository.saveAttachFile(attachDto);
 					
 				}
@@ -163,8 +174,10 @@ public class BoardService {
 			//게시글 등록에 실패하면
 			log.info("e.getMessage()={}", e.getMessage());
 			code = -1;
+			e.printStackTrace();
 		} catch(FileSaveException e) {
 			code = -2; //사용자에게 게시글 등록 실패 이유를 전달하기 위해 굳이 code를 나눴다.
+			e.printStackTrace();
 		}
 		return code;
 	}

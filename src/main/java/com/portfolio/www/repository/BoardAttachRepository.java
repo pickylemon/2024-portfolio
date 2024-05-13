@@ -13,5 +13,6 @@ public interface BoardAttachRepository {
 	int deleteList(int boardSeq, int boardTypeSeq);
 	int deleteOne(int attachSeq);
 	BoardAttachDto getOne(Integer attachSeq);
+	int count(int boardSeq, int boardTypeSeq);
 
 }

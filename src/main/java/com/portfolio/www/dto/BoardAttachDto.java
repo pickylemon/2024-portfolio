@@ -40,7 +40,7 @@ public class BoardAttachDto {
 	 }
 	 
 	 public void setBoardTypeSeq(int boardTypeSeq) {
-		 this.setBoardSeq(boardSeq);
+		 this.boardTypeSeq = boardTypeSeq;
 	 }
 	 
 	
