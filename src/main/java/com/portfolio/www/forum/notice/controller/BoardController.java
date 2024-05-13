@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.portfolio.www.dto.BoardAttachDto;
 import com.portfolio.www.dto.BoardDto;
+import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.service.BoardService;
@@ -112,25 +113,6 @@ public class BoardController {
 	}
 	
 	/**
-	 * 게시판 수정 페이지 요청
-	 * @param boardSeq
-	 * @param model
-	 * @return
-	 */
-	@GetMapping("/notice/{boardTypeSeq}/{boardSeq}/modifyPage.do")
-	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, 
-							@PathVariable("boardTypeSeq") Integer boardTypeSeq,
-							Model model) {
-		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
-		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
-		model.addAttribute("boardDto", boardDto);
-		model.addAttribute("attFileList", attFileList);
-		model.addAttribute("page", "modify");
-		
-		return "forum/notice/modify";
-	}
-	
-	/**
 	 * 글쓰기 페이지 요청
 	 * @return
 	 */
@@ -173,16 +155,37 @@ public class BoardController {
 			rattr.addFlashAttribute("code", 1);
 			rattr.addFlashAttribute("msg", "게시글 등록이 성공적으로 완료되었습니다.");
 			return "redirect:/forum/notice/listPage.do"; //목록으로 이동
-		} else if (code == -1) {
-			//게시글 등록에 예외 발생
-			model.addAttribute("msg", "게시글 등록에 실패하였습니다");
-		} else { //코드 -2 : 첨부파일을 물리적으로 저장하는데 예외 발생
+		} else if (code == -2) { 
+			//코드 -2 : 첨부파일을 물리적으로 저장하는데 예외 발생
 			model.addAttribute("msg", "첨부파일 등록에 오류가 발생해 게시글 등록에 실패하였습니다.");
+			
+		} else { //code == -1 게시글 등록에 예외 발생
+			model.addAttribute("msg", "게시글 등록에 실패하였습니다");
 		}
 		//게시글 등록에 실패한 경우에도, 사용자가 입력한 정보가 사라지면 안되고 그대로 다시 뷰에 뿌려주어야함
 
 			model.addAttribute("boardSaveDto", saveDto);
 			return "forum/notice/write";
+	}
+	
+	
+	/**
+	 * 게시판 수정 페이지 요청
+	 * @param boardSeq
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/notice/{boardTypeSeq}/{boardSeq}/modifyPage.do")
+	public String modifyPage(@PathVariable("boardSeq") Integer boardSeq, 
+							@PathVariable("boardTypeSeq") Integer boardTypeSeq,
+							Model model) {
+		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
+		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
+		model.addAttribute("boardDto", boardDto);
+		model.addAttribute("attFileList", attFileList);
+		model.addAttribute("page", "modify");
+		
+		return "forum/notice/modify";
 	}
 	
 	/**
@@ -195,10 +198,31 @@ public class BoardController {
 	 */
 	@PostMapping("/notice/{boardTypeSeq}/{boardSeq}/modify.do")
 	public String modify(
+			@PathVariable("boardTypeSeq") int boardTypeSeq,
+			@PathVariable("boardSeq") int boardSeq,
 			@RequestParam HashMap<String, String> params,
+			HttpSession session,
 			MultipartFile[] attFiles, Model model, RedirectAttributes rattr) {
 		
-		return "home";
+		int updateMemberSeq = (int)session.getAttribute("memberSeq");
+		BoardModifyDto modifyDto = new BoardModifyDto(boardTypeSeq, boardSeq,
+									updateMemberSeq, params.get("title"), params.get("trumbowyg-demo"));
+		
+		log.info("modifyDto={}", modifyDto);
+		int code = boardService.modify(modifyDto, attFiles);
+		if(code == 1) {
+			rattr.addFlashAttribute("msg", "게시물이 성공적으로 수정되었습니다");
+			return "redirect:/forum/notice/listPage.do";
+		} else if(code == -2) {
+			model.addAttribute("msg", "첨부파일 등록에 오류가 발생해 게시글 수정에 실패하였습니다.");
+			
+		} else {
+			model.addAttribute("msg", "게시물 수정에 실패했습니다");
+		}
+		//게시물 수정에 실패하더라도 유저가 입력한 내용은 보존해야한다.
+	
+		model.addAttribute("boardDto", modifyDto);
+		return "forum/notice/modify";
 	}	
 	
 	

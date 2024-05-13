@@ -19,5 +19,16 @@ public class BoardModifyDto {
 	@NotEmpty
 	private int updateMemberSeq;
 	
+	public BoardModifyDto(int boardTypeSeq, int boardSeq, int updateMemberSeq,
+			String title, String content) {
+		this.boardSeq = boardSeq;
+		this.title = title;
+		this.content = content;
+		this.boardTypeSeq = boardTypeSeq;
+		this.updateMemberSeq = updateMemberSeq;
+	}
+	
+	
+	
 
 }

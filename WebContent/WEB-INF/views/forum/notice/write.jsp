@@ -57,8 +57,7 @@ String ctx = request.getContextPath();
 	    	//사용자 입력 내용을 그대로 전달받아 뿌려줌 
 
 	    	$('#trumbowyg-demo').trumbowyg('html', '${boardSaveDto.content}');
-	    	$('#title').val('${boardSaveDto.title}');
-	    	
+	    
 	    	if(${msg ne null}){
 	    		alert('${msg}')
 	    	}
@@ -197,7 +196,7 @@ String ctx = request.getContextPath();
                         <form action="<%=ctx %>/forum/notice/1/write.do" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required id="title" name="title" >
+                                <input type="text" placeholder="Enter title here" required id="title" name="title" value="${boardSaveDto.title}" >
                             </div>
                             <div class="form-group">
                                 <label>Description</label>

@@ -54,7 +54,6 @@ String ctx = request.getContextPath();
 	    $(document).ready(function(){
 	    	//게시물 정보 뿌려주기
 	    	$('#trumbowyg-demo').trumbowyg('html', '${boardDto.content}');
-	    	$('#title').val('${boardDto.title}')
 	    })
 	    
 	    //개별 파일 삭제 ajax 요청
@@ -85,62 +84,18 @@ String ctx = request.getContextPath();
 	    	});
 	    	
 	    }
-
-	    
-	    function boardModify() {
-	    	let boardModifyDto = {}
-	    	boardModifyDto.boardSeq = ${boardDto.boardSeq}
-	    	boardModifyDto.boardTypeSeq = ${boardDto.boardTypeSeq}
-	    	boardModifyDto.title = $('#title').val()
-	    	boardModifyDto.content = $('#trumbowyg-demo').trumbowyg('html')
-	    	boardModifyDto.updateMemberSeq = memberSeq
-	    	
-	    	console.log(boardModifyDto)
-	    	
-	    	let url = '<%=ctx%>/forum/notice/'
-	    	url += ${boardDto.boardTypeSeq}+'/'
-	    	url += ${boardDto.boardSeq}+'/modifyPage.do'
-	    	
-	    	$.ajax({    
-	    		type : 'patch',           
-	    		// 타입 (get, post, put 등등)    
-	    		url : url,
-	    		// 요청할 서버url
-	    		async : true,
-	    		// 비동기화 여부 (default : true)
-	    		headers : {
-	    			// Http header
-	    			"Content-Type" : "application/json",
-	    			"accept" : "application/json"
-	    		},
-	    		data : JSON.stringify(boardModifyDto),
-	    		dataType : 'json',
-	    		success : function(result) {
-	    			// 결과 성공 콜백함수 
-	    			console.log(result);
-	    		
-	    			if(result.code == 1){
-	    				alert(result.msg);
-	    				location.href='<%=ctx%>/forum/notice/listPage.do'
-	    				//성공시, 게시글 정상 등록되었다는 alert와 함께, 게시글 목록으로 redirect
-	    			} else {
-	    				alert(result.msg);
-	    			}
-
-	    		},
-	    		error : function(result) {
-	    			// 결과 에러 콜백함수
-	    			let response = result;
-	    			console.log(response);
-// 	    			const response = JSON.parse(result);
-					let message = response.msg;
-					console.log(typeof message);
-	    			alert(message);
-	    		}
-	    	});
-	    }
 	    
 	</script>
+	<style>
+	.question-form .form-group .attachments label, 
+	.question-form .form-group .attachments p.label {
+	    border: 1px solid #ececec;
+	    line-height: 55px;
+	    padding: 0 20px;
+	    text-align: center;
+	    cursor: pointer;
+	}
+	</style>
 </head>
 
 <body class="preload home1 mutlti-vendor">
@@ -155,7 +110,7 @@ String ctx = request.getContextPath();
                         <form action="<%=ctx %>/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modify.do" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>제목</label>
-                                <input type="text" placeholder="Enter title here" required id="title" >
+                                <input type="text" placeholder="Enter title here" required id="title" name="title" value="${boardDto.title}" >
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
@@ -163,6 +118,7 @@ String ctx = request.getContextPath();
                             </div>
                             <div class="form-group">
                                 <div class="attachments">
+                                <b style="font-size:20px;">Attachments</b>
                                 <c:set var="listSize" value='${attFileList.size() }'/>
                                 <c:forEach items="${attFileList }" var="attFile">
                                 	<div> 
@@ -173,11 +129,10 @@ String ctx = request.getContextPath();
                                 
                                 <!--  첨부파일은 총 3개까지 추가 가능 -->
                                 <c:forEach begin='${listSize +1}' end="3" step="1">
-                                	<label>Attachments</label>
                                     <label>
                                         <span class="lnr lnr-paperclip"></span> Add File
                                         <span>or Drop Files Here</span>
-                                        <input type="file" name="attchedFiles" style="display:inline-block;" >
+                                        <input type="file" name="attFiles" style="display:inline-block;font-size:15px;" >
                                     </label>
                                 </c:forEach>                              
                                 </div>

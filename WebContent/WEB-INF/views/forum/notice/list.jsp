@@ -39,7 +39,7 @@ String ctx = request.getContextPath();
 		let code = '${code}'
 		let msg = '${msg}'
 		
-		if(code == 1) {
+		if(msg != null & msg != "") {
 			alert(msg);
 		}
 		

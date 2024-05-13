@@ -168,7 +168,6 @@ public class BoardService {
 					//3-2. 첨부파일 메타데이터 DB에 저장
 					log.info("attachDto={}", attachDto);
 					boardAttachRepository.saveAttachFile(attachDto);
-					
 				}
 			}
 		} catch(DataAccessException e) {
@@ -186,11 +185,41 @@ public class BoardService {
 	
 	/**
 	 * 게시물 수정
+	 * 게시물 작성과 달리 게시물 수정은 이미 boardSeq가 있기 때문에 keyHolder를 쓰지 않아도 된다.
 	 * @param modifyDto
 	 * @return
 	 */
-	public int modify(BoardModifyDto modifyDto) {
-		int code = boardRepository.update(modifyDto);
+	@Transactional
+	public int modify(BoardModifyDto modifyDto, MultipartFile[] attFiles) {
+		//1. 게시글 데이터 DB 업데이트
+		int code = 0;
+		try {
+			code = boardRepository.update(modifyDto);
+			
+			for(MultipartFile mf : attFiles) {
+				if(!mf.isEmpty()) {
+					//2. 첨부파일 물리적 저장
+					File destFile = fileUtil.saveFiles(mf);
+					
+					//dto
+					BoardAttachDto attachDto = BoardAttachDto.makeBoardAttachDto(mf, destFile);
+					attachDto.setBoardSeq(modifyDto.getBoardSeq());
+					attachDto.setBoardTypeSeq(modifyDto.getBoardTypeSeq());
+					
+					//3. 첨부파일 데이터 DB 저장
+					boardAttachRepository.saveAttachFile(attachDto);
+				}
+			}
+		} catch(DataAccessException e) {
+			//게시글 수정에 실패하면
+			log.info("e.getMessage()={}", e.getMessage());
+			code = -1;
+			e.printStackTrace();
+		} catch(FileSaveException e) {
+			code = -2; //사용자에게 게시글 수정 실패 이유를 전달하기 위해 code를 나눴다.
+			e.printStackTrace();
+		}
+		
 		log.info("code={}",code);
 		return code;
 	}
