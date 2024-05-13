@@ -2,6 +2,7 @@ package com.portfolio.www.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -171,7 +172,7 @@ public class BoardService {
 
 	
 	/**
-	 * 게시글 수정
+	 * 게시물 수정
 	 * @param modifyDto
 	 * @return
 	 */
@@ -183,14 +184,42 @@ public class BoardService {
 	
 	
 	/**
-	 * 게시글 삭제
+	 * 게시물 삭제
+	 * -> 해당 게시물의 게시글과 첨부파일 모두 삭제
+	 * -> (물리적으로 저장된 첨부파일도 삭제하고, DB에서 파일 데이터도 모두 삭제)
 	 * @param boardSeq
+	 * @param boardTypeSeq
 	 * @return
 	 */
+	
+	@Transactional
 	public int delete(Integer boardSeq, Integer boardTypeSeq) {
-		int code = boardRepository.delete(boardSeq, boardTypeSeq);
+		int code = -1;
+		//1. 게시글 DB에서 삭제	
+		try {
+			//2. 물리적으로 저장되어있는 파일 삭제
+			List<File> delFileList = getDeleteFileList(boardSeq, boardTypeSeq);
+			fileUtil.deleteFiles(delFileList);
+			
+			//3. 파일정보 DB에서 삭제
+			boardAttachRepository.deleteList(boardSeq, boardTypeSeq);
+			code = boardRepository.delete(boardSeq, boardTypeSeq);
+		} catch(Exception e) { 
+			//물리적 파일 삭제 에러 또는 DataAccessException은 모두 삭제 실패로 처리
+			//Q. DB관련 에러가 아닌 예외가 발생해도 rollback될까?(ex.파일 삭제 에러)
+		}
 		log.info("code={}", code);
 		return code;
+	}
+
+	
+	
+	private List<File> getDeleteFileList(Integer boardSeq, Integer boardTypeSeq) {
+		List<BoardAttachDto> attFileList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
+		List<File> delFileList = attFileList.stream()
+								.map(dto -> new File(dto.getSavePath()))
+								.collect(Collectors.toList());
+		return delFileList;
 	}
 
 

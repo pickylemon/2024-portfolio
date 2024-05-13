@@ -31,11 +31,23 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 		
 		return update(sql, args);
 	}
-
+	
 	@Override
-	public int delete() {
+	public int deleteList(int boardSeq, int boardTypeSeq) {
+		String sql = "DELETE FROM forum.board_attach "
+				+ " WHERE board_seq=? AND board_type_seq=?";
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return update(sql, args);
+	}
+	
+	@Override
+	public int deleteOne(int attachSeq) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 
 	/**
 	 * 첨부파일info 리스트 가져오기
@@ -85,4 +97,5 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 			return dto;
 		});
 	}
+
 }

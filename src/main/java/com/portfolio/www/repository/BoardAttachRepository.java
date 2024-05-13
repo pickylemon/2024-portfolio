@@ -8,7 +8,8 @@ public interface BoardAttachRepository {
 	
 	int saveAttachFile(BoardAttachDto dto);
 	List<BoardAttachDto> getList(int boardSeq, int boardTypeSeq);
-	int delete();
+	int deleteList(int boardSeq, int boardTypeSeq);
+	int deleteOne(int attachSeq);
 	BoardAttachDto getOne(Integer attachSeq);
 
 }

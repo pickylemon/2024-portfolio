@@ -139,7 +139,7 @@ public class RestNoticeController {
 	
 	
 	/**
-	 * 게시글 삭제
+	 * 게시물 삭제(게시글과 저장된 파일, 파일 정보 모두 삭제)
 	 * @param boardSeq
 	 * @return
 	 */

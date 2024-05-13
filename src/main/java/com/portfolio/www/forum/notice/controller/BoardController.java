@@ -83,7 +83,10 @@ public class BoardController {
 	 */
 	@GetMapping("/notice/readPage.do") 
 	public String readPage(Integer boardSeq, Integer boardTypeSeq, HttpSession session, Model model) {
-
+		// FIXME validation 필요
+		//queryparam으로 boardSeq와 boardTypeSeq가 넘어가야하는데 param없이 readPage.do로 접근했을 경우
+		//500에러가 터짐. 
+		
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		String isLike = "";
 		

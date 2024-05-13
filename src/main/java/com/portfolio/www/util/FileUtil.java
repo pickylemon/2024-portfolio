@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.portfolio.www.exception.FileSaveException;
@@ -34,7 +36,15 @@ public class FileUtil {
 			
 			destfile = new File(getSavePath(), getUniqueFileNm(mf.getOriginalFilename()));
 			mf.transferTo(destfile);
+			
+			if(ObjectUtils.isEmpty(destfile)) {
+				throw new FileSaveException("저장된 파일 크기가 0");
+			}
 
+		} catch (FileSaveException e) {
+			destfile.delete(); //저장된 파일 크기가 0이면 삭제한다.
+			throw e;
+			
 		} catch (IllegalStateException | IOException e) {
 			FileSaveException fe = new FileSaveException("첨부파일 저장 에러");
 			fe.initCause(e);
@@ -42,6 +52,15 @@ public class FileUtil {
 		}
 		
 		return destfile;
+	}
+	
+	
+	public void deleteFiles(List<File> delFileList) {
+		for(File file : delFileList) {
+			if(file.exists()) {
+				file.delete();
+			}
+		}
 	}
 	
 	/**

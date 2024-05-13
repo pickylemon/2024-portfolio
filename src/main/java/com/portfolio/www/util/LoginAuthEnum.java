@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum LoginAuthEnum {
-	BOARD("/forum/notice"),
+	BOARD("/forum"),
 	DEVELOP("/develop"),
 	SUPPORT("/support"),
 	SALES("/sales"),
