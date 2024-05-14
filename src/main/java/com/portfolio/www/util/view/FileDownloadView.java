@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.AbstractView;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class FileDownloadView extends AbstractView {
 	
 	public FileDownloadView() { //뷰 생성시점에 content-type 설정
@@ -28,7 +31,9 @@ public class FileDownloadView extends AbstractView {
 		Map<String, Object> fileInfo = (Map<String, Object>) model.get("fileInfo");
 		File downloadFile = (File)fileInfo.get("file");
 		String orgFileNm = (String)fileInfo.get("orgFileNm");
+		boolean flag = (boolean)fileInfo.get("allCompressedFile");
 		
+		log.info("flag={}", flag);
 		
 		//헤더 세팅(중요함!!)
 		response.setContentType(getContentType());
@@ -64,6 +69,13 @@ public class FileDownloadView extends AbstractView {
 				}
 			}
 			out.flush();
+		}
+		
+		//일괄 다운받기로 인해 만든 zip파일의 경우에는 
+		//유저의 파일 다운로드가 끝나면 해당 zip파일을 삭제해야한다. 
+		//즉, 일괄다운로드인지 개별 다운로드인지에 따라 파일 삭제 여부가 결정됨
+		if(flag) {
+			downloadFile.delete(); 
 		}
 	}
 }

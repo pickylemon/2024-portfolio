@@ -29,11 +29,6 @@ public class BoardMemoryRepository implements BoardRepository{
 		return 0;
 	}
 
-	@Override
-	public BoardDto getOne(Integer boardSeq) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	/*
 	 * 좋아요/싫어요 투표 결과 가져오기
@@ -123,6 +118,12 @@ public class BoardMemoryRepository implements BoardRepository{
 		System.out.println("size = " + store.size());
 		store.entrySet().forEach(System.out::println);
 		System.out.println("==========================");
+	}
+
+	@Override
+	public BoardDto getOne(Integer boardSeq, Integer boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

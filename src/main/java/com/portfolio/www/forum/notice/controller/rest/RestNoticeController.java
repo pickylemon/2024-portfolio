@@ -8,17 +8,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.service.BoardService;
 import com.portfolio.www.util.MessageEnum;
@@ -126,19 +123,19 @@ public class RestNoticeController {
 	 * @param boardModifyDto
 	 * @return
 	 */
-	@PatchMapping("/{boardTypeSeq}/{boardSeq}/modifyPage.do")
-	public BoardResponse modfiy(@RequestBody BoardModifyDto boardModifyDto) {
-		//게시글 수정
-		log.info("\n boardModifyDto={} \n", boardModifyDto);
-		//게시글 작성자와 수정자의 memberSeq가 다르면 수정 불가능하게 막기
-		int code = boardService.modify(boardModifyDto);
-		if (code == 1) {
-			return new BoardResponse(MessageEnum.MODIFY_SUCCESS.getCode(), MessageEnum.MODIFY_SUCCESS.getMessage());
-		} else {
-			return new BoardResponse(
-					MessageEnum.MODIFY_FAIL.getCode(), MessageEnum.MODIFY_FAIL.getMessage());
-		}
-	}
+//	@PatchMapping("/{boardTypeSeq}/{boardSeq}/modifyPage.do")
+//	public BoardResponse modfiy(@RequestBody BoardModifyDto boardModifyDto) {
+//		//게시글 수정
+//		log.info("\n boardModifyDto={} \n", boardModifyDto);
+//		//게시글 작성자와 수정자의 memberSeq가 다르면 수정 불가능하게 막기
+//		int code = boardService.modify(boardModifyDto);
+//		if (code == 1) {
+//			return new BoardResponse(MessageEnum.MODIFY_SUCCESS.getCode(), MessageEnum.MODIFY_SUCCESS.getMessage());
+//		} else {
+//			return new BoardResponse(
+//					MessageEnum.MODIFY_FAIL.getCode(), MessageEnum.MODIFY_FAIL.getMessage());
+//		}
+//	}
 	
 	
 	/**

@@ -255,17 +255,6 @@ public class BoardService {
 		return code;
 	}
 
-	
-	
-	private List<? super CustomFile> getFileList(Integer boardSeq, Integer boardTypeSeq) {
-		List<BoardAttachDto> attFileInfoList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
-		List<CustomFile> fileList = attFileInfoList.stream()
-								.map(dto -> new CustomFile(dto.getSavePath(), dto.getOrgFileNm()))
-								.collect(Collectors.toList());
-		return fileList;
-	}
-
-	
 	/**
 	 * 게시물 수정 페이지에서 개별 첨부 파일 삭제 요청
 	 * 
@@ -296,5 +285,30 @@ public class BoardService {
 		//해당 boardTypeSeq와 boardSeq로 식별되는 모든 파일 정보를 읽어온다.
 		List<CustomFile> fileList = (List<CustomFile>) getFileList(boardSeq, boardTypeSeq);
 		return fileUtil.makeCompressedFile(fileList);
+	}
+	
+	
+	/**
+	 * boardSeq와 boardTypeSeq로 식별되는 게시물에 포함된
+	 * 모든 첨부파일의 정보를 DB에서 읽어와서 (List<BoardAttachDto>)
+	 * List<? super CustomFile>로 변환하는 메서드
+	 * 
+	 * ex) 
+	 * 1. 게시글 삭제시 해당 게시글에 포함된 모든 첨부파일을 삭제할 때
+	 * 2. 사용자가 해당 게시글의 모든 첨부파일을 한번에 압축파일로 다운받을 때
+	 * 
+	 * zip파일로 다운 받아도 압축 해제시, 원본 파일명이 그대로 보존되길 원해서
+	 * File을 상속받고 File을 포함하고 원본 파일명을 가지는 CustomFile 클래스를 만들어 사용함.
+	 * 
+	 * @param boardSeq
+	 * @param boardTypeSeq
+	 * @return
+	 */
+	private List<? super CustomFile> getFileList(Integer boardSeq, Integer boardTypeSeq) {
+		List<BoardAttachDto> attFileInfoList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
+		List<CustomFile> fileList = attFileInfoList.stream()
+								.map(dto -> new CustomFile(dto.getSavePath(), dto.getOrgFileNm()))
+								.collect(Collectors.toList());
+		return fileList;
 	}
 }

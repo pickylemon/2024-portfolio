@@ -33,7 +33,154 @@ String ctx = request.getContextPath();
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/resources/template/images/favicon.png">    
-	<script type="text/javascript">
+</head>
+
+<body class="preload home1 mutlti-vendor">
+    <!--================================
+            START DASHBOARD AREA
+    =================================-->
+    <section class="support_threads_area section--padding2">    
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="forum_detail_area ">
+                        <div class="cardify forum--issue">
+                            <div class="title_vote clearfix">
+                                <h3>${boardDto.title }</h3>
+
+                                <div class="vote">
+                                    <a href="#" id="cThumbUpAnchor" data-isLike='Y' data-thumb=true class="${isLike eq 'Y'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
+                                        <span class="lnr lnr-thumbs-up"></span>
+                                    </a>
+                                    <a href="#" id="cThumbDownAnchor" data-isLike='N' data-thumb=false class="${isLike eq 'N'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
+                                        <span class="lnr lnr-thumbs-down"></span>
+                                    </a>
+                                </div>
+                                <!-- end .vote -->
+                            </div>
+                            <!-- end .title_vote -->
+                            <div class="suppot_query_tag">
+                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${boardDto.regMemberId }
+                                <span>${boardDto.regDtm }</span>
+                            </div>
+                            <p style="    margin-bottom: 0; margin-top: 19px;">
+                            	${boardDto.content }</p>
+                            <br/><br/><br/>
+                            <c:if test="${attFileList.size() != 0}">
+	                            <c:forEach items="${attFileList }" var="attFile">
+	                            	<a href="<%=ctx%>/forum/download.do?attachSeq=${attFile.attachSeq}">다운로드 : ${attFile.orgFileNm } (${attFile.fileSize })</a>
+	                            	<br>
+	                            </c:forEach>
+	                            <br>
+	                            <br>
+                            </c:if>
+                            
+                            <!-- 첨부된 파일이 2개 이상일때만 전체 압축해서 다운로드 받을 수 있음 -->
+                            <c:if test="${attFileList.size() > 1}">
+                            	<a href="<%=ctx%>/forum/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/download.do">파일 전체 다운로드</a>
+                            	<br>
+                            </c:if>
+                            
+                            <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
+                            <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
+                            	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a><br>
+                            	<a href="#" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</a><br>
+                            </c:if>
+                        </div>
+                        <!-- end .forum_issue -->
+
+
+                        <div class="forum--replays cardify">
+                            <div class="area_title">
+                                <h4>1 Replies</h4>
+                            </div>
+                            <!-- end .area_title -->
+
+                            <div class="forum_single_reply">
+                                <div class="reply_content">
+                                    <div class="name_vote">
+                                        <div class="pull-left">
+                                            <h4>AazzTech
+                                                <span>staff</span>
+                                            </h4>
+                                            <p>Answered 3 days ago</p>
+                                        </div>
+                                        <!-- end .pull-left -->
+
+                                        <div class="vote">
+                                            <a href="#" class="active">
+                                                <span class="lnr lnr-thumbs-up"></span>
+                                            </a>
+                                            <a href="#" class="">
+                                                <span class="lnr lnr-thumbs-down"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!-- end .vote -->
+                                    <p>Nunc placerat mi id nisi interdum mollis. Praesent pharetra, justo ut sceleris que the
+                                        mattis, leo quam aliquet congue placerat mi id nisi interdum mollis. </p>
+                                </div>
+                                <!-- end .reply_content -->
+                            </div>
+                            <!-- end .forum_single_reply -->
+
+                            <div class="comment-form-area">
+                                <h4>Leave a comment</h4>
+                                <!-- comment reply -->
+                                <div class="media comment-form support__comment">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img class="media-object" src="<%=ctx%>/resources/template/images/m7.png" alt="Commentator Avatar">
+                                        </a>
+                                    </div>
+	                                   <div class="media-body">
+	                                       <form class="comment-reply-form">
+	                                           <div id="trumbowyg-demo"></div>
+	                                           <button type="button" onclick="javascript:addComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq})" class="btn btn--sm btn--round">Post Comment</button>
+	                                       </form>
+	                                   </div>
+                                </div>
+                                <!-- comment reply -->
+                            </div>
+                        </div>
+                        <!-- end .forum_replays -->
+                    </div>
+                    <!-- end .forum_detail_area -->
+                </div>
+                <!-- end .col-md-12 -->            
+            </div>
+            <!-- end .row -->
+        </div>
+        <!-- end .container -->
+    </section>
+    <!--================================
+            END DASHBOARD AREA
+    =================================-->
+   	<!--//////////////////// JS GOES HERE ////////////////-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0C5etf1GVmL_ldVAichWwFFVcDfa1y_c"></script>
+    <!-- inject:js -->
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery/jquery-1.12.3.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery/popper.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery/uikit.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/bootstrap.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/chart.bundle.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/grid.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery-ui.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery.barrating.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery.countdown.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery.counterup.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/jquery.easing1.3.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/owl.carousel.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/slick.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/tether.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/vendor/waypoints.min.js"></script>
+    <script src="<%=ctx%>/resources/template/js/dashboard.js"></script>
+    <script src="<%=ctx%>/resources/template/js/main.js"></script>
+    <script src="<%=ctx%>/resources/template/js/map.js"></script>
+    <!-- endinject -->
+    
+    <script type="text/javascript">
 		var ctx = '<%= request.getContextPath() %>';
 	</script>	
 	<script src="<%=ctx%>/resources/js/page.js"></script>
@@ -142,152 +289,44 @@ String ctx = request.getContextPath();
 	    	});
 	    }
 	    
+	    function addComment(boardTypeSeq, boardSeq){
+	    	let commentDto = {
+	    			boardTypeSeq: boardTypeSeq,
+	    			boardSeq: boardSeq,
+	    			content: $('#trumbowyg-demo').trumbowyg('html')
+	    	};
+	    	
+	    	$.ajax({    
+	    		type : 'post',           
+	    		url : '<%=ctx%>/forum/notice/reply.do',
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		dataType : 'text',
+				data: JSON.stringify(commentDto),
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log(result);
+	    			alert(result)
+// 	    			if(result.code == 1){
+<%-- 	    				location.href='<%=ctx%>/forum/notice/listPage.do' --%>
+// 	    			}
+	    			
+	    		},
+	    		error : function(request, status, error) {
+	    			// 결과 에러 콜백함수
+	    			alert('failed');
+	    			console.log(error)
+	    		}
+	    	});
+	    }
+	    
 
 	</script>
-</head>
-
-<body class="preload home1 mutlti-vendor">
-    <!--================================
-            START DASHBOARD AREA
-    =================================-->
-    <section class="support_threads_area section--padding2">    
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="forum_detail_area ">
-                        <div class="cardify forum--issue">
-                            <div class="title_vote clearfix">
-                                <h3>${boardDto.title }</h3>
-
-                                <div class="vote">
-                                    <a href="#" id="cThumbUpAnchor" data-isLike='Y' data-thumb=true class="${isLike eq 'Y'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
-                                        <span class="lnr lnr-thumbs-up"></span>
-                                    </a>
-                                    <a href="#" id="cThumbDownAnchor" data-isLike='N' data-thumb=false class="${isLike eq 'N'? 'active':'' }" onclick="javascript:thumbClick(${boardDto.boardSeq }, ${boardDto.boardTypeSeq }, this);">
-                                        <span class="lnr lnr-thumbs-down"></span>
-                                    </a>
-                                </div>
-                                <!-- end .vote -->
-                            </div>
-                            <!-- end .title_vote -->
-                            <div class="suppot_query_tag">
-                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${boardDto.regMemberId }
-                                <span>${boardDto.regDtm }</span>
-                            </div>
-                            <p style="    margin-bottom: 0; margin-top: 19px;">
-                            	${boardDto.content }</p>
-                            <br/><br/><br/><br/>
-                            <c:if test="${attFileList.size() != 0}">
-	                            <c:forEach items="${attFileList }" var="attFile">
-	                            	<a href="<%=ctx%>/forum/download.do?attachSeq=${attFile.attachSeq}">다운로드 : ${attFile.orgFileNm } (${attFile.fileSize })</a>
-	                            	<br>
-	                            </c:forEach>
-	                            <br>
-	                            <br>
-                            </c:if>
-                            <c:if test="${attFileList.size() > 1}">
-                            	<a href="<%=ctx%>/forum/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/download.do">파일 전체 다운로드</a>
-                            	<br>
-                            </c:if>
-                            
-                            <!-- 수정하기, 삭제하기 버튼은 본인일때만 보여야 하는 버튼 -->
-                            <c:if test='${sessionScope.memberSeq eq boardDto.regMemberSeq }'>
-                            	<a href="<c:url value='/forum/notice/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/modifyPage.do'/>" id="modBtn" >글 수정하기</a><br>
-                            	<a href="#" id="delBtn" onclick="javascript:deletePage()">글 삭제하기</a><br>
-                            </c:if>
-                        </div>
-                        <!-- end .forum_issue -->
-
-
-                        <div class="forum--replays cardify">
-                            <div class="area_title">
-                                <h4>1 Replies</h4>
-                            </div>
-                            <!-- end .area_title -->
-
-                            <div class="forum_single_reply">
-                                <div class="reply_content">
-                                    <div class="name_vote">
-                                        <div class="pull-left">
-                                            <h4>AazzTech
-                                                <span>staff</span>
-                                            </h4>
-                                            <p>Answered 3 days ago</p>
-                                        </div>
-                                        <!-- end .pull-left -->
-
-                                        <div class="vote">
-                                            <a href="#" class="active">
-                                                <span class="lnr lnr-thumbs-up"></span>
-                                            </a>
-                                            <a href="#" class="">
-                                                <span class="lnr lnr-thumbs-down"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <!-- end .vote -->
-                                    <p>Nunc placerat mi id nisi interdum mollis. Praesent pharetra, justo ut sceleris que the
-                                        mattis, leo quam aliquet congue placerat mi id nisi interdum mollis. </p>
-                                </div>
-                                <!-- end .reply_content -->
-                            </div>
-                            <!-- end .forum_single_reply -->
-
-                            <div class="comment-form-area">
-                                <h4>Leave a comment</h4>
-                                <!-- comment reply -->
-                                <div class="media comment-form support__comment">
-                                    <div class="media-left">
-                                        <a href="#">
-                                            <img class="media-object" src="<%=ctx%>/resources/template/images/m7.png" alt="Commentator Avatar">
-                                        </a>
-                                    </div>
-                                    <div class="media-body">
-                                        <form action="#" class="comment-reply-form">
-                                            <div id="trumbowyg-demo"></div>
-                                            <button class="btn btn--sm btn--round">Post Comment</button>
-                                        </form>
-                                    </div>
-                                </div>
-                                <!-- comment reply -->
-                            </div>
-                        </div>
-                        <!-- end .forum_replays -->
-                    </div>
-                    <!-- end .forum_detail_area -->
-                </div>
-                <!-- end .col-md-12 -->            
-            </div>
-            <!-- end .row -->
-        </div>
-        <!-- end .container -->
-    </section>
-    <!--================================
-            END DASHBOARD AREA
-    =================================-->
-   	<!--//////////////////// JS GOES HERE ////////////////-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0C5etf1GVmL_ldVAichWwFFVcDfa1y_c"></script>
-    <!-- inject:js -->
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery/jquery-1.12.3.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery/popper.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery/uikit.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/bootstrap.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/chart.bundle.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/grid.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery-ui.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery.barrating.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery.countdown.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery.counterup.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/jquery.easing1.3.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/owl.carousel.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/slick.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/tether.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/trumbowyg.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/vendor/waypoints.min.js"></script>
-    <script src="<%=ctx%>/resources/template/js/dashboard.js"></script>
-    <script src="<%=ctx%>/resources/template/js/main.js"></script>
-    <script src="<%=ctx%>/resources/template/js/map.js"></script>
-    <!-- endinject -->
 </body>
 
 </html>

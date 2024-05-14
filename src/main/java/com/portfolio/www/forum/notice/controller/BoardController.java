@@ -239,6 +239,7 @@ public class BoardController {
 		
 		fileInfo.put("orgFileNm", attachDto.getOrgFileNm());
 		fileInfo.put("file", file);
+		fileInfo.put("allCompressedFile", false);
 		
 		model.addAttribute("fileInfo", fileInfo);
 		
@@ -258,6 +259,7 @@ public class BoardController {
 		File compresedFile = boardService.getCompressedFile(boardSeq, boardTypeSeq);
 		fileInfo.put("orgFileNm", downloadFileNm); //사용자에게 저장될 zip파일의 이름은 오늘 날짜로
 		fileInfo.put("file", compresedFile);
+		fileInfo.put("allCompressedFile", true);
 		
 		model.addAttribute("fileInfo", fileInfo);
 		
