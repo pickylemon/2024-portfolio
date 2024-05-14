@@ -1,12 +1,17 @@
 package com.portfolio.www.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +50,7 @@ public class FileUtil {
 			throw e;
 			
 		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
 			FileSaveException fe = new FileSaveException("첨부파일 저장 에러");
 			fe.initCause(e);
 			throw fe;
@@ -53,14 +59,17 @@ public class FileUtil {
 		return destfile;
 	}
 	
-	
+	/**
+	 * 파일 리스트를 받아서 파일을 삭제
+	 * @param delFileList
+	 */
 	public void deleteFiles(List<File> delFileList) {
 		for(File file : delFileList) {
-			if(file.exists()) {
-				file.delete();
-			}
+			deleteFile(file);
 		}
 	}
+	
+	
 	
 	/*
 	 * file.delete()는 삭제에 성공하면 true, 실패하면 false다
@@ -72,6 +81,66 @@ public class FileUtil {
 			delFile.delete();
 		}
 	}
+
+	
+	/**
+	 * 사용자가 파일 전체 다운로드를 만들었을 때
+	 * zip파일을 만들어서 저장.
+	 * @param zipList
+	 * @return
+	 */
+	public File makeCompressedFile(List<CustomFile> zipList) {
+		//zip파일로 만들 파일 리스트 준비
+		//FileOutputStream, ZipOutputStream, FileInputStream
+		
+		FileOutputStream fos = null;
+		ZipOutputStream zos = null;
+		FileInputStream fis = null;
+		
+		File zipFile = new File(getSavePath());
+		
+		try {
+			
+			if(!zipFile.exists()) {
+				zipFile.mkdirs();
+			}
+			
+			//여러 사용자들이 동시에 다운로드 받을 수 있으므로 생성되는 zip파일도 UUID로 만듦.
+			String fileNm = UUID.randomUUID().toString().replaceAll("-", "") + ".zip";
+			zipFile = new File(getSavePath(), fileNm);
+			
+			fos = new FileOutputStream(zipFile);
+			zos = new ZipOutputStream(fos);
+			
+			for(CustomFile file : zipList) {
+				fis = new FileInputStream(file);
+				ZipEntry zipEntry = new ZipEntry(file.getOrgFileNm()); //압축해제해도 원본 파일명으로 받을 수 있도록
+				zos.putNextEntry(zipEntry);
+				
+				 byte[] bytes = new byte[1024];
+	                int length;
+	                while((length = fis.read(bytes)) >= 0) {
+	                    zos.write(bytes, 0, length);
+	                }
+
+	                fis.close();
+	                zos.closeEntry();
+			}
+			
+			zos.close();
+			fos.close();
+			
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(zos);
+			IOUtils.closeQuietly(fis);
+			IOUtils.closeQuietly(fos);
+		}
+		
+		return zipFile;
+	}
+	
 
 	/**
 	 * 파일의 저장 경로(SAVE_PATH\YYYY\MM\DD)를 구하는 메서드

@@ -2,6 +2,8 @@ package com.portfolio.www.forum.notice.controller;
 
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -227,25 +229,39 @@ public class BoardController {
 	
 	
 	@GetMapping("/download.do")
-	public String download(@RequestParam(required=false) Integer attachSeq, Model model) {
-		if(attachSeq == null) { 
-			//queryString없이 온 요청은 전체 다운로드
-			//해당 게시글의 모든 파일을 압축해서 다운로드 
-			
-		} else { //single 첨부파일 다운로드
-			log.info("attachSeq={}", attachSeq);
-			
-			BoardAttachDto attachDto = boardService.getSingleAttFileInfo(attachSeq);
-			File file = new File(attachDto.getSavePath());
-			Map<String, Object> fileInfo = new HashMap();
-			
-			fileInfo.put("orgFileNm", attachDto.getOrgFileNm());
-			fileInfo.put("file", file);
-			
-			model.addAttribute("fileInfo", fileInfo);
-			
-		}
+	public String download(Integer attachSeq, Model model) {
+		
+		log.info("attachSeq={}", attachSeq);
+		
+		BoardAttachDto attachDto = boardService.getSingleAttFileInfo(attachSeq);
+		File file = new File(attachDto.getSavePath());
+		Map<String, Object> fileInfo = new HashMap();
+		
+		fileInfo.put("orgFileNm", attachDto.getOrgFileNm());
+		fileInfo.put("file", file);
+		
+		model.addAttribute("fileInfo", fileInfo);
 		
 		return "fileDownloadView"; //beanNameViewResolver에 의해 view이름으로 해석됨
+	}
+	
+	/**
+	 * 해당 게시물의 모든 첨부파일을 zip파일로 내려받기
+	 * @return
+	 */
+	@GetMapping("/{boardTypeSeq}/{boardSeq}/download.do")
+	public String downloadAll(@PathVariable("boardTypeSeq") Integer boardTypeSeq,
+							@PathVariable("boardSeq") Integer boardSeq, Model model){
+		
+		Map<String, Object> fileInfo = new HashMap();
+		String downloadFileNm = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE)+".zip";
+		File compresedFile = boardService.getCompressedFile(boardSeq, boardTypeSeq);
+		fileInfo.put("orgFileNm", downloadFileNm); //사용자에게 저장될 zip파일의 이름은 오늘 날짜로
+		fileInfo.put("file", compresedFile);
+		
+		model.addAttribute("fileInfo", fileInfo);
+		
+		return "fileDownloadView";
+		
 	}
 }

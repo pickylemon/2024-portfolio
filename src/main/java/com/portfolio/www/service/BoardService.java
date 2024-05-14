@@ -19,6 +19,7 @@ import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.exception.FileSaveException;
 import com.portfolio.www.repository.BoardAttachRepository;
 import com.portfolio.www.repository.BoardRepository;
+import com.portfolio.www.util.CustomFile;
 import com.portfolio.www.util.FileUtil;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
@@ -242,7 +243,7 @@ public class BoardService {
 		int code = -1;
 	
 		//1. 물리적으로 저장되어있는 파일 삭제
-		List<File> delFileList = getDeleteFileList(boardSeq, boardTypeSeq);
+		List<File> delFileList = (List<File>) getFileList(boardSeq, boardTypeSeq);
 		fileUtil.deleteFiles(delFileList);
 		
 		//2. 파일정보 DB에서 삭제
@@ -256,12 +257,12 @@ public class BoardService {
 
 	
 	
-	private List<File> getDeleteFileList(Integer boardSeq, Integer boardTypeSeq) {
-		List<BoardAttachDto> attFileList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
-		List<File> delFileList = attFileList.stream()
-								.map(dto -> new File(dto.getSavePath()))
+	private List<? super CustomFile> getFileList(Integer boardSeq, Integer boardTypeSeq) {
+		List<BoardAttachDto> attFileInfoList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
+		List<CustomFile> fileList = attFileInfoList.stream()
+								.map(dto -> new CustomFile(dto.getSavePath(), dto.getOrgFileNm()))
 								.collect(Collectors.toList());
-		return delFileList;
+		return fileList;
 	}
 
 	
@@ -282,5 +283,18 @@ public class BoardService {
 		File file = new File(dto.getSavePath());
 		fileUtil.deleteFile(file);
 		return boardAttachRepository.deleteOne(attachSeq);
+	}
+
+	/**
+	 * 해당 boardTypeSeq와 boardSeq로 식별되는 모든 첨부파일을 zip파일로 만들어
+	 * 컨트롤러에 전달
+	 * @param boardTypeSeq
+	 * @param boardSeq
+	 * @return
+	 */
+	public File getCompressedFile(Integer boardSeq, Integer boardTypeSeq) {
+		//해당 boardTypeSeq와 boardSeq로 식별되는 모든 파일 정보를 읽어온다.
+		List<CustomFile> fileList = (List<CustomFile>) getFileList(boardSeq, boardTypeSeq);
+		return fileUtil.makeCompressedFile(fileList);
 	}
 }

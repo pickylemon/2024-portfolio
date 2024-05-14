@@ -186,7 +186,7 @@ String ctx = request.getContextPath();
 	                            <br>
                             </c:if>
                             <c:if test="${attFileList.size() > 1}">
-                            	<a href="<%=ctx%>/forum/download.do">파일 전체 다운로드</a>
+                            	<a href="<%=ctx%>/forum/${boardDto.boardTypeSeq }/${boardDto.boardSeq }/download.do">파일 전체 다운로드</a>
                             	<br>
                             </c:if>
                             
