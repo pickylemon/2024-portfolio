@@ -61,7 +61,7 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 	public List<BoardCommentDto> getList(int boardSeq, int boardTypeSeq) {
 		String sql = "SELECT a.*, m.member_nm "
 				+ " FROM "
-				+ "	(SELECT bc1.comment_seq, bc1.lvl, CONCAT(LPAD(' ', (bc1.lvl)*5,' '), IF(bc1.lvl = 0,'','ㄴ'), bc1.content) as content,"
+				+ "	(SELECT bc1.comment_seq, bc1.lvl, bc1.content,"
 				+ "		    bc1.board_seq, bc1.board_type_seq, bc1.member_seq, "
 				+ "		    IFNULL(bc1.parent_comment_seq, bc2.parent_comment_seq) parent_comment_seq,"
 				+ "		    bc1.reg_dtm, bc1.update_dtm, bc1.delete_dtm"

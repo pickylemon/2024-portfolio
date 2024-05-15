@@ -32,7 +32,27 @@ String ctx = request.getContextPath();
     <!-- endinject -->
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/resources/template/images/favicon.png">    
+    <link rel="icon" type="image/png" sizes="16x16" href="<%=ctx%>/resources/template/images/favicon.png">
+	<script src="https://kit.fontawesome.com/a26f9e7c74.js" crossorigin="anonymous"></script>
+    
+    <style>
+    .reply_content {
+    	width: 100%;
+    }
+    .name_vote {
+    	width: 100%;
+    }
+    .pull-left{
+    	width: 100%;
+    }
+    .inner {
+    	display: flex;
+    	justify-content: space-between; 
+    	align-items: center;
+    	width: 100%;
+    }
+    
+    </style>    
 </head>
 
 <body class="preload home1 mutlti-vendor">
@@ -97,27 +117,29 @@ String ctx = request.getContextPath();
                             <!-- end .area_title -->
                             <c:forEach var="comment" items="${comments }">
                             	<div class="forum_single_reply">
-	                                <div class="reply_content">
+	                                <div class="reply_content" style="padding-left: ${18 + 30*comment.lvl}px">
 	                                    <div class="name_vote">
 	                                        <div class="pull-left">
-	                                            <h4>${comment.memberNm }
-	                                                <span>staff</span>
-	                                            </h4>
+	                                        	<div class="inner">
+		                                        	<h4>${comment.memberNm }
+		                                                <span>staff</span>
+		                                            </h4>
+		                                            <div class="vote">
+			                                            <a href="#" class="active">
+			                                                <span class="lnr lnr-thumbs-up"></span>
+			                                            </a>
+			                                            <a href="#" class="">
+			                                                <span class="lnr lnr-thumbs-down"></span>
+			                                            </a>
+		                                        	</div>
+	                                        	</div>
 	                                            <p>${comment.regDtm }</p>
 	                                        </div>
 	                                        <!-- end .pull-left -->
 	
-	                                        <div class="vote">
-	                                            <a href="#" class="active">
-	                                                <span class="lnr lnr-thumbs-up"></span>
-	                                            </a>
-	                                            <a href="#" class="">
-	                                                <span class="lnr lnr-thumbs-down"></span>
-	                                            </a>
-	                                        </div>
 	                                    </div>
-	                                    <!-- end .vote -->
-	                                    <p> ${comment.content }</p>
+	                                    <!-- end .vote -->  
+	                                    <p> <c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>${comment.content }</p>
 	                                </div>
 	                                <!-- end .reply_content -->
                             	</div>
