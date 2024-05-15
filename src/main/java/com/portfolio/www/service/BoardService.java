@@ -18,6 +18,7 @@ import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
 import com.portfolio.www.exception.FileSaveException;
 import com.portfolio.www.repository.BoardAttachRepository;
+import com.portfolio.www.repository.BoardCommentRepository;
 import com.portfolio.www.repository.BoardRepository;
 import com.portfolio.www.util.CustomFile;
 import com.portfolio.www.util.FileUtil;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardService {
 	private final BoardRepository boardRepository;
 	private final BoardAttachRepository boardAttachRepository;
+	private final BoardCommentRepository boardcommentRepository;
 	private final FileUtil fileUtil;
 	
 	/*
@@ -48,9 +50,10 @@ public class BoardService {
 			int boardSeq = dto.getBoardSeq();
 			int boardTypeSeq = dto.getBoardTypeSeq();
 			int attFileCnt = boardAttachRepository.count(boardSeq, boardTypeSeq);
-//			int commentCnt = boardCommentRepository.count(dto);
+			int commentCnt = boardcommentRepository.count(boardSeq, boardTypeSeq);
+			log.info("commentCnt={}", commentCnt);
 			dto.setAttFileCnt(attFileCnt);
-//			dto.setBoardCommentCnt(commentCnt);
+			dto.setBoardCommentCnt(commentCnt);
 		}
 		return list;
 	}

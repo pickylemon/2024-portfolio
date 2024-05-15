@@ -54,4 +54,20 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		return null;
 	}
 
+
+	/**
+	 * 해당 게시글의 댓글 수를 반환
+	 */
+	@Override
+	public int count(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT COUNT(*) "
+				+ " FROM forum.board_comment "
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return queryForObject(sql, Integer.class, args);
+	}
+
 }

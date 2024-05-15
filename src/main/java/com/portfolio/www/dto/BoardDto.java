@@ -2,9 +2,11 @@ package com.portfolio.www.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString(of= {"boardSeq", "boardTypeSeq", "attFileCnt", "boardCommentCnt"})
 public class BoardDto {
 	private int boardSeq;
 	private int boardTypeSeq;
