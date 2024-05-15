@@ -51,7 +51,18 @@ String ctx = request.getContextPath();
     	align-items: center;
     	width: 100%;
     }
-    
+    .delModBtnGrp button {
+    	border: 0px;
+   	    color: #fff;
+	    background: #6fa9e9;
+	    font-weight: 400;
+	    font-size: 14px;
+	    line-height: 24px;
+	    display: inline-block;
+	    padding: 0 10px;
+ 	    -webkit-border-radius: 100px; 
+	    border-radius: 100px; 
+    }
     </style>    
 </head>
 
@@ -116,7 +127,8 @@ String ctx = request.getContextPath();
                             </div>
                             <!-- end .area_title -->
                             <c:forEach var="comment" items="${comments }">
-                            	<div class="forum_single_reply">
+                            	<div class="forum_single_reply" data-commentSeq="${comment.commentSeq }">
+                            	<!-- commentDto의 lvl을 활용해 패딩값을 조절해서 댓글 계층구조를 시각적으로 드러내기 -->
 	                                <div class="reply_content" style="padding-left: ${18 + 30*comment.lvl}px">
 	                                    <div class="name_vote">
 	                                        <div class="pull-left">
@@ -139,7 +151,20 @@ String ctx = request.getContextPath();
 	
 	                                    </div>
 	                                    <!-- end .vote -->  
-	                                    <p> <c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>${comment.content }</p>
+	                                    <!-- 대댓글의 경우(lvl이 0이 아님) 대댓글 마크 표현 -->
+	                                    <div class="contentBtn">
+	                                    	<p> <c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>${comment.content }</p>
+	                                    	<div class="delModBtnGrp">
+	                                    	 <!-- 댓글 수정 삭제 버튼은 작성자에게만 보인다. -->
+	                                    	<c:if test="${sessionScope.memberSeq eq comment.memberSeq }">
+	                                    		<button type="button" class="modBtn" onclick="javascript:modifyComment(this)">댓글 수정</button>
+	                                    		<button type="button" class="delBtn" onclick="javascript:deleteComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq }, this)">댓글 삭제</button>
+                                    		</c:if>
+                                    		<button type="button" class="replyBtn" 
+                                    			data-commentSeq="${comment.commentSeq }" data-commentLvl="${comment.lvl}"
+                                    			onclick="javascript:addReply(this)">답글</button>
+	                                    	</div>
+	                                    </div>
 	                                </div>
 	                                <!-- end .reply_content -->
                             	</div>
@@ -321,7 +346,7 @@ String ctx = request.getContextPath();
 	    	
 	    	$.ajax({    
 	    		type : 'post',           
-	    		url : '<%=ctx%>/forum/notice/reply.do',
+	    		url : '<%=ctx%>/forum/notice/addComment.do',
 	    		async : true,
 	    		// 비동기화 여부 (default : true)
 	    		headers : {
@@ -349,6 +374,52 @@ String ctx = request.getContextPath();
 	    			// 결과 에러 콜백함수
 	    			alert('댓글 등록에 실패했습니다.');
 	    			console.log(error)
+	    		}
+	    	});
+	    }
+	    
+	    function deleteComment(boardTypeSeq, boardSeq, elem){
+	    	let comment = elem.closest('div.forum_single_reply');
+	    
+	    	console.log("commentSeq = " + comment.getAttribute("data-commentSeq"))
+	    	url = '<%=ctx%>/forum/notice/'
+	    	url += comment.getAttribute('data-commentSeq')+'/deleteComment.do'
+	    	
+	    	$.ajax({    
+	    		type : 'delete',           
+	    		url : url,
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+// 	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		dataType : 'json',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log(result);
+	    			if(result.code == 1) {
+	    				//댓글이 성공적으로 등록되면 get요청
+	    				alert(result.msg);
+	    				location.href='<%=ctx%>/forum/notice/readPage.do?boardSeq='+boardSeq+'&boardTypeSeq='+boardTypeSeq
+	    				return;
+	    			} else {
+	    				alert(result.msg);
+	    			}
+	    		},
+	    		
+	    		//jQuery .ajax는 js fetchAPI와 달리
+	    		//상태코드가 200이 아니면 error 콜백에서 처리한다.
+	    		error : function(result) {
+	    			// 결과 에러 콜백함수
+	    			/* 확인용.
+	    			console.log('댓글 등록 실패')
+	    			console.log(result);
+	    			console.log(result.responseJSON);
+	    			*/
+	    			alert(result.responseJSON.msg);
+	    			console.log(error);
 	    		}
 	    	});
 	    }

@@ -3,6 +3,8 @@ package com.portfolio.www.forum.notice.controller.rest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +38,7 @@ public class RestCommentController {
 	 * @param session
 	 * @return
 	 */
-	@PostMapping("/reply.do")
+	@PostMapping("/addComment.do")
 	public ResponseEntity<CommentResponse> addComment(@RequestBody BoardCommentDto commentDto, HttpSession session) {
 		int memberSeq = (int)session.getAttribute("memberSeq");
 		commentDto.setMemberSeq(memberSeq);
@@ -50,5 +52,16 @@ public class RestCommentController {
 			return ResponseEntity.badRequest().body(new CommentResponse(code, "댓글 등록에 실패했습니다."));
 		}
 
+	}
+	
+	@DeleteMapping("/{commentSeq}/deleteComment.do")
+	public ResponseEntity<CommentResponse> deleteComment(@PathVariable("commentSeq") int commentSeq) {
+		int code = commentService.deleteComment(commentSeq);
+		
+		if(code == 1) {
+			return ResponseEntity.ok().body(new CommentResponse(code, "댓글이 성공적으로 삭제되었습니다."));
+		} else {
+			return ResponseEntity.badRequest().body(new CommentResponse(code, "댓글 삭제에 실패했습니다."));
+		}
 	}
 }

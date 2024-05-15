@@ -37,16 +37,24 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 	
 	}
 
+	/**
+	 * 댓글 수정
+	 */
 	@Override
 	public int update(BoardCommentDto commentDto) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	/**
+	 * 댓글 삭제
+	 */
 	@Override
 	public int delete(int commentSeq) {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "DELETE FROM forum.board_comment "
+				+ " WHERE comment_seq = ?";
+
+		return update(sql, commentSeq);
 	}
 
 	
