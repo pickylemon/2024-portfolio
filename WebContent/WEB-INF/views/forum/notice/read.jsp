@@ -63,6 +63,15 @@ String ctx = request.getContextPath();
  	    -webkit-border-radius: 100px; 
 	    border-radius: 100px; 
     }
+    div.contentBtn.hiddenComment {
+    	display : none;
+    }
+    
+    .comment-form-area.edit .comment-reply-form button.edit, 
+    .comment-form-area.edit .comment-reply-form button.cancel {
+    	color: #fff;
+	    background: #6fa9e9;
+    }
     </style>    
 </head>
 
@@ -153,11 +162,14 @@ String ctx = request.getContextPath();
 	                                    <!-- end .vote -->  
 	                                    <!-- 대댓글의 경우(lvl이 0이 아님) 대댓글 마크 표현 -->
 	                                    <div class="contentBtn">
-	                                    	<p> <c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>${comment.content }</p>
+	                                    	<p> 
+	                                    		<c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>
+	                                    		<span class="commentContent">${comment.content }</span>
+	                                    	</p>
 	                                    	<div class="delModBtnGrp">
 	                                    	 <!-- 댓글 수정 삭제 버튼은 작성자에게만 보인다. -->
 	                                    	<c:if test="${sessionScope.memberSeq eq comment.memberSeq }">
-	                                    		<button type="button" class="modBtn" onclick="javascript:modifyComment(this)">댓글 수정</button>
+	                                    		<button type="button" class="modBtn" onclick="javascript:openModifyWindow(this)">댓글 수정</button>
 	                                    		<button type="button" class="delBtn" onclick="javascript:deleteComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq }, this)">댓글 삭제</button>
                                     		</c:if>
                                     		<button type="button" class="replyBtn" 
@@ -171,7 +183,7 @@ String ctx = request.getContextPath();
                             <!-- end .forum_single_reply -->
                             </c:forEach>
 
-
+							<!-- 댓글 및 대댓글 등록 창 -->
                             <div class="comment-form-area">
                                 <h4>Leave a comment</h4>
                                 <!-- comment reply -->
@@ -185,11 +197,36 @@ String ctx = request.getContextPath();
 	                                       <form class="comment-reply-form">
 	                                           <div id="trumbowyg-demo"></div>
 	                                           <button type="button" onclick="javascript:addComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq})" class="btn btn--sm btn--round">Post Comment</button>
+	                                           <button type="button" onclick="location.href='<%=ctx %>/forum/notice/readPage.do?boardSeq=${boardDto.boardSeq }&boardTypeSeq=${boardDto.boardTypeSeq }'"  class="btn btn--sm btn--round">Cancel</button>
 	                                       </form>
 	                                   </div>
                                 </div>
                                 <!-- comment reply -->
                             </div>
+                            
+                            <!-- 댓글 수정 창 -->
+                            <div class="comment-form-area edit" style="display:none">
+                                <h4>Edit your comment</h4>
+                                <!-- comment reply -->
+                                <div class="media comment-form support__comment">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img class="media-object" src="<%=ctx%>/resources/template/images/m7.png" alt="Commentator Avatar">
+                                        </a>
+                                    </div>
+	                                   <div class="media-body">
+	                                       <div class="comment-reply-form">
+	                                           <div id="comment-edit"></div>
+	                                           <button type="button" onclick="javascript:modifyComment(this)" class="btn btn--sm btn--round edit">Edit Comment</button>
+	                                           <button type="button" 
+	                                           		onclick="location.href='<%=ctx %>/forum/notice/readPage.do?boardSeq=${boardDto.boardSeq }&boardTypeSeq=${boardDto.boardTypeSeq }'" 
+	                                           		class="btn btn--sm btn--round cancel">Cancel</button>
+	                                       </div>
+	                                   </div>
+                                </div>
+                                <!-- comment reply -->
+                            </div>
+                            
                         </div>
                         <!-- end .forum_replays -->
                     </div>
@@ -246,6 +283,10 @@ String ctx = request.getContextPath();
 	    $('#trumbowyg-demo').trumbowyg({
 	        lang: 'kr'
 	    });
+     	
+     	$('#comment-edit').trumbowyg({
+     		lang: 'kr'
+     	})
 
 	    
 	    function thumbClick(boardSeq, boardTypeSeq, elem) {
@@ -379,6 +420,10 @@ String ctx = request.getContextPath();
 	    }
 	    
 	    function deleteComment(boardTypeSeq, boardSeq, elem){
+	    	if(!confirm('댓글을 정말 삭제하시겠습니까?')){
+	    		return;
+	    	}
+	    	
 	    	let comment = elem.closest('div.forum_single_reply');
 	    
 	    	console.log("commentSeq = " + comment.getAttribute("data-commentSeq"))
@@ -422,6 +467,32 @@ String ctx = request.getContextPath();
 	    			console.log(error);
 	    		}
 	    	});
+	    }
+	    
+	    // 댓글 수정창을 보여주는 메서드
+	    function openModifyWindow(elem){
+	    	//1. 현재 댓글 내용을 댓글 수정 창에 뿌리기.
+	    	let contentBox = elem.closest('div.contentBtn');
+	    	let commentContent = contentBox.querySelector('span.commentContent').innerHTML;
+	    	$('#comment-edit').trumbowyg('html', commentContent);
+	    	
+	    	//2.댓글 수정 창을 현재 댓글 위치로 가져오고(&display를 block) 현재 댓글 내용 요소는 삭제.
+	    	let commentArea = elem.closest('div.forum_single_reply');
+	    	let editForm = document.querySelector('div.comment-form-area.edit');
+	    	commentArea.append(editForm);
+	    	editForm.style.display = "block";
+	    	
+	    	//2-2. 이전의 다른 댓글의 수정버튼을 누른 상태라면, 그 댓글의 수정창은 닫혀야 한다.
+	    	let hiddenElem = document.querySelector('div.contentBtn.hiddenComment');
+	    	console.log(hiddenElem);
+	    	if(hiddenElem != null) {
+	    		hiddenElem.classList.remove("hiddenComment");
+	    	}
+	    	contentBox.classList.add("hiddenComment");
+	    	
+	    	//3.댓글 수정 창의 수정 버튼에 현재 댓글의 commentSeq를 심어둔다.
+	    	let editBtn = editForm.querySelector('button.edit');
+	    	editBtn.setAttribute('data-commentSeq', commentArea.getAttribute('data-commentSeq'));
 	    }
 	    
 
