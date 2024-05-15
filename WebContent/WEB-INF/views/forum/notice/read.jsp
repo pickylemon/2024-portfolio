@@ -217,7 +217,7 @@ String ctx = request.getContextPath();
 	                                   <div class="media-body">
 	                                       <div class="comment-reply-form">
 	                                           <div id="comment-edit"></div>
-	                                           <button type="button" onclick="javascript:modifyComment(this)" class="btn btn--sm btn--round edit">Edit Comment</button>
+	                                           <button type="button" onclick="javascript:modifyComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq }, this)" class="btn btn--sm btn--round edit">Edit Comment</button>
 	                                           <button type="button" 
 	                                           		onclick="location.href='<%=ctx %>/forum/notice/readPage.do?boardSeq=${boardDto.boardSeq }&boardTypeSeq=${boardDto.boardTypeSeq }'" 
 	                                           		class="btn btn--sm btn--round cancel">Cancel</button>
@@ -495,6 +495,52 @@ String ctx = request.getContextPath();
 	    	editBtn.setAttribute('data-commentSeq', commentArea.getAttribute('data-commentSeq'));
 	    }
 	    
+	    // 댓글 수정을 비동기로 요청하는 메서드
+	    function modifyComment(boardTypeSeq, boardSeq, elem) {
+	    	let commentDto = {
+	    			commentSeq: elem.getAttribute("data-commentSeq"),
+	    			content: $('#comment-edit').trumbowyg('html')
+	    	};
+	      	
+	      		$.ajax({    
+		    		type : 'patch',           
+		    		url : '<%=ctx%>/forum/notice/modifyComment.do',
+		    		async : true,
+		    		// 비동기화 여부 (default : true)
+		    		headers : {
+		    			// Http header
+	 	    			"Content-Type" : "application/json",
+		    			"accept" : "application/json"
+		    		},
+		    		data: JSON.stringify(commentDto),
+		    		dataType : 'json',
+		    		success : function(result) {
+		    			// 결과 성공 콜백함수 
+		    			console.log(result);
+		    			if(result.code == 1) {
+		    				//댓글이 성공적으로 등록되면 get요청
+		    				alert(result.msg);
+		    				location.href='<%=ctx%>/forum/notice/readPage.do?boardSeq='+boardSeq+'&boardTypeSeq='+boardTypeSeq
+		    				return;
+		    			} else {
+		    				alert(result.msg);
+		    			}
+		    		},
+		    
+		    		error : function(result) {
+		    			// 결과 에러 콜백함수
+		    			/* 확인용.
+		    			console.log('댓글 수정 실패')
+		    			console.log(result);
+		    			console.log(result.responseJSON);
+		    			*/
+		    			alert(result.responseJSON.msg);
+		    			console.log(error);
+		    		}
+		    	});
+	    	
+	    	
+	    }
 
 	</script>
 </body>

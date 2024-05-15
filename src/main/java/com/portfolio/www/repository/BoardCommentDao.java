@@ -122,4 +122,20 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		return queryForObject(sql, Integer.class, args);
 	}
 
+
+	/**
+	 * 댓글 수정
+	 */
+	@Override
+	public int modify(BoardCommentDto commentDto) {
+		String sql = "UPDATE forum.board_comment "
+				+ " SET content = ?,"
+				+ " update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s') "
+				+ " WHERE comment_seq = ?";
+		
+		Object[] args = { commentDto.getContent(), commentDto.getCommentSeq()};
+		
+		return update(sql, args);
+	}
+
 }

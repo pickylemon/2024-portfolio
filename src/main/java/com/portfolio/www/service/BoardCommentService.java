@@ -42,4 +42,15 @@ public class BoardCommentService {
 		return code;
 	}
 
+	public int modifyComment(BoardCommentDto commentDto) {
+		int code = -1;
+		try {
+			code = boardCommentRepository.modify(commentDto);
+		} catch(DataAccessException e) {
+			e.printStackTrace();
+		}
+		return code;
+		
+	}
+
 }

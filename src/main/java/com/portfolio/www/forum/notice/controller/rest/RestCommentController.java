@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,5 +64,17 @@ public class RestCommentController {
 		} else {
 			return ResponseEntity.badRequest().body(new CommentResponse(code, "댓글 삭제에 실패했습니다."));
 		}
+	}
+	
+	@PatchMapping("/modifyComment.do")
+	public ResponseEntity<CommentResponse> modifyComment(@RequestBody BoardCommentDto commentDto) {
+		int code = commentService.modifyComment(commentDto);
+		
+		if(code == 1) {
+			return ResponseEntity.ok().body(new CommentResponse(code, "댓글이 성공적으로 수정되었습니다."));
+		} else {
+			return ResponseEntity.badRequest().body(new CommentResponse(code, "댓글 수정에 실패했습니다."));
+		}
+		
 	}
 }

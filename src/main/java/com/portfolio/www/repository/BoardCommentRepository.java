@@ -11,4 +11,5 @@ public interface BoardCommentRepository {
 	int delete(int commentSeq);
 	List<BoardCommentDto> getList(int boardSeq, int boardTypeSeq);
 	int count(int boardTypeSeq, int boardSeq);
+	int modify(BoardCommentDto commentDto);
 }
