@@ -1,15 +1,13 @@
 package com.portfolio.www.forum.notice.controller.rest;
 
-import java.util.List;
-
-import com.portfolio.www.dto.BoardCommentDto;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class CommentResponse {
+	private int code;
 	private String msg;
-	private List<BoardCommentDto> commentList;
 }

@@ -9,6 +9,6 @@ public interface BoardCommentRepository {
 	int save(BoardCommentDto commentDto);
 	int update(BoardCommentDto commentDto);
 	int delete(int commentSeq);
-	List<BoardCommentDto> getList(int boardTypeSeq, int boardSeq);
+	List<BoardCommentDto> getList(int boardSeq, int boardTypeSeq);
 	int count(int boardTypeSeq, int boardSeq);
 }

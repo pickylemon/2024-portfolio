@@ -24,10 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.portfolio.www.dto.BoardAttachDto;
+import com.portfolio.www.dto.BoardCommentDto;
 import com.portfolio.www.dto.BoardDto;
 import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
+import com.portfolio.www.service.BoardCommentService;
 import com.portfolio.www.service.BoardService;
 import com.portfolio.www.util.PageHandler;
 import com.portfolio.www.util.SearchCondition;
@@ -42,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BoardController {
 	private final BoardService boardService;
+	private final BoardCommentService boardCommentService;
 	
 	/**
 	 * 게시판 목록 페이지 요청
@@ -99,7 +102,8 @@ public class BoardController {
 		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
-		//List<BoardCommentDto> comments = boardCommentService.getList(boardSeq, boardTypeSeq);
+		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq);
+		log.info("comments={}", comments);
 
 		if(!ObjectUtils.isEmpty(voteDto)) {
 			//해당 게시글에 대한 좋아요/싫어요 투표 결과가 있으면 꺼내기
@@ -108,8 +112,7 @@ public class BoardController {
 		model.addAttribute("boardDto", boardDto);
 		model.addAttribute("isLike", isLike);
 		model.addAttribute("attFileList", attFileList);
-
-//		model.addAttribute("comments", comments);
+		model.addAttribute("comments", comments);
 		
 		return "forum/notice/read";
 	}

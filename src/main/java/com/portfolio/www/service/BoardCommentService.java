@@ -18,8 +18,8 @@ public class BoardCommentService {
 		return boardCommentRepository.save(commentDto);
 	}
 	
-	public List<BoardCommentDto> getCommentList(int boardTypeSeq, int boardSeq){
-		return boardCommentRepository.getList(boardTypeSeq, boardSeq);
+	public List<BoardCommentDto> getCommentList(int boardSeq, int boardTypeSeq){
+		return boardCommentRepository.getList(boardSeq, boardTypeSeq);
 	}
 
 }

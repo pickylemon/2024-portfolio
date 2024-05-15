@@ -92,37 +92,38 @@ String ctx = request.getContextPath();
 
                         <div class="forum--replays cardify">
                             <div class="area_title">
-                                <h4>1 Replies</h4>
+                                <h4>${comments.size()} Replies</h4>
                             </div>
                             <!-- end .area_title -->
-
-                            <div class="forum_single_reply">
-                                <div class="reply_content">
-                                    <div class="name_vote">
-                                        <div class="pull-left">
-                                            <h4>AazzTech
-                                                <span>staff</span>
-                                            </h4>
-                                            <p>Answered 3 days ago</p>
-                                        </div>
-                                        <!-- end .pull-left -->
-
-                                        <div class="vote">
-                                            <a href="#" class="active">
-                                                <span class="lnr lnr-thumbs-up"></span>
-                                            </a>
-                                            <a href="#" class="">
-                                                <span class="lnr lnr-thumbs-down"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <!-- end .vote -->
-                                    <p>Nunc placerat mi id nisi interdum mollis. Praesent pharetra, justo ut sceleris que the
-                                        mattis, leo quam aliquet congue placerat mi id nisi interdum mollis. </p>
-                                </div>
-                                <!-- end .reply_content -->
-                            </div>
+                            <c:forEach var="comment" items="${comments }">
+                            	<div class="forum_single_reply">
+	                                <div class="reply_content">
+	                                    <div class="name_vote">
+	                                        <div class="pull-left">
+	                                            <h4>${comment.memberNm }
+	                                                <span>staff</span>
+	                                            </h4>
+	                                            <p>${comment.regDtm }</p>
+	                                        </div>
+	                                        <!-- end .pull-left -->
+	
+	                                        <div class="vote">
+	                                            <a href="#" class="active">
+	                                                <span class="lnr lnr-thumbs-up"></span>
+	                                            </a>
+	                                            <a href="#" class="">
+	                                                <span class="lnr lnr-thumbs-down"></span>
+	                                            </a>
+	                                        </div>
+	                                    </div>
+	                                    <!-- end .vote -->
+	                                    <p> ${comment.content }</p>
+	                                </div>
+	                                <!-- end .reply_content -->
+                            	</div>
                             <!-- end .forum_single_reply -->
+                            </c:forEach>
+
 
                             <div class="comment-form-area">
                                 <h4>Leave a comment</h4>
@@ -306,20 +307,25 @@ String ctx = request.getContextPath();
 	    			"Content-Type" : "application/json",
 	    			"accept" : "application/json"
 	    		},
-	    		dataType : 'text',
+	    		dataType : 'json',
 				data: JSON.stringify(commentDto),
 	    		success : function(result) {
 	    			// 결과 성공 콜백함수 
 	    			console.log(result);
-	    			alert(result)
-// 	    			if(result.code == 1){
-<%-- 	    				location.href='<%=ctx%>/forum/notice/listPage.do' --%>
-// 	    			}
+	    			if(result.code == 1) {
+	    				//댓글이 성공적으로 등록되면 get요청
+	    				alert(result.msg);
+	    				location.href='<%=ctx%>/forum/notice/readPage.do?boardSeq='+boardSeq+'&boardTypeSeq='+boardTypeSeq
+	    				return;
+	    			} else {
+	    				alert(result.msg);
+	    			}
+	    		
 	    			
 	    		},
 	    		error : function(request, status, error) {
 	    			// 결과 에러 콜백함수
-	    			alert('failed');
+	    			alert('댓글 등록에 실패했습니다.');
 	    			console.log(error)
 	    		}
 	    	});

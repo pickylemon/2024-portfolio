@@ -14,6 +14,7 @@ public class BoardCommentDto {
 	private int boardSeq;
 	private int boardTypeSeq;
 	private int memberSeq;
+	private String memberNm;//이건 memberTable에서 온 정보
 	private Integer parentCommentSeq;
 	private String regDtm;
 	private String updateDtm;
