@@ -164,7 +164,7 @@ String ctx = request.getContextPath();
 	                                    <div class="contentBtn">
 	                                    	<p> 
 	                                    		<c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>
-	                                    		<span class="commentContent">${comment.content }</span>
+	                                    		<div class="commentContent">[self : ${comment.commentSeq}] [parent : ${comment.parentCommentSeq}] ${comment.content }</div>
 	                                    	</p>
 	                                    	<div class="delModBtnGrp">
 	                                    	 <!-- 댓글 수정 삭제 버튼은 작성자에게만 보인다. -->
@@ -174,7 +174,7 @@ String ctx = request.getContextPath();
                                     		</c:if>
                                     		<button type="button" class="replyBtn" 
                                     			data-commentSeq="${comment.commentSeq }" data-commentLvl="${comment.lvl}"
-                                    			onclick="javascript:addReply(this)">답글</button>
+                                    			onclick="javascript:openReplyWindow(this)">답글</button>
 	                                    	</div>
 	                                    </div>
 	                                </div>
@@ -184,7 +184,7 @@ String ctx = request.getContextPath();
                             </c:forEach>
 
 							<!-- 댓글 및 대댓글 등록 창 -->
-                            <div class="comment-form-area">
+                            <div class="comment-form-area reply">
                                 <h4>Leave a comment</h4>
                                 <!-- comment reply -->
                                 <div class="media comment-form support__comment">
@@ -196,7 +196,8 @@ String ctx = request.getContextPath();
 	                                   <div class="media-body">
 	                                       <form class="comment-reply-form">
 	                                           <div id="trumbowyg-demo"></div>
-	                                           <button type="button" onclick="javascript:addComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq})" class="btn btn--sm btn--round">Post Comment</button>
+	                                           <!-- 댓글 및 대댓글 등록 버튼 -->
+	                                           <button type="button" onclick="javascript:addComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq}, this)" class="btn btn--sm btn--round submit">Post Comment</button>
 	                                           <button type="button" onclick="location.href='<%=ctx %>/forum/notice/readPage.do?boardSeq=${boardDto.boardSeq }&boardTypeSeq=${boardDto.boardTypeSeq }'"  class="btn btn--sm btn--round">Cancel</button>
 	                                       </form>
 	                                   </div>
@@ -378,11 +379,16 @@ String ctx = request.getContextPath();
 	    	});
 	    }
 	    
-	    function addComment(boardTypeSeq, boardSeq){
+	    //어차피 서버에서의 댓글 등록 로직은 같으므로 (댓글과 대댓글의 구분이 없다. 그냥 댓글을 DB에 insert하는 것)
+	    //프론트에서도 댓글(parentSeq=null, lvl=0)과 대댓글(parentSeq!=null, lvl>0)을 모두 보낼 수 있게
+	    //보내는 data(commentDto)의 스펙을 변경함(즉, parentCommentSeq와 lvl을 추가)
+	    function addComment(boardTypeSeq, boardSeq, elem){
 	    	let commentDto = {
 	    			boardTypeSeq: boardTypeSeq,
 	    			boardSeq: boardSeq,
-	    			content: $('#trumbowyg-demo').trumbowyg('html')
+	    			content: $('#trumbowyg-demo').trumbowyg('html'),
+	    			parentCommentSeq: elem.getAttribute("data-parentCommentSeq"),
+	    			lvl: elem.getAttribute("data-commentLvl")
 	    	};
 	    	
 	    	$.ajax({    
@@ -473,7 +479,7 @@ String ctx = request.getContextPath();
 	    function openModifyWindow(elem){
 	    	//1. 현재 댓글 내용을 댓글 수정 창에 뿌리기.
 	    	let contentBox = elem.closest('div.contentBtn');
-	    	let commentContent = contentBox.querySelector('span.commentContent').innerHTML;
+	    	let commentContent = contentBox.querySelector('div.commentContent').innerText;
 	    	$('#comment-edit').trumbowyg('html', commentContent);
 	    	
 	    	//2.댓글 수정 창을 현재 댓글 위치로 가져오고(&display를 block) 현재 댓글 내용 요소는 삭제.
@@ -538,10 +544,28 @@ String ctx = request.getContextPath();
 		    			console.log(error);
 		    		}
 		    	});
+   			}
+	    
+	    
+	    // 대댓글 등록 창을 띄우는 메서드
+	    function openReplyWindow(elem){
+	    	//이전에 등록하지 않고 작성한 내용이 있다면 초기화시키기
+	    	$('#trumbowyg-demo').trumbowyg('html', '');
 	    	
+	    	//1.댓글 등록 창을 현재 댓글 위치로 가져오기(&display를 block)
+	    	let ReplyArea = elem.closest('div.forum_single_reply');
+	    	let commentForm = document.querySelector('div.comment-form-area.reply');
 	    	
+	    	ReplyArea.append(commentForm);
+	    	
+	    	//3.대댓글 등록 창의 등록 버튼에 현재 댓글의 commentSeq를 심어둔다.
+	    	let submitBtn = commentForm.querySelector('button.submit');
+	    	//현재 댓글의 commentSeq를 작성중인 대댓글의 parentCommentSeq로 넣어주고
+	    	//대댓글이므로 lvl+1 해주기
+	    	submitBtn.setAttribute('data-parentCommentSeq', elem.getAttribute('data-commentSeq'));
+	    	submitBtn.setAttribute('data-commentLvl', parseInt(elem.getAttribute('data-commentLvl'))+1);
 	    }
-
+	    
 	</script>
 </body>
 
