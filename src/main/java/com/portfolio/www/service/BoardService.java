@@ -62,8 +62,21 @@ public class BoardService {
 		return boardRepository.getTotalCnt(sc);
 	}
 	
+	/**
+	 * 하나의 게시글에 대한 모든 정보 가져오기(제목, 내용, 총 좋아요 수, 총 싫어요 수)
+	 * @param boardSeq
+	 * @param boardTypeSeq
+	 * @return
+	 */
+	@Transactional
 	public BoardDto getPost(Integer boardSeq, Integer boardTypeSeq) {
-		return boardRepository.getOne(boardSeq, boardTypeSeq);
+		BoardDto boardDto = boardRepository.getOne(boardSeq, boardTypeSeq);
+		int likeTotal = boardRepository.getLikeTotal(boardSeq, boardTypeSeq);
+		int unlikeTotal = boardRepository.getUnlikeTotal(boardSeq, boardTypeSeq);
+		boardDto.setLikeTotal(likeTotal);
+		boardDto.setUnlikeTotal(unlikeTotal);
+		
+		return boardDto;
 	}
 	
 	/**
@@ -85,6 +98,13 @@ public class BoardService {
 		return boardAttachRepository.getOne(attachSeq);
 	}
 	
+	
+	public int getLikeTotal(int boardSeq, int boardTypeSeq) {
+		return boardRepository.getLikeTotal(boardSeq, boardTypeSeq);
+	}
+	public int getUnlikeTotal(int boardSeq, int boardTypeSeq) {
+		return boardRepository.getUnlikeTotal(boardSeq, boardTypeSeq);
+	}
 	
 	/**
 	 * 

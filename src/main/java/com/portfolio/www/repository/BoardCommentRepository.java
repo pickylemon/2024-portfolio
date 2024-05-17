@@ -12,9 +12,11 @@ public interface BoardCommentRepository {
 	int delete(int commentSeq);
 	List<BoardCommentDto> getList(int boardSeq, int boardTypeSeq);
 	int count(int boardTypeSeq, int boardSeq);
-	BoardCommentVoteDto getVote(int commentSeq);
+	BoardCommentVoteDto getVote(int commentSeq, int memberSeq);
 	int addVote(BoardCommentVoteDto dto);
 	int deleteVote(int commentSeq);
 	int updateVote(BoardCommentVoteDto dto);
+	int getLikeTotal(int commentSeq);
+	int getUnlikeTotal(int commentSeq);
 
 }

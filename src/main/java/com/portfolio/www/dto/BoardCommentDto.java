@@ -21,4 +21,6 @@ public class BoardCommentDto {
 	private String deleteDtm;
 	
 	private String isLike;
+	private int likeTotal;
+	private int unlikeTotal;
 }

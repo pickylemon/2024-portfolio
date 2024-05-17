@@ -51,6 +51,27 @@ String ctx = request.getContextPath();
     	align-items: center;
     	width: 100%;
     }
+    .dateVoteStat, .regDtmVote {
+    	margin-top: 5px;
+    	display: flex;
+    	justify-content: space-between; 
+    	align-items: center;
+    	width: 100%;
+    }
+    
+    .voteStat .total {
+	    border: 0px;
+	    color: #fff;
+	    background: #6fa9e9;
+	    font-weight: 400;
+	    font-size: 14px;
+	    line-height: 24px;
+	    display: inline-block;
+	    padding: 0 10px;
+	    border-radius: 4px;
+    
+    }
+    
     .delModBtnGrp button {
     	border: 0px;
    	    color: #fff;
@@ -99,10 +120,17 @@ String ctx = request.getContextPath();
                                 <!-- end .vote -->
                             </div>
                             <!-- end .title_vote -->
-                            <div class="suppot_query_tag">
-                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${boardDto.regMemberId }
-                                <span>${boardDto.regDtm }</span>
+                            <div class="regDtmVote">
+                                <div class="suppot_query_tag">	
+	                                <img class="poster_avatar" src="<%=ctx%>/resources/template/images/support_avat1.png" alt="Support Avatar"> ${boardDto.regMemberId }
+	                                <span>${boardDto.regDtm }</span>
+                            	</div>
+                            	 <div class="voteStat">
+                                    <div class="total">like : ${boardDto.likeTotal}</div> 
+                                    <div class="total">unlike: ${boardDto.unlikeTotal}</div>
+	                         	</div>
                             </div>
+
                             <p style="    margin-bottom: 0; margin-top: 19px;">
                             	${boardDto.content }</p>
                             <br/><br/><br/>
@@ -154,7 +182,14 @@ String ctx = request.getContextPath();
 			                                            </a>
 		                                        	</div>
 	                                        	</div>
-	                                            <p>${comment.regDtm }</p>
+	                                        	<div class="dateVoteStat">
+	                                        		<p>${comment.regDtm }</p>
+		                                            <div class="voteStat">
+			                                            <div class="total">like : ${comment.likeTotal}</div> 
+			                                            <div class="total">unlike: ${comment.unlikeTotal}</div>
+		                                            </div>
+	                                        	</div>
+	                                            
 	                                        </div>
 	                                        <!-- end .pull-left -->
 	

@@ -102,7 +102,7 @@ public class BoardController {
 		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
-		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq);
+		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq, memberSeq);
 		log.info("comments={}", comments);
 
 		if(!ObjectUtils.isEmpty(voteDto)) {

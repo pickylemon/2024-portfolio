@@ -30,5 +30,8 @@ public interface BoardRepository {
 	int update(BoardModifyDto dto);
 	
 	int delete(Integer boardSeq, Integer boardTypeSeq);
+	
+	int getLikeTotal(int boardSeq, int boardTypeSeq);
+	int getUnlikeTotal(int boardSeq, int boardTypeSeq);
 
 }

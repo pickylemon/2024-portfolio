@@ -82,19 +82,51 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 	}
 	
 	
-	public int addLike(int boardSeq, int boardTypeSeq, int memberSeq, String ip) {
-		String sql = "INSERT INTO forum.board_like"
-				+ "(board_seq, board_type_seq, member_seq, ip, reg_dtm)"
-				+ "VALUES(?, ?, ?, ?, DATE_FORMAT(NOW(), );";
+//	public int addLike(int boardSeq, int boardTypeSeq, int memberSeq, String ip) {
+//		String sql = "INSERT INTO forum.board_like"
+//				+ "(board_seq, board_type_seq, member_seq, ip, reg_dtm)"
+//				+ "VALUES(?, ?, ?, ?, DATE_FORMAT(NOW(), );";
+//		
+//		Object[] args = {boardSeq, boardTypeSeq, memberSeq, ip};
+//		return update(sql, args);
+//	}
+	
+	/**
+	 * 특정 게시물의 좋아요 총합구하기
+	 */
+	@Override
+	public int getLikeTotal(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT COUNT(*) "
+				+ " FROM forum.board_vote"
+				+ " WHERE is_like = 'Y'"
+				+ " AND board_seq = ?"
+				+ " AND board_type_seq = ?";
 		
-		Object[] args = {boardSeq, boardTypeSeq, memberSeq, ip};
-		return update(sql, args);
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return queryForObject(sql, Integer.class, args);
+	}
+
+	
+	/**
+	 * 특정 게시물의 싫어요 총합구하기
+	 */
+	@Override
+	public int getUnlikeTotal(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT COUNT(*) "
+				+ " FROM forum.board_vote"
+				+ " WHERE is_like = 'N'"
+				+ " AND board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return queryForObject(sql, Integer.class, args);
 	}
 	
 	/**
 	 * 좋아요, 싫어요 이미 존재하는지
 	 */
-	
 	@Override
 	public BoardVoteDto getVote(int boardSeq, int boardTypeSeq, int memberSeq) {
 		String sql = "SELECT * FROM board_vote "
@@ -247,6 +279,7 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 			return dto;
 		});
 	}
+
 
 
 

@@ -33,14 +33,19 @@ public class BoardCommentService {
 	}
 	
 	@Transactional
-	public List<BoardCommentDto> getCommentList(int boardSeq, int boardTypeSeq){
+	public List<BoardCommentDto> getCommentList(int boardSeq, int boardTypeSeq, int memberSeq){
 //		return boardCommentRepository.getList(boardSeq, boardTypeSeq);
 		List<BoardCommentDto> commentDtoList = boardCommentRepository.getList(boardSeq, boardTypeSeq);
 		for(BoardCommentDto commentDto : commentDtoList) {
 			try {
 				//투표 결과가 있는 commentDto에 한해서 투표 결과를 commentDto에 담는다.
-				BoardCommentVoteDto voteDto = boardCommentRepository.getVote(commentDto.getCommentSeq());
+				//지금 로그인한 유저가 각 댓글에 대해 표시한 투표 결과를 가져오는 것.
+				BoardCommentVoteDto voteDto = boardCommentRepository.getVote(commentDto.getCommentSeq(), memberSeq);
+				int likeTotal = boardCommentRepository.getLikeTotal(commentDto.getCommentSeq());
+				int unlikeTotal = boardCommentRepository.getUnlikeTotal(commentDto.getCommentSeq());
 				commentDto.setIsLike(voteDto.getIsLike());
+				commentDto.setLikeTotal(likeTotal);
+				commentDto.setUnlikeTotal(unlikeTotal);
 			} catch (EmptyResultDataAccessException e) {
 				log.info(e.getMessage());
 			}
@@ -72,7 +77,7 @@ public class BoardCommentService {
 	public int vote(BoardCommentVoteDto voteDto) {
 		//이전 투표 결과가 있는지 체크
 		int code = -1;
-		BoardCommentVoteDto savedCommentVoteDto = getVote(voteDto.getCommentSeq());
+		BoardCommentVoteDto savedCommentVoteDto = getVote(voteDto.getCommentSeq(), voteDto.getMemberSeq());
 		try {
 			if(ObjectUtils.isEmpty(savedCommentVoteDto)) { 
 				//이전의 투표 결과가 없다. -> INSERT
@@ -95,10 +100,10 @@ public class BoardCommentService {
 	
 	
 	
-	public BoardCommentVoteDto getVote(int commentSeq) {
+	public BoardCommentVoteDto getVote(int commentSeq, int memberSeq) {
 		BoardCommentVoteDto commentVoteDto = null;
 		try {
-			commentVoteDto = boardCommentRepository.getVote(commentSeq);
+			commentVoteDto = boardCommentRepository.getVote(commentSeq, memberSeq);
 		} catch(EmptyResultDataAccessException e) {
 			log.info(e.getMessage());
 		}

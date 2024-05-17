@@ -106,16 +106,45 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		
 		return query(sql, boardCommentDtoRowMapper(), args);
 	}
+	
+	/**
+	 * 특정 댓글의 좋아요 수 반환
+	 */
+	@Override
+	public int getLikeTotal(int commentSeq) {
+		String sql = "SELECT COUNT(comment_seq) "
+				+ " FROM forum.comment_vote "
+				+ " WHERE comment_seq = ? "
+				+ " AND is_like = 'Y'";
+		
+		return queryForObject(sql, Integer.class, commentSeq);
+	}
+
+
+	/**
+	 * 특정 댓글의 싫어요 수 반환
+	 */
+	@Override
+	public int getUnlikeTotal(int commentSeq) {
+		String sql = "SELECT COUNT(comment_seq) "
+				+ " FROM forum.comment_vote "
+				+ " WHERE comment_seq = ? "
+				+ " AND is_like = 'N'";
+		
+		return queryForObject(sql, Integer.class, commentSeq);
+	}
 
 	/**
 	 * (댓글의) 이전 투표 결과를 반환
+	 * 댓글 투표 테이블의 pk는 comment_seq와 member_seq다.
 	 */
 	@Override
-	public BoardCommentVoteDto getVote(int commentSeq) {
+	public BoardCommentVoteDto getVote(int commentSeq, int memberSeq) {
 		String sql = "SELECT * FROM forum.comment_vote"
-				+ " WHERE comment_seq = ?";
-		
-		return queryForObject(sql, boardCommentVoteDtoRowMapper(), commentSeq);
+				+ " WHERE comment_seq = ?"
+				+ " AND member_seq = ?";
+		Object[] args = {commentSeq, memberSeq};
+		return queryForObject(sql, boardCommentVoteDtoRowMapper(), args);
 	}
 	
 	/**
@@ -194,4 +223,7 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 			return dto;
 		};
 	}
+
+
+
 }
