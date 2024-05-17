@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardCommentDto;
+import com.portfolio.www.dto.BoardCommentVoteDto;
 
 @Repository
 public class BoardCommentDao extends JdbcTemplate implements BoardCommentRepository{
@@ -19,6 +20,21 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 	}
 
 	
+	/**
+	 * 해당 게시글의 댓글 수를 반환
+	 */
+	@Override
+	public int count(int boardSeq, int boardTypeSeq) {
+		String sql = "SELECT COUNT(*) "
+				+ " FROM forum.board_comment "
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return queryForObject(sql, Integer.class, args);
+	}
+
 	/**
 	 * 댓글을 저장한다.
 	 */
@@ -63,8 +79,6 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		return update(sql, commentSeq);
 	}
 
-	
-
 	/**
 	 * boardSeq와 boardTypeSeq로 식별되는 모든 댓글 가져오기
 	 * 계층을 유지하는 방식으로 정렬해서 가져와야 함
@@ -93,6 +107,74 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		return query(sql, boardCommentDtoRowMapper(), args);
 	}
 
+	/**
+	 * (댓글의) 이전 투표 결과를 반환
+	 */
+	@Override
+	public BoardCommentVoteDto getVote(int commentSeq) {
+		String sql = "SELECT * FROM forum.comment_vote"
+				+ " WHERE comment_seq = ?";
+		
+		return queryForObject(sql, boardCommentVoteDtoRowMapper(), commentSeq);
+	}
+	
+	/**
+	 * 댓글 투표 추가
+	 */
+
+	@Override
+	public int addVote(BoardCommentVoteDto dto) {
+		String sql = "INSERT INTO forum.comment_vote"
+				+ " (comment_seq, member_seq, is_like, ip, reg_dtm)"
+				+ " VALUES(?, ?, ?, ?, DATE_FORMAT(now(),'%Y%m%d%H%i%s'))";
+		
+		Object[] args = {dto.getCommentSeq(), dto.getMemberSeq(), dto.getIsLike(), dto.getIp()};
+		return update(sql, args);
+		
+	}
+
+	/**
+	 * 댓글 투표 삭제
+	 */
+	@Override
+	public int deleteVote(int commentSeq) {
+		String sql = "DELETE FROM forum.comment_vote "
+				+ " WHERE comment_seq = ?";
+		
+		return update(sql, commentSeq);
+	}
+
+	/**
+	 * 댓글 투표 업데이트(좋아요, 싫어요 변경)
+	 */
+	@Override
+	public int updateVote(BoardCommentVoteDto dto) {
+		String sql = "UPDATE forum.comment_vote "
+				+ " SET is_like = ?"
+				+ " , reg_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s')"
+				+ " , ip = ?"
+				+ " WHERE comment_seq = ?";
+		
+		Object[] args = {dto.getIsLike(), dto.getIp(), dto.getCommentSeq() };
+		
+		return update(sql, args);
+		
+	}
+
+	
+	private RowMapper<BoardCommentVoteDto> boardCommentVoteDtoRowMapper() {
+		return (rs, rowNum) -> {
+			BoardCommentVoteDto voteDto = new BoardCommentVoteDto();
+			voteDto.setCommentSeq(rs.getInt("comment_seq"));
+			voteDto.setMemberSeq(rs.getInt("member_seq"));
+			voteDto.setRegDtm(rs.getString("reg_dtm"));
+			voteDto.setIsLike(rs.getString("is_like"));
+			voteDto.setIp(rs.getString("ip"));
+			
+			return voteDto;
+		};
+	}
+
 	
 	private RowMapper<BoardCommentDto> boardCommentDtoRowMapper(){
 		return (rs, rowNum) -> {
@@ -112,20 +194,4 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 			return dto;
 		};
 	}
-
-	/**
-	 * 해당 게시글의 댓글 수를 반환
-	 */
-	@Override
-	public int count(int boardSeq, int boardTypeSeq) {
-		String sql = "SELECT COUNT(*) "
-				+ " FROM forum.board_comment "
-				+ " WHERE board_seq = ?"
-				+ " AND board_type_seq = ?";
-		
-		Object[] args = {boardSeq, boardTypeSeq};
-		
-		return queryForObject(sql, Integer.class, args);
-	}
-
 }

@@ -145,11 +145,11 @@ String ctx = request.getContextPath();
 		                                        	<h4>${comment.memberNm }
 		                                                <span>staff</span>
 		                                            </h4>
-		                                            <div class="vote">
-			                                            <a href="#" class="active">
+		                                            <div class="reply vote">
+			                                            <a href="#" class="reply ${comment.isLike eq 'Y'? 'active': ''}" data-thumb=true onclick="javascript:replyThumbClick(${comment.commentSeq}, this)">
 			                                                <span class="lnr lnr-thumbs-up"></span>
 			                                            </a>
-			                                            <a href="#" class="">
+			                                            <a href="#" class="reply ${comment.isLike eq 'N'? 'active': ''}" data-thumb=false onclick="javascript:replyThumbClick(${comment.commentSeq}, this)">
 			                                                <span class="lnr lnr-thumbs-down"></span>
 			                                            </a>
 		                                        	</div>
@@ -289,13 +289,15 @@ String ctx = request.getContextPath();
      		lang: 'kr'
      	})
 
-	    
+	    //게시글에 대한 좋아요/싫어요 투표
 	    function thumbClick(boardSeq, boardTypeSeq, elem) {
-	    	console.log('clicked');
 	    	alert('clicked!');
 	    	
+	    	let voteDiv = elem.closest('div.vote');
 	    	console.log(boardSeq);
 	    	console.log(boardTypeSeq);
+	    	
+	    	console.log(voteDiv)
 	    	
 	    	let url = '<%=ctx%>/forum/notice/'
 	    	url += boardTypeSeq + '/'
@@ -323,12 +325,68 @@ String ctx = request.getContextPath();
 	    			const response = JSON.parse(result);
 	    			
 	    			if(response.code == 0) { //이전 투표 결과가 없는 경우.
-	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
+	    				voteDiv.querySelector("a[data-thumb="+response.thumb+"]").classList.add('active')
+// 	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
 	    			} else if (response.code == 1) { //이전 투표결과를 취소
-	    				$("a[data-thumb="+response.thumb+"]").removeClass('active')
+	    				voteDiv.querySelector("a[data-thumb="+response.thumb+"]").classList.remove('active')
+// 	    				$("a[data-thumb="+response.thumb+"]").removeClass('active')
 	    			} else { //이전 투표결과를 반대로 
-	    				$("a[data-thumb="+!response.thumb+"]").removeClass('active')
-	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
+	    				voteDiv.querySelector("a[data-thumb="+!response.thumb+"]").classList.remove('active')
+	    				voteDiv.querySelector("a[data-thumb="+response.thumb+"]").classList.add('active')
+// 	    				$("a[data-thumb="+!response.thumb+"]").removeClass('active')
+// 	    				$("a[data-thumb="+response.thumb+"]").addClass('active')
+	    			}
+
+	    		},
+	    		error : function(request, status, error) {
+	    			// 결과 에러 콜백함수
+	    			alert('failed');
+	    			console.log(error)
+	    		}
+	    	});
+	    }
+     	
+     	//각각 댓글에 대한 좋아요 싫어요
+	    function replyThumbClick(commentSeq, elem) {
+	    	alert('clicked!');
+	    	let replyDiv = elem.closest('div.reply.vote');
+	    	console.log(replyDiv)
+	    	
+	    	let url = '<%=ctx%>/forum/notice/'
+	    	url += commentSeq + '/'
+	    	url += 'replyVote.do?thumb=' + elem.getAttribute("data-thumb")
+	    		
+	    			
+	    	$.ajax({    
+	    		type : 'get',           
+	    		// 타입 (get, post, put 등등)    
+	    		url : url,
+	    		// 요청할 서버url
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		dataType : 'json',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.dir(result);
+	    			console.dir(result.thumb);
+	    			
+	    			if(result.code == 0) { //이전 투표 결과가 없는 경우 (새로 투표 결과 insert)
+	    				replyDiv.querySelector("a[data-thumb="+result.thumb+"]").classList.add('active')
+// 	    				$("replyDiv a[data-thumb="+result.thumb+"]").addClass('active')
+	    			} else if (result.code == 1) { //이전 투표결과를 취소
+// 	    				alert("!")
+						replyDiv.querySelector("a[data-thumb="+result.thumb+"]").classList.remove('active')
+// 	    				$("replyDiv a[data-thumb="+result.thumb+"]").removeClass('active')
+	    			} else if (result.code == 2){ //이전 투표결과를 반대로 
+	    				replyDiv.querySelector("a[data-thumb="+!result.thumb+"]").classList.remove('active')
+	    				replyDiv.querySelector("a[data-thumb="+result.thumb+"]").classList.add('active')
+// 	    				$("replyDiv a[data-thumb="+!result.thumb+"]").removeClass('active')
+// 	    				$("replyDiv a[data-thumb="+result.thumb+"]").addClass('active')
 	    			}
 
 	    		},
@@ -552,7 +610,7 @@ String ctx = request.getContextPath();
 	    	//이전에 등록하지 않고 작성한 내용이 있다면 초기화시키기
 	    	$('#trumbowyg-demo').trumbowyg('html', '');
 	    	
-	    	//1.댓글 등록 창을 현재 댓글 위치로 가져오기(&display를 block)
+	    	//1.댓글 등록 창을 현재 댓글 위치로 가져오기
 	    	let ReplyArea = elem.closest('div.forum_single_reply');
 	    	let commentForm = document.querySelector('div.comment-form-area.reply');
 	    	

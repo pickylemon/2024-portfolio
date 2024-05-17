@@ -19,4 +19,6 @@ public class BoardCommentDto {
 	private String regDtm;
 	private String updateDtm;
 	private String deleteDtm;
+	
+	private String isLike;
 }

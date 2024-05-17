@@ -1,17 +1,21 @@
 package com.portfolio.www.forum.notice.controller.rest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.portfolio.www.dto.BoardCommentDto;
+import com.portfolio.www.dto.BoardCommentVoteDto;
 import com.portfolio.www.service.BoardCommentService;
 
 import lombok.RequiredArgsConstructor;
@@ -76,5 +80,36 @@ public class RestCommentController {
 			return ResponseEntity.badRequest().body(new CommentResponse(code, "댓글 수정에 실패했습니다."));
 		}
 		
+	}
+	
+	/**
+	 * 댓글 투표 
+	 * @param commentSeq
+	 * @param thumb
+	 * @param session
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/{commentSeq}/replyVote.do")
+	public ResponseEntity<ReplyVoteResponse> vote(@PathVariable("commentSeq") int commentSeq,
+									@RequestParam("thumb") boolean thumb, 
+									HttpSession session, HttpServletRequest request) {
+		log.info("commentSeq={}", commentSeq);
+		log.info("thumb={}", thumb);
+		//댓글 등록자
+		int memberSeq = (int)session.getAttribute("memberSeq");
+		//ip 주소
+		String ip = request.getRemoteAddr();
+		//댓글 투표 정보
+		String isLike = thumb? "Y" : "N";
+	
+		BoardCommentVoteDto commentVoteDto = new BoardCommentVoteDto(commentSeq, memberSeq, isLike, ip);
+		int code = commentService.vote(commentVoteDto);
+		ReplyVoteResponse response = new ReplyVoteResponse(code, thumb);
+		if(code == -1) {
+			return ResponseEntity.badRequest().body(response);
+		} else {
+			return ResponseEntity.ok().body(response);
+		}
 	}
 }
