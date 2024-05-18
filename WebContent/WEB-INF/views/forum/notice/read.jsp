@@ -136,7 +136,7 @@ String ctx = request.getContextPath();
                             <br/><br/><br/>
                             <c:if test="${attFileList.size() != 0}">
 	                            <c:forEach items="${attFileList }" var="attFile">
-	                            	<a href="<%=ctx%>/forum/download.do?attachSeq=${attFile.attachSeq}">다운로드 : ${attFile.orgFileNm } (${attFile.fileSize })</a>
+	                            	<a href="<%=ctx%>/forum/download.do?attachSeq=${attFile.attachSeq}">다운로드 : ${attFile.orgFileNm } (${attFile.fileSize } bytes) [다운로드 횟수 : ${attFile.downloadCnt } ]</a>
 	                            	<br>
 	                            </c:forEach>
 	                            <br>

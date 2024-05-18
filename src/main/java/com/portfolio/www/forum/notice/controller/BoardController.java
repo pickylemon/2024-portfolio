@@ -92,6 +92,7 @@ public class BoardController {
 	 */
 	@GetMapping("/notice/readPage.do") 
 	public String readPage(Integer boardSeq, Integer boardTypeSeq, HttpSession session, Model model) {
+		// TODO Exception처리!!
 		// FIXME validation 필요
 		//queryparam으로 boardSeq와 boardTypeSeq가 넘어가야하는데 param없이 readPage.do로 접근했을 경우
 		//500에러가 터짐. 
@@ -100,6 +101,7 @@ public class BoardController {
 		String isLike = "";
 		
 		BoardDto boardDto = boardService.getPost(boardSeq, boardTypeSeq);
+		log.info("boardDto={}", boardDto);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq, memberSeq);
@@ -231,6 +233,7 @@ public class BoardController {
 	}	
 	
 	
+	//개별 파일 다운로드 
 	@GetMapping("/download.do")
 	public String download(Integer attachSeq, Model model) {
 		

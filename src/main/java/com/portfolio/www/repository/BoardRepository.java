@@ -34,4 +34,6 @@ public interface BoardRepository {
 	int getLikeTotal(int boardSeq, int boardTypeSeq);
 	int getUnlikeTotal(int boardSeq, int boardTypeSeq);
 
+	int updateViewCnt(Integer boardSeq, Integer boardTypeSeq);
+
 }

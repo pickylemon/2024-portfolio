@@ -91,6 +91,23 @@ public class BoardDao extends JdbcTemplate implements BoardRepository {
 //		return update(sql, args);
 //	}
 	
+	
+	/**
+	 * 조회수 +1 메서드
+	 */
+	@Override
+	public int updateViewCnt(Integer boardSeq, Integer boardTypeSeq) {
+		String sql = "UPDATE forum.board "
+				+ " SET hit = hit + 1 "
+				+ " WHERE board_seq = ?"
+				+ " AND board_type_seq = ?";
+		
+		Object[] args = {boardSeq, boardTypeSeq};
+		
+		return update(sql, args);
+	}
+
+	
 	/**
 	 * 특정 게시물의 좋아요 총합구하기
 	 */

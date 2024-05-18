@@ -22,6 +22,7 @@ public class BoardAttachDto {
 	 private String fileType;
 	 private String accessUri;
 	 private String regDtm;
+	 private int downloadCnt;
 	 
 	 
 	 public static BoardAttachDto makeBoardAttachDto(MultipartFile mf, File destFile) {

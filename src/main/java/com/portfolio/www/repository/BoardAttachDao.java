@@ -33,6 +33,15 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 		return update(sql, args);
 	}
 	
+	@Override
+	public int updateDownloadCnt(int attachSeq) {
+		String sql = "UPDATE forum.board_attach "
+				+ " SET download_cnt = download_cnt + 1"
+				+ " WHERE attach_seq = ?";
+		
+		return update(sql, attachSeq);
+	}
+	
 	/**
 	 * 해당 게시물의 첨부파일 갯수를 세기
 	 */
@@ -73,7 +82,7 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 	@Override
 	public List<BoardAttachDto> getList(int boardSeq, int boardTypeSeq) {
 		String sql = "SELECT attach_seq, board_seq, board_type_seq, org_file_nm, "
-				+ " save_path, chng_file_nm, file_size, file_type, access_uri, reg_dtm "
+				+ " save_path, chng_file_nm, file_size, file_type, access_uri, download_cnt, reg_dtm "
 				+ " FROM forum.board_attach "
 				+ " WHERE board_seq = ?"
 				+ " AND board_type_seq = ?";
@@ -90,7 +99,7 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 	@Override
 	public BoardAttachDto getOne(Integer attachSeq) {
 		String sql = "SELECT attach_seq, board_seq, board_type_seq, org_file_nm, "
-				+ " save_path, chng_file_nm, file_size, file_type, access_uri, reg_dtm "
+				+ " save_path, chng_file_nm, file_size, file_type, access_uri, download_cnt, reg_dtm "
 				+ " FROM forum.board_attach "
 				+ " WHERE attach_seq = ?";
 		
@@ -111,12 +120,10 @@ public class BoardAttachDao extends JdbcTemplate implements BoardAttachRepositor
 			dto.setSavePath(rs.getString("save_path"));
 			dto.setFileType(rs.getString("file_type"));
 			dto.setOrgFileNm(rs.getString("org_file_nm"));
+			dto.setDownloadCnt(rs.getInt("download_cnt"));
 			
 			return dto;
 		});
 	}
-
-
-
 
 }

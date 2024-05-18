@@ -14,5 +14,6 @@ public interface BoardAttachRepository {
 	int deleteOne(int attachSeq);
 	BoardAttachDto getOne(Integer attachSeq);
 	int count(int boardSeq, int boardTypeSeq);
+	int updateDownloadCnt(int attachSeq);
 
 }

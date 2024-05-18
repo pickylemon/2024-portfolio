@@ -70,12 +70,17 @@ public class BoardService {
 	 */
 	@Transactional
 	public BoardDto getPost(Integer boardSeq, Integer boardTypeSeq) {
-		BoardDto boardDto = boardRepository.getOne(boardSeq, boardTypeSeq);
-		int likeTotal = boardRepository.getLikeTotal(boardSeq, boardTypeSeq);
-		int unlikeTotal = boardRepository.getUnlikeTotal(boardSeq, boardTypeSeq);
-		boardDto.setLikeTotal(likeTotal);
-		boardDto.setUnlikeTotal(unlikeTotal);
-		
+		BoardDto boardDto = null;
+		try {
+			boardRepository.updateViewCnt(boardSeq, boardTypeSeq);
+			boardDto = boardRepository.getOne(boardSeq, boardTypeSeq);
+			int likeTotal = boardRepository.getLikeTotal(boardSeq, boardTypeSeq);
+			int unlikeTotal = boardRepository.getUnlikeTotal(boardSeq, boardTypeSeq);
+			boardDto.setLikeTotal(likeTotal);
+			boardDto.setUnlikeTotal(unlikeTotal);
+		} catch(DataAccessException e) {
+			log.info(e.getMessage());
+		}
 		return boardDto;
 	}
 	
@@ -90,11 +95,15 @@ public class BoardService {
 	}
 	
 	/**
-	 * 특정 첨부파일의 정보 가져오기
+	 * 특정 첨부파일의 정보 가져오기, 다운로드 횟수 카운트+1
+	 * 지금은, 선택한 특정 첨부파일 다운로드 상황에서만 이 메서드가 호출돼서
+	 * downloadCnt를 +1하는 로직과 같이 묶어놓을 수 있긴한데 
 	 * @param attachSeq
 	 * @return 
 	 */
+	@Transactional
 	public BoardAttachDto getSingleAttFileInfo(Integer attachSeq) {
+		boardAttachRepository.updateDownloadCnt(attachSeq);
 		return boardAttachRepository.getOne(attachSeq);
 	}
 	
@@ -305,6 +314,12 @@ public class BoardService {
 	 * @return
 	 */
 	public File getCompressedFile(Integer boardSeq, Integer boardTypeSeq) {
+		//해당 게시물의 모든 파일의 download count를 +1
+		List<BoardAttachDto> attachDtoList = boardAttachRepository.getList(boardSeq, boardTypeSeq);
+		for(BoardAttachDto attachDto : attachDtoList) {
+			boardAttachRepository.updateDownloadCnt(attachDto.getAttachSeq());
+		}
+		
 		//해당 boardTypeSeq와 boardSeq로 식별되는 모든 파일 정보를 읽어온다.
 		List<CustomFile> fileList = (List<CustomFile>) getFileList(boardSeq, boardTypeSeq);
 		return fileUtil.makeCompressedFile(fileList);

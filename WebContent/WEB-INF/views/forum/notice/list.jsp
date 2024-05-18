@@ -66,6 +66,7 @@ String ctx = request.getContextPath();
                                             	<th>No</th>
                                                 <th>제목</th>
                                                 <th>Date</th>
+                                                <th>조회수</th>
                                                 <th>작성자</th>
                                             </tr>
                                         </thead>
@@ -82,6 +83,7 @@ String ctx = request.getContextPath();
                                         		</c:if>
                                         		</a></td>
                                         		<td>${item.regDtm }</td>
+                                        		<td>${item.hit }</td>
                                         		<td>${item.regMemberId }</td>
                                         	</tr>
                                         </c:forEach>
