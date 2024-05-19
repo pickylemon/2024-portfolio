@@ -1,7 +1,10 @@
 package com.portfolio.www.dto;
 
+import org.apache.ibatis.type.Alias;
+
 import lombok.Data;
 
+@Alias("MemberDto")
 @Data
 public class MemberDto {
 	private int memberSeq;

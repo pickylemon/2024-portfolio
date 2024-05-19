@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardDto;
 import com.portfolio.www.dto.BoardModifyDto;
@@ -22,7 +21,7 @@ import com.portfolio.www.util.SearchCondition;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Repository
+//@Repository
 @Slf4j
 public class BoardDao extends JdbcTemplate implements BoardRepository {
 	

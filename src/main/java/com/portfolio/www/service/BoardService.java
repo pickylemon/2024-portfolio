@@ -33,8 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BoardService {
+//	private final BoardDao boardRepository;
 	private final BoardRepository boardRepository;
+//	private final BoardAttachDao boardAttachRepository;
 	private final BoardAttachRepository boardAttachRepository;
+//	private final BoardCommentDao boardcommentRepository;
 	private final BoardCommentRepository boardcommentRepository;
 	private final FileUtil fileUtil;
 	

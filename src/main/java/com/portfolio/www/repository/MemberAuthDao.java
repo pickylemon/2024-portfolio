@@ -11,7 +11,8 @@ import com.portfolio.www.dto.MemberAuthDto;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MemberAuthDao extends JdbcTemplate{
+//@Repository
+public class MemberAuthDao extends JdbcTemplate implements MemberAuthRepository{
 
 	public MemberAuthDao(DataSource dataSource) {
 		super(dataSource);

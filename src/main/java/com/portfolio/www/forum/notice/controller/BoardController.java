@@ -104,6 +104,7 @@ public class BoardController {
 		log.info("boardDto={}", boardDto);
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
+		log.info("attFileList={}", attFileList);
 		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq, memberSeq);
 		log.info("comments={}", comments);
 

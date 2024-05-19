@@ -4,28 +4,32 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.portfolio.www.dto.EmailDto;
 import com.portfolio.www.dto.MemberAuthDto;
 import com.portfolio.www.exception.InvalidAuthUriException;
 import com.portfolio.www.exception.TimeoutException;
-import com.portfolio.www.repository.MemberAuthDao;
-import com.portfolio.www.repository.MemberDao;
+import com.portfolio.www.repository.MemberAuthRepository;
+import com.portfolio.www.repository.MemberRepository;
 import com.portfolio.www.util.EmailUtil;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class JoinService {
-	private final MemberDao memberDao;
-	private final MemberAuthDao memberAuthDao;
+	private final MemberRepository memberRepository;
+	private final MemberAuthRepository memberAuthRepository;
 	private final EmailUtil emailUtil;
 
 	public int join(HashMap<String, String> params) {
+		String contextPath = params.get("contextPath");
+		log.info("contextPath={}", contextPath);
 		//params에 담겨있는 값 : 이름, 이메일, 비밀번호
 		//join 로직 순서
 		//1. 비밀번호 암호화
@@ -53,11 +57,11 @@ public class JoinService {
 		//이메일을 저장할 때는 암호화해서 저장하지만, mail을 보낼때는...복호화해서 보내야하는데?
 		
 		//가입
-		int cnt = memberDao.join(params);
+		int cnt = memberRepository.join(params);
 		if(cnt == 1) {
 			//인증메일 구조 만들기
 			//이 부분을 좀더 직관적이게 리팩토링 해보기
-			int memberSeq = memberDao.getMemberSeq(params.get("memberId"));
+			int memberSeq = memberRepository.getMemberSeq(params.get("memberId"));
 			MemberAuthDto authDto = new MemberAuthDto();
 			authDto.setMemberSeq(memberSeq);
 			//UUID
@@ -68,7 +72,7 @@ public class JoinService {
 			cal.add(Calendar.MINUTE, 3); //유효시간 3분
 			authDto.setRegDtm(Calendar.getInstance().getTimeInMillis());
 			authDto.setExpireDtm(cal.getTimeInMillis());
-			memberAuthDao.addAuthInfo(authDto);
+			memberAuthRepository.addAuthInfo(authDto);
 			
 			//인증메일 구조 만들어서 발송
 			EmailDto email = new EmailDto();
@@ -79,7 +83,7 @@ public class JoinService {
 			
 			//직접 String을 짜지 않고 코드로 간단한 html 만들어주는 builder없을까
 			//UriComponentBuilder같은..
-			String html = "<a href='http://localhost:8080/240423/emailAuth.do?uri="+ authDto.getAuthUri()+"'>인증하기</a>";
+			String html = "<a href='http://localhost:8080/"+contextPath+"/emailAuth.do?uri="+ authDto.getAuthUri()+"'>인증하기</a>";
 			email.setText(html);
 			
 			emailUtil.sendMail(email, true);
@@ -90,7 +94,7 @@ public class JoinService {
 	
 	@Transactional
 	public int emailAuth(String uri) {
-		MemberAuthDto authDto = memberAuthDao.getMemberAuthDto(uri);
+		MemberAuthDto authDto = memberAuthRepository.getMemberAuthDto(uri);
 		if(authDto == null || !uri.equals(authDto.getAuthUri())) { 
 			//client가 잘못된 혹은 임의의 auth uri로 접근했을 경우
 			throw new InvalidAuthUriException("유효하지 않은 인증 uri");
@@ -110,8 +114,8 @@ public class JoinService {
 			//아니면 회원 가입 자체를 무효화할 것인지?
 		}
 	
-		memberAuthDao.authValidation(uri);
-		return memberDao.authValidation(memberSeq);
+		memberAuthRepository.authValidation(uri);
+		return memberRepository.authValidation(memberSeq);
 		//member_auth와 member테이블의 auth_yn을 모두 update한다. (@Transactional)
 				
 	}

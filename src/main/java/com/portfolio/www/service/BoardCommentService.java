@@ -41,9 +41,11 @@ public class BoardCommentService {
 				//투표 결과가 있는 commentDto에 한해서 투표 결과를 commentDto에 담는다.
 				//지금 로그인한 유저가 각 댓글에 대해 표시한 투표 결과를 가져오는 것.
 				BoardCommentVoteDto voteDto = boardCommentRepository.getVote(commentDto.getCommentSeq(), memberSeq);
+				if(!ObjectUtils.isEmpty(voteDto)) {
+					commentDto.setIsLike(voteDto.getIsLike());
+				}
 				int likeTotal = boardCommentRepository.getLikeTotal(commentDto.getCommentSeq());
 				int unlikeTotal = boardCommentRepository.getUnlikeTotal(commentDto.getCommentSeq());
-				commentDto.setIsLike(voteDto.getIsLike());
 				commentDto.setLikeTotal(likeTotal);
 				commentDto.setUnlikeTotal(unlikeTotal);
 			} catch (EmptyResultDataAccessException e) {

@@ -103,6 +103,7 @@ public class LoginController {
 	public ModelAndView join(@RequestParam HashMap<String, String> params, HttpServletRequest request, Model model, RedirectAttributes rattr) {
 //	public ModelAndView join(MemberJoinDto member, HttpServletRequest request, RedirectAttributes rattr) {
 		log.info("\n\n params = {}", params);
+		params.put("contextPath", request.getContextPath());
 		
 		ModelAndView mv = new ModelAndView();
 		String msg = "";

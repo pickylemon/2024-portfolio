@@ -90,6 +90,21 @@
 	    <version>8.3.0</version>
 	</dependency>
 	
+	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis</artifactId>
+	    <version>3.5.16</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis-spring</artifactId>
+	    <version>2.1.2</version>
+	</dependency>
+
+
+	
 	<!--비밀번호 암호화-->
 	<!-- https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
 	<dependency>

@@ -7,12 +7,11 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 
 import com.portfolio.www.dto.BoardCommentDto;
 import com.portfolio.www.dto.BoardCommentVoteDto;
 
-@Repository
+//@Repository
 public class BoardCommentDao extends JdbcTemplate implements BoardCommentRepository{
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
