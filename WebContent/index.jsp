@@ -5,6 +5,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script>
+	window.onload = function(){
+		location.href="/24/index.do";
+	}
+</script>
 </head>
 <body>
 HELLO THIS IS HOME

@@ -199,7 +199,7 @@ String ctx = request.getContextPath();
 	                                    <div class="contentBtn">
 	                                    	<p> 
 	                                    		<c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>
-	                                    		<div class="commentContent">[self : ${comment.commentSeq}] [parent : ${comment.parentCommentSeq}] ${comment.content }</div>
+	                                    		<div class="commentContent">[self : ${comment.commentSeq}] [parent : ${comment.rootCommentSeq}] ${comment.content }</div>
 	                                    	</p>
 	                                    	<div class="delModBtnGrp">
 	                                    	 <!-- 댓글 수정 삭제 버튼은 작성자에게만 보인다. -->
@@ -480,7 +480,8 @@ String ctx = request.getContextPath();
 	    			boardTypeSeq: boardTypeSeq,
 	    			boardSeq: boardSeq,
 	    			content: $('#trumbowyg-demo').trumbowyg('html'),
-	    			parentCommentSeq: elem.getAttribute("data-parentCommentSeq"),
+	    			parentCommentSeq: elem.getAttribute("data-rootCommentSeq"),
+	    			commentGrp: elem.getAttribute('data-commentGrp'),
 	    			lvl: elem.getAttribute("data-commentLvl")
 	    	};
 	    	
@@ -655,7 +656,8 @@ String ctx = request.getContextPath();
 	    	let submitBtn = commentForm.querySelector('button.submit');
 	    	//현재 댓글의 commentSeq를 작성중인 대댓글의 parentCommentSeq로 넣어주고
 	    	//대댓글이므로 lvl+1 해주기
-	    	submitBtn.setAttribute('data-parentCommentSeq', elem.getAttribute('data-commentSeq'));
+	    	submitBtn.setAttribute('data-rootCommentSeq', elem.getAttribute('data-rootCommentSeq'));
+	    	submitBtn.setAttribute('data-commentGrp', elem.getAttribute('data-commentGrp'));
 	    	submitBtn.setAttribute('data-commentLvl', parseInt(elem.getAttribute('data-commentLvl'))+1);
 	    }
 	    

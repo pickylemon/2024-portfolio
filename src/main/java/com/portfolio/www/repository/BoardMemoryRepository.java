@@ -126,4 +126,22 @@ public class BoardMemoryRepository implements BoardRepository{
 		return null;
 	}
 
+	@Override
+	public int getLikeTotal(int boardSeq, int boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getUnlikeTotal(int boardSeq, int boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateViewCnt(Integer boardSeq, Integer boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
