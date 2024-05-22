@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.portfolio.www.repository.MemberAuthRepository">
+    <insert id="addAuthInfo" parameterType="MemberAuthDto">
+    <!-- indent 주의 -->
+    INSERT INTO forum.member_auth
+	(member_seq, auth_num, auth_uri, reg_dtm, expire_dtm, auth_yn)
+	VALUES( #{memberSeq}, '', #{authUri}, #{regDtm}, #{expireDtm}, 'N')
+	</insert>
+	<select id="getMemberAuthDto" parameterType="string" resultType="MemberAuthDto">
+	SELECT auth_seq, 
+		   member_seq, 
+		   auth_num, 
+		   auth_uri, 
+		   reg_dtm, 
+		   expire_dtm, 
+		   auth_yn"
+	FROM forum.member_auth 
+   WHERE auth_uri = #{uri} AND auth_yn = 'N'
+	</select>
+	<update id="authValidation" parameterType="String">
+	UPDATE forum.member_auth
+	   SET auth_yn='Y'
+	 WHERE auth_uri = #{uri}
+	</update>
+
+</mapper>

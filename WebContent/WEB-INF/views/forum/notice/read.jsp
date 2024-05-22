@@ -199,7 +199,7 @@ String ctx = request.getContextPath();
 	                                    <div class="contentBtn">
 	                                    	<p> 
 	                                    		<c:if test="${comment.lvl ne 0}"> <i class="far fa-regular fa-comments"></i> </c:if>
-	                                    		<div class="commentContent">[self : ${comment.commentSeq}] [parent : ${comment.parentCommentSeq}] ${comment.content }</div>
+	                                    		<div class="commentContent">[self : ${comment.commentSeq}] [parent : ${comment.rootCommentSeq}] ${comment.content }</div>
 	                                    	</p>
 	                                    	<div class="delModBtnGrp">
 	                                    	 <!-- 댓글 수정 삭제 버튼은 작성자에게만 보인다. -->
@@ -208,7 +208,9 @@ String ctx = request.getContextPath();
 	                                    		<button type="button" class="delBtn" onclick="javascript:deleteComment(${boardDto.boardTypeSeq}, ${boardDto.boardSeq }, this)">댓글 삭제</button>
                                     		</c:if>
                                     		<button type="button" class="replyBtn" 
-                                    			data-commentSeq="${comment.commentSeq }" data-commentLvl="${comment.lvl}"
+                                    			data-commentSeq="${comment.commentSeq}" data-commentLvl="${comment.lvl}"
+                                    			data-rootCommentSeq="${comment.rootCommentSeq}" data-commentGrp="${comment.commentGrp}" 
+                                    			data-ordSeq="${comment.ordSeq}"
                                     			onclick="javascript:openReplyWindow(this)">답글</button>
 	                                    	</div>
 	                                    </div>
@@ -474,16 +476,18 @@ String ctx = request.getContextPath();
 	    
 	    //어차피 서버에서의 댓글 등록 로직은 같으므로 (댓글과 대댓글의 구분이 없다. 그냥 댓글을 DB에 insert하는 것)
 	    //프론트에서도 댓글(parentSeq=null, lvl=0)과 대댓글(parentSeq!=null, lvl>0)을 모두 보낼 수 있게
-	    //보내는 data(commentDto)의 스펙을 변경함(즉, parentCommentSeq와 lvl을 추가)
+	    //보내는 data(commentDto)의 스펙을 변경함(즉, rootCommentSeq와 lvl을 추가)
 	    function addComment(boardTypeSeq, boardSeq, elem){
 	    	let commentDto = {
-	    			boardTypeSeq: boardTypeSeq,
-	    			boardSeq: boardSeq,
-	    			content: $('#trumbowyg-demo').trumbowyg('html'),
-	    			parentCommentSeq: elem.getAttribute("data-parentCommentSeq"),
-	    			lvl: elem.getAttribute("data-commentLvl")
+    			boardTypeSeq: boardTypeSeq,
+    			boardSeq: boardSeq,
+    			content: $('#trumbowyg-demo').trumbowyg('html'),
+    			rootCommentSeq: elem.getAttribute("data-rootCommentSeq"),
+    			commentGrp: elem.getAttribute('data-commentGrp'),
+    			lvl: elem.getAttribute("data-commentLvl"),
+    			ordSeq: elem.getAttribute("data-ordSeq")
 	    	};
-	    	
+	    	console.log(commentDto);
 	    	$.ajax({    
 	    		type : 'post',           
 	    		url : '<%=ctx%>/forum/notice/addComment.do',
@@ -592,6 +596,8 @@ String ctx = request.getContextPath();
 	    	//3.댓글 수정 창의 수정 버튼에 현재 댓글의 commentSeq를 심어둔다.
 	    	let editBtn = editForm.querySelector('button.edit');
 	    	editBtn.setAttribute('data-commentSeq', commentArea.getAttribute('data-commentSeq'));
+	    	editBtn.setAttribute('data-rootCommentSeq', commentArea.getAttribute('data-rootCommentSeq'));
+	    	editBtn.setAttribute('data-commentGrp', commentArea.getAttribute('data-commentGrp'));
 	    }
 	    
 	    // 댓글 수정을 비동기로 요청하는 메서드
@@ -601,43 +607,43 @@ String ctx = request.getContextPath();
 	    			content: $('#comment-edit').trumbowyg('html')
 	    	};
 	      	
-	      		$.ajax({    
-		    		type : 'patch',           
-		    		url : '<%=ctx%>/forum/notice/modifyComment.do',
-		    		async : true,
-		    		// 비동기화 여부 (default : true)
-		    		headers : {
-		    			// Http header
-	 	    			"Content-Type" : "application/json",
-		    			"accept" : "application/json"
-		    		},
-		    		data: JSON.stringify(commentDto),
-		    		dataType : 'json',
-		    		success : function(result) {
-		    			// 결과 성공 콜백함수 
-		    			console.log(result);
-		    			if(result.code == 1) {
-		    				//댓글이 성공적으로 등록되면 get요청
-		    				alert(result.msg);
-		    				location.href='<%=ctx%>/forum/notice/readPage.do?boardSeq='+boardSeq+'&boardTypeSeq='+boardTypeSeq
-		    				return;
-		    			} else {
-		    				alert(result.msg);
-		    			}
-		    		},
-		    
-		    		error : function(result) {
-		    			// 결과 에러 콜백함수
-		    			/* 확인용.
-		    			console.log('댓글 수정 실패')
-		    			console.log(result);
-		    			console.log(result.responseJSON);
-		    			*/
-		    			alert(result.responseJSON.msg);
-		    			console.log(error);
-		    		}
-		    	});
-   			}
+      		$.ajax({    
+	    		type : 'patch',           
+	    		url : '<%=ctx%>/forum/notice/modifyComment.do',
+	    		async : true,
+	    		// 비동기화 여부 (default : true)
+	    		headers : {
+	    			// Http header
+ 	    			"Content-Type" : "application/json",
+	    			"accept" : "application/json"
+	    		},
+	    		data: JSON.stringify(commentDto),
+	    		dataType : 'json',
+	    		success : function(result) {
+	    			// 결과 성공 콜백함수 
+	    			console.log(result);
+	    			if(result.code == 1) {
+	    				//댓글이 성공적으로 등록되면 get요청
+	    				alert(result.msg);
+	    				location.href='<%=ctx%>/forum/notice/readPage.do?boardSeq='+boardSeq+'&boardTypeSeq='+boardTypeSeq
+	    				return;
+	    			} else {
+	    				alert(result.msg);
+	    			}
+	    		},
+	    
+	    		error : function(result) {
+	    			// 결과 에러 콜백함수
+	    			/* 확인용.
+	    			console.log('댓글 수정 실패')
+	    			console.log(result);
+	    			console.log(result.responseJSON);
+	    			*/
+	    			alert(result.responseJSON.msg);
+	    			console.log(error);
+	    		}
+	    	});
+  			}
 	    
 	    
 	    // 대댓글 등록 창을 띄우는 메서드
@@ -653,10 +659,14 @@ String ctx = request.getContextPath();
 	    	
 	    	//3.대댓글 등록 창의 등록 버튼에 현재 댓글의 commentSeq를 심어둔다.
 	    	let submitBtn = commentForm.querySelector('button.submit');
-	    	//현재 댓글의 commentSeq를 작성중인 대댓글의 parentCommentSeq로 넣어주고
+	    	//현재 댓글의 commentSeq를 작성중인 대댓글의 rootCommentSeq로 넣어주고
 	    	//대댓글이므로 lvl+1 해주기
-	    	submitBtn.setAttribute('data-parentCommentSeq', elem.getAttribute('data-commentSeq'));
+	    	submitBtn.setAttribute('data-commentSeq', elem.getAttribute('data-commentSeq'));
+	    	submitBtn.setAttribute('data-rootCommentSeq',elem.getAttribute('data-rootCommentSeq'));
+	    	submitBtn.setAttribute('data-commentGrp', elem.getAttribute('data-commentGrp'));
 	    	submitBtn.setAttribute('data-commentLvl', parseInt(elem.getAttribute('data-commentLvl'))+1);
+	    	submitBtn.setAttribute('data-ordSeq', parseInt(elem.getAttribute('data-ordSeq'))+1);
+	    	console.log(${comment.rootCommentSeq});
 	    }
 	    
 	</script>

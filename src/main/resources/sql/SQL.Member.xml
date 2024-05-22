@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.portfolio.www.repository.MemberRepository">
+    <insert id="join" parameterType="hashMap">
+    <!-- indent 주의 -->
+    INSERT INTO forum.`member`
+	(member_id, passwd, member_nm, email, auth_yn, pwd_chng_dtm, join_dtm)
+	VALUES (#{memberId},#{passwd},'',#{email},'','', DATE_FORMAT(NOW()  ,'%Y%m%d%H%i%s'))
+	</insert>
+	<select id="getMemberSeq" parameterType="string" resultType="int">
+	SELECT member_seq FROM member 
+	WHERE member_id = #{memberId}
+	</select>
+	<update id="authValidation" parameterType="int">
+	UPDATE forum.`member` 
+	SET auth_yn = 'Y' 
+	WHERE member_seq = #{memberSeq}
+	</update>
+	<select id="find" parameterType="string" resultType="MemberDto">
+	SELECT * FROM forum.`member` 
+	WHERE member_id = #{memberId}
+	</select>
+	
+<!--     <insert id="addBoard" parameterType="java.util.HashMap"> -->
+<!--     	<selectKey resultType="string" keyProperty="boardSeq" keyColumn="board_seq" order="AFTER"> -->
+<!--     	SELECT LAST_INSERT_ID() -->
+<!--     	</selectKey> -->
+<!-- 	INSERT INTO board  -->
+<!-- 		(board_type_seq, title, content, reg_dtm, reg_member_seq )  -->
+<!-- 		VALUES ('1', #{title}, #{trumbowyg-demo}, DATE_FORMAT(now(),'%Y%m%d%H%i%s'), '8') -->
+<!--     </insert> -->
+
+</mapper>
