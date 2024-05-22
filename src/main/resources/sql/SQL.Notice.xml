@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.portfolio.www.repository.BoardRepository">
+    <select id="getList" resultType="BoardDto">
+     SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id
+	   FROM board b 
+	   JOIN board_type bt 
+	     ON b.board_type_seq = bt.board_type_seq 
+	   JOIN member m 
+	     ON b.reg_member_seq = m.member_seq 
+   ORDER BY b.board_seq DESC 
+	  LIMIT ${ph.offset}, ${ph.pageSize}
+	</select>
+	
+	<!-- 나중에 검색 조건 추가하면 수정할 예정 -->
+	<select id="getTotalCnt" resultType="int">
+	 SELECT count(*) 
+	   FROM board b 
+	   JOIN board_type bt 
+	     ON b.board_type_seq = bt.board_type_seq 
+	   JOIN member m 
+	     ON b.reg_member_seq = m.member_seq 
+	</select>
+	
+	<select id="getOne" resultType="BoardDto">
+	 SELECT b.board_seq, b.board_type_seq, b.title, b.content, b.hit, b.del_yn, b.reg_dtm, b.reg_member_seq, b.update_dtm, b.update_member_seq, m.member_id
+	   FROM board b 
+	   JOIN board_type bt 
+		 ON b.board_type_seq = bt.board_type_seq 
+	   JOIN member m 
+		 ON b.reg_member_seq = m.member_seq 
+	  WHERE b.board_seq = #{boardSeq}
+		AND b.board_type_seq = #{boardTypeSeq}
+	</select>
+	
+	<select id="getVote" resultType="BoardVoteDto">
+	 SELECT * FROM board_vote 
+	  WHERE board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+		AND member_seq = #{memberSeq}
+	</select>
+	
+	<insert id="addVote">
+	 INSERT INTO board_vote 
+	 (board_seq, board_type_seq, member_seq, is_like, reg_dtm, ip) 
+	 VALUES (#{boardSeq}, #{boardTypeSeq}, #{memberSeq}, #{isLike}, DATE_FORMAT(now(),'%Y%m%d%H%i%s'), #{ip})
+	</insert>
+	
+	<delete id="deleteVote">
+	 DELETE FROM board_vote 
+	  WHERE board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+		AND member_seq = #{memberSeq}
+		AND is_like = #{isLike}
+	</delete>
+	
+	<update id="updateVote">
+	 UPDATE board_vote
+		SET is_like = #{isLike},
+			ip = #{ip}
+	  WHERE board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+		AND member_seq = #{memberSeq}
+	</update>
+	
+	<insert id="save" parameterType="BoardSaveDto">
+		<selectKey resultType="string" keyProperty="boardSeq" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO board 
+		(board_type_seq, title, content, reg_member_seq, reg_dtm) 
+		VALUES (#{boardTypeSeq}, #{title}, #{content}, #{regMemberSeq}, DATE_FORMAT(now(),'%Y%m%d%H%i%s'))
+	</insert>
+	
+	<update id="update" parameterType="BoardModifyDto">
+	 UPDATE board 
+		SET title = #{title} ,
+			content = #{content} ,
+			update_member_seq = #{updateMemberSeq} ,
+			update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+	  WHERE board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+	</update>
+	
+	<delete id="delete">
+	 DELETE FROM board 
+	  WHERE board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+	</delete>
+	
+	<select id="getLikeTotal" resultType="int">
+	 SELECT COUNT(*) 
+	   FROM forum.board_vote
+	  WHERE is_like = 'Y'
+		AND board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+	</select>
+	
+	<select id="getUnlikeTotal" resultType="int">
+	 SELECT COUNT(*) 
+	   FROM forum.board_vote
+	  WHERE is_like = 'N'
+		AND board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq}
+	</select>
+	
+	<update id="updateViewCnt">
+	 UPDATE forum.board 
+	    SET hit = hit + 1 
+	  WHERE board_seq = #{boardSeq}
+	    AND board_type_seq = #{boardTypeSeq}
+	</update>
+	
+	
+<!--     <insert id="addBoard" parameterType="java.util.HashMap"> -->
+<!--     	<selectKey resultType="string" keyProperty="boardSeq" keyColumn="board_seq" order="AFTER"> -->
+<!--     	SELECT LAST_INSERT_ID() -->
+<!--     	</selectKey> -->
+<!-- 	INSERT INTO board  -->
+<!-- 		(board_type_seq, title, content, reg_dtm, reg_member_seq )  -->
+<!-- 		VALUES ('1', #{title}, #{trumbowyg-demo}, DATE_FORMAT(now(),'%Y%m%d%H%i%s'), '8') -->
+<!--     </insert> -->
+
+</mapper>

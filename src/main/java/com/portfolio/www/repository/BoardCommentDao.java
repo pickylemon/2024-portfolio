@@ -45,7 +45,7 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 		
 		Object[] args = { commentDto.getLvl(), commentDto.getContent(), 
 				commentDto.getBoardSeq(), commentDto.getBoardTypeSeq(), 
-				commentDto.getMemberSeq(), commentDto.getParentCommentSeq()
+				commentDto.getMemberSeq(), commentDto.getRootCommentSeq()
 			};
 		
 		return update(sql, args);
