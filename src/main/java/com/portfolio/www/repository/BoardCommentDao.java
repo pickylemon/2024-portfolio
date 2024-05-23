@@ -214,7 +214,7 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 			dto.setDeleteDtm(rs.getString("delete_dtm"));
 			dto.setLvl(rs.getInt("lvl"));
 			dto.setMemberSeq(rs.getInt("member_seq"));
-			dto.setParentCommentSeq(rs.getInt("parent_comment_seq"));
+			dto.setRootCommentSeq(rs.getInt("root_comment_seq"));
 			dto.setRegDtm(rs.getString("reg_dtm"));
 			dto.setUpdateDtm(rs.getString("update_dtm"));
 			dto.setMemberNm(rs.getString("member_nm"));

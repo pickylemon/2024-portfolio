@@ -488,6 +488,7 @@ String ctx = request.getContextPath();
     			ordSeq: elem.getAttribute("data-ordSeq")
 	    	};
 	    	console.log(commentDto);
+	    	
 	    	$.ajax({    
 	    		type : 'post',           
 	    		url : '<%=ctx%>/forum/notice/addComment.do',

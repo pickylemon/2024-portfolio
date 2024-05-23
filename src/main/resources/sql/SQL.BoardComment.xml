@@ -6,11 +6,11 @@
 <mapper namespace="com.portfolio.www.repository.BoardCommentRepository">
   	<insert id="save" parameterType="BoardCommentDto">
   		<selectKey resultType="Integer" keyProperty="commentSeq" order="BEFORE">
-		SELECT IFNULL(MAX(comment_seq)+1, 1) FROM board_comment 
+		SELECT IFNULL(MAX(comment_seq)+1, 1) FROM board_comment2 
 		</selectKey>
-  	 	INSERT INTO forum.board_comment 
+  	 	INSERT INTO forum.board_comment2
 			(comment_seq, lvl, content, board_seq, board_type_seq, member_seq, root_comment_seq, comment_grp, ord_seq, reg_dtm)
-			VALUES(#{commentSeq}, #{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq}, 
+			SELECT #{commentSeq}, #{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq}, 
 			<choose>
 				<when test='rootCommentSeq != null'>
 				${rootCommentSeq},
@@ -24,7 +24,7 @@
 				${commentGrp},
 				</when>
 				<otherwise>
-				${commentSeq},
+				(SELECT IFNULL(MAX(comment_grp)+1, 1) FROM board_comment2 WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq}),
 				</otherwise>
 			</choose>
 			<choose>
@@ -35,50 +35,33 @@
 				1,
 				</otherwise>
 			</choose>
-			DATE_FORMAT(now(),'%Y%m%d%H%i%s'))
+			DATE_FORMAT(now(),'%Y%m%d%H%i%s')
 	</insert>
 	
 	<update id="modify" parameterType="BoardCommentDto">
-	 UPDATE forum.board_comment
+	 UPDATE forum.board_comment2
 		SET content = #{content},
 			update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s') 
 	  WHERE comment_seq = #{commentSeq}
 	</update>
 	
 	<delete id="delete" parameterType="int">
-	 DELETE FROM forum.board_comment 
+	 DELETE FROM forum.board_comment2 
 	  WHERE comment_seq = #{commentSeq}
 	</delete>
 	
-<!-- 	<select id="getList" resultType="BoardCommentDto"> -->
-<!-- 	 SELECT a.*, m.member_nm  -->
-<!--        FROM (SELECT bc1.comment_seq, bc1.lvl, bc1.content, -->
-<!-- 				    bc1.board_seq, bc1.board_type_seq, bc1.member_seq,  -->
-<!-- 				    IFNULL(bc1.parent_comment_seq, bc2.parent_comment_seq) parent_comment_seq, -->
-<!-- 				    bc1.reg_dtm, bc1.update_dtm, bc1.delete_dtm -->
-<!-- 				    FROM forum.board_comment bc1 -->
-<!-- 				    LEFT OUTER JOIN forum.board_comment bc2 -->
-<!-- 				    ON bc1.comment_seq = bc2.parent_comment_seq -->
-<!-- 				    GROUP BY bc1.comment_seq) a -->
-<!-- 		JOIN forum.member m -->
-<!-- 		  ON a.member_seq = m.member_seq -->
-<!-- 	   WHERE board_seq = #{boardSeq} -->
-<!-- 		 AND board_type_seq = #{boardTypeSeq} -->
-<!-- 	ORDER BY IFNULL(parent_comment_seq, 9999999), reg_dtm, comment_seq -->
-<!-- 	</select> -->
-	
 	<select id="getList" resultType="BoardCommentDto">
 		select comment_seq, lvl, content, board_seq, board_type_seq, m.member_nm, root_comment_seq, comment_grp, ord_seq, bc.reg_dtm
-		  from board_comment bc
+		  from board_comment2 bc
  	      join member m on bc.member_seq = m.member_seq
  	     WHERE board_seq = #{boardSeq}
            AND board_type_seq = #{boardTypeSeq}
-      ORDER BY root_comment_seq, comment_grp, ord_seq, bc.reg_dtm asc 
+      ORDER BY root_comment_seq, comment_grp, bc.reg_dtm asc
 	</select>
 	
 	<select id="count" resultType="int">
 	 SELECT COUNT(*)
-	   FROM forum.board_comment
+	   FROM forum.board_comment2
 	  WHERE board_seq = #{boardSeq}
 		AND board_type_seq = #{boardTypeSeq}
 	</select>
