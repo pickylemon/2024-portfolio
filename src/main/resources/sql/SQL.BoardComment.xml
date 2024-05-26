@@ -4,15 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.portfolio.www.repository.BoardCommentRepository">
+
   	<insert id="save" parameterType="BoardCommentDto">
   		<selectKey resultType="Integer" keyProperty="commentSeq" order="BEFORE">
-		SELECT IFNULL(MAX(comment_seq)+1, 1) FROM board_comment2 
+		SELECT IFNULL(MAX(comment_seq)+1, 1) FROM board_comment 
 		</selectKey>
-  	 	INSERT INTO forum.board_comment2
+  	 	INSERT INTO forum.board_comment
 			(comment_seq, lvl, content, board_seq, board_type_seq, member_seq, root_comment_seq, comment_grp, ord_seq, reg_dtm)
 			SELECT #{commentSeq}, #{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq}, 
 			<choose>
-				<when test='rootCommentSeq != null'>
+				<when test='rootCommentSeq != 0'>
 				${rootCommentSeq},
 				</when>
 				<otherwise>
@@ -20,15 +21,15 @@
 				</otherwise>
 			</choose>
 			<choose>
-				<when test='commentGrp != null'>
+				<when test='commentGrp != 0'>
 				${commentGrp},
 				</when>
 				<otherwise>
-				(SELECT IFNULL(MAX(comment_grp)+1, 1) FROM board_comment2 WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq}),
+				(SELECT IFNULL(MAX(comment_grp)+1, 1) FROM board_comment WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq}),
 				</otherwise>
 			</choose>
 			<choose>
-				<when test='ordSeq != null'>
+				<when test='ordSeq != 0'>
 				${ordSeq},
 				</when>
 				<otherwise>
@@ -39,29 +40,49 @@
 	</insert>
 	
 	<update id="modify" parameterType="BoardCommentDto">
-	 UPDATE forum.board_comment2
-		SET content = #{content},
-			update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s') 
+	 UPDATE forum.board_comment
+		SET update_dtm = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		<if test='content != null'>
+			,content = #{content}
+		</if>
+		<if test='ordSeq != null'>
+			,ord_seq = #{ordSeq}
+		</if>
 	  WHERE comment_seq = #{commentSeq}
 	</update>
 	
 	<delete id="delete" parameterType="int">
-	 DELETE FROM forum.board_comment2 
+	 DELETE FROM forum.board_comment 
 	  WHERE comment_seq = #{commentSeq}
 	</delete>
 	
-	<select id="getList" resultType="BoardCommentDto">
+	<select id="getList" parameterType="BoardCommentDto" resultType="BoardCommentDto">
 		select comment_seq, lvl, content, board_seq, board_type_seq, m.member_nm, root_comment_seq, comment_grp, ord_seq, bc.reg_dtm
-		  from board_comment2 bc
+		  from board_comment bc
  	      join member m on bc.member_seq = m.member_seq
  	     WHERE board_seq = #{boardSeq}
            AND board_type_seq = #{boardTypeSeq}
-      ORDER BY root_comment_seq, comment_grp, bc.reg_dtm asc
+           <if test='commentGrp != 0'>
+           AND comment_grp = #{commentGrp}
+           </if>
+           <if test='gtOrdSeq != 0'>
+           AND ord_seq > #{gtOrdSeq}
+           </if>
+      ORDER BY root_comment_seq, comment_grp, ord_seq, bc.reg_dtm asc
+	</select>
+	
+	<select id="getAllCommentList" resultType="BoardCommentDto">
+		select comment_seq, lvl, content, board_seq, board_type_seq, m.member_nm, root_comment_seq, comment_grp, ord_seq, bc.reg_dtm
+		  from board_comment bc
+ 	      join member m on bc.member_seq = m.member_seq
+ 	     WHERE board_seq = #{boardSeq}
+           AND board_type_seq = #{boardTypeSeq}
+      ORDER BY root_comment_seq, comment_grp, ord_seq, bc.reg_dtm asc
 	</select>
 	
 	<select id="count" resultType="int">
 	 SELECT COUNT(*)
-	   FROM forum.board_comment2
+	   FROM forum.board_comment
 	  WHERE board_seq = #{boardSeq}
 		AND board_type_seq = #{boardTypeSeq}
 	</select>

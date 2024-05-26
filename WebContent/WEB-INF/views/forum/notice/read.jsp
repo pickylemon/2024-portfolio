@@ -482,6 +482,7 @@ String ctx = request.getContextPath();
     			boardTypeSeq: boardTypeSeq,
     			boardSeq: boardSeq,
     			content: $('#trumbowyg-demo').trumbowyg('html'),
+    			parentCommentSeq : elem.getAttribute("data-commentSeq"),
     			rootCommentSeq: elem.getAttribute("data-rootCommentSeq"),
     			commentGrp: elem.getAttribute('data-commentGrp'),
     			lvl: elem.getAttribute("data-commentLvl"),
@@ -666,7 +667,8 @@ String ctx = request.getContextPath();
 	    	submitBtn.setAttribute('data-rootCommentSeq',elem.getAttribute('data-rootCommentSeq'));
 	    	submitBtn.setAttribute('data-commentGrp', elem.getAttribute('data-commentGrp'));
 	    	submitBtn.setAttribute('data-commentLvl', parseInt(elem.getAttribute('data-commentLvl'))+1);
-	    	submitBtn.setAttribute('data-ordSeq', parseInt(elem.getAttribute('data-ordSeq'))+1);
+	    	// 현재 댓글의 정렬 순서를 가져온다
+	    	submitBtn.setAttribute('data-ordSeq', parseInt(elem.getAttribute('data-ordSeq')));
 	    	console.log(${comment.rootCommentSeq});
 	    }
 	    

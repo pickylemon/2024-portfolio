@@ -12,7 +12,8 @@ public interface BoardCommentRepository {
 	int save(BoardCommentDto commentDto);
 	int modify(BoardCommentDto commentDto);
 	int delete(int commentSeq);
-	List<BoardCommentDto> getList(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
+	List<BoardCommentDto> getList(BoardCommentDto commentDto);
+	List<BoardCommentDto> getAllCommentList(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
 	int count(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
 	BoardCommentVoteDto getVote(@Param("commentSeq") int commentSeq, @Param("memberSeq") int memberSeq);
 	int addVote(BoardCommentVoteDto dto);
