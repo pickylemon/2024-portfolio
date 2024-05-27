@@ -224,5 +224,26 @@ public class BoardCommentDao extends JdbcTemplate implements BoardCommentReposit
 	}
 
 
+	@Override
+	public int saveCommentRelation(int parentSeq, int childSeq) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public List<BoardCommentDto> getList(BoardCommentDto commentDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public List<BoardCommentDto> getAllCommentList(int boardSeq, int boardTypeSeq) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

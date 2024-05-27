@@ -24,11 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.portfolio.www.dto.BoardAttachDto;
-import com.portfolio.www.dto.BoardCommentDto;
 import com.portfolio.www.dto.BoardDto;
 import com.portfolio.www.dto.BoardModifyDto;
 import com.portfolio.www.dto.BoardSaveDto;
 import com.portfolio.www.dto.BoardVoteDto;
+import com.portfolio.www.forum.notice.dto.CommentResultDto;
 import com.portfolio.www.service.BoardCommentService;
 import com.portfolio.www.service.BoardService;
 import com.portfolio.www.util.PageHandler;
@@ -105,7 +105,7 @@ public class BoardController {
 		BoardVoteDto voteDto = boardService.getVote(boardSeq, boardTypeSeq, memberSeq);
 		List<BoardAttachDto> attFileList = boardService.getAttFileInfoList(boardSeq, boardTypeSeq);
 		log.info("attFileList={}", attFileList);
-		List<BoardCommentDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq, memberSeq);
+		List<CommentResultDto> comments = boardCommentService.getCommentList(boardSeq, boardTypeSeq, memberSeq);
 		log.info("comments={}", comments);
 
 		if(!ObjectUtils.isEmpty(voteDto)) {

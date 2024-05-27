@@ -6,14 +6,14 @@ import org.apache.ibatis.annotations.Param;
 
 import com.portfolio.www.dto.BoardCommentDto;
 import com.portfolio.www.dto.BoardCommentVoteDto;
+import com.portfolio.www.forum.notice.dto.CommentResultDto;
 
 public interface BoardCommentRepository {
 
 	int save(BoardCommentDto commentDto);
 	int modify(BoardCommentDto commentDto);
 	int delete(int commentSeq);
-	List<BoardCommentDto> getList(BoardCommentDto commentDto);
-	List<BoardCommentDto> getAllCommentList(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
+	List<CommentResultDto> getAllCommentList(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
 	int count(@Param("boardSeq") int boardSeq, @Param("boardTypeSeq") int boardTypeSeq);
 	BoardCommentVoteDto getVote(@Param("commentSeq") int commentSeq, @Param("memberSeq") int memberSeq);
 	int addVote(BoardCommentVoteDto dto);

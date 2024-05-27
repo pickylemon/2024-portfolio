@@ -11,15 +11,8 @@
 		</selectKey>
   	 	INSERT INTO forum.board_comment
 			(comment_seq, lvl, content, board_seq, board_type_seq, member_seq, root_comment_seq, comment_grp, ord_seq, reg_dtm)
-			SELECT #{commentSeq}, #{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq}, 
-			<choose>
-				<when test='rootCommentSeq != 0'>
-				${rootCommentSeq},
-				</when>
-				<otherwise>
-				${commentSeq},
-				</otherwise>
-			</choose>
+			SELECT #{commentSeq}, #{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq},
+			${parentCommentSeq},
 			<choose>
 				<when test='commentGrp != 0'>
 				${commentGrp},
@@ -56,28 +49,51 @@
 	  WHERE comment_seq = #{commentSeq}
 	</delete>
 	
-	<select id="getList" parameterType="BoardCommentDto" resultType="BoardCommentDto">
-		select comment_seq, lvl, content, board_seq, board_type_seq, m.member_nm, root_comment_seq, comment_grp, ord_seq, bc.reg_dtm
-		  from board_comment bc
- 	      join member m on bc.member_seq = m.member_seq
- 	     WHERE board_seq = #{boardSeq}
-           AND board_type_seq = #{boardTypeSeq}
-           <if test='commentGrp != 0'>
-           AND comment_grp = #{commentGrp}
-           </if>
-           <if test='gtOrdSeq != 0'>
-           AND ord_seq > #{gtOrdSeq}
-           </if>
-      ORDER BY root_comment_seq, comment_grp, ord_seq, bc.reg_dtm asc
-	</select>
-	
-	<select id="getAllCommentList" resultType="BoardCommentDto">
-		select comment_seq, lvl, content, board_seq, board_type_seq, m.member_nm, root_comment_seq, comment_grp, ord_seq, bc.reg_dtm
-		  from board_comment bc
- 	      join member m on bc.member_seq = m.member_seq
- 	     WHERE board_seq = #{boardSeq}
-           AND board_type_seq = #{boardTypeSeq}
-      ORDER BY root_comment_seq, comment_grp, ord_seq, bc.reg_dtm asc
+	<select id="getAllCommentList" resultType="CommentResultDto">
+	WITH RECURSIVE nested_comments(
+		board_seq, board_type_seq, comment_seq, root_comment_seq, content, member_seq, path, lvl, sortable, reg_dtm, update_dtm, delete_dtm
+	) AS (
+		SELECT
+		    board_seq,
+		    board_type_seq,
+		    comment_seq,
+		    root_comment_seq,
+		    content,
+		    member_seq,
+		    comment_seq as path,
+		    lvl,
+		    CONCAT('-', COALESCE(bc.root_comment_seq, 0), '.', comment_seq) as sortable,
+		    reg_dtm, update_dtm, delete_dtm
+		FROM
+		    board_comment bc
+		WHERE 1=1 
+		 AND board_seq = #{boardSeq}
+		 AND board_type_seq = #{boardTypeSeq}
+		 AND root_comment_seq = 0
+		UNION ALL
+		SELECT
+		    c.board_seq, c.board_type_seq,
+		    c.comment_seq,
+		    c.root_comment_seq,
+		    c.content,
+		    c.member_seq,
+		    CONCAT(nc.path, '.', c.comment_seq) as path,
+		    nc.lvl + 1,
+		    CONCAT(nc.sortable, '.-', COALESCE(c.root_comment_seq, 0), '.', c.comment_seq) as sortable,
+		    c.reg_dtm,
+		    c.update_dtm,
+		    c.delete_dtm
+		FROM
+	    	nested_comments nc
+		JOIN board_comment c ON nc.comment_seq = c.root_comment_seq
+	   WHERE 1=1 
+		 AND c.board_seq = #{boardSeq}
+		 AND c.board_type_seq = #{boardTypeSeq}
+	)
+	  SELECT nc.*, m.member_nm
+	    FROM nested_comments nc
+	    join member m on nc.member_seq = m.member_seq
+	ORDER BY sortable
 	</select>
 	
 	<select id="count" resultType="int">
